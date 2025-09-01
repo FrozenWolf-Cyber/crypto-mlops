@@ -4,7 +4,13 @@ metadata:
   name: mlflow-ingress
   namespace: platform
   annotations:
+    kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      # Block write methods
+      location /api/2.0/preview/mlflow/ {
+          if ($request_method !~ ^(GET|HEAD|OPTIONS)$ ) { return 405; }
+      }
 spec:
   ingressClassName: nginx
   tls:
@@ -22,11 +28,3 @@ spec:
                 name: mlflow
                 port:
                   number: 5000
-
-          - path: /.well-known/acme-challenge/
-            pathType: Prefix
-            backend:
-              service:
-                name: ingress-nginx-controller
-                port:
-                  number: 80
