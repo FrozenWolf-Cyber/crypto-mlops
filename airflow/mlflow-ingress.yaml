@@ -4,11 +4,9 @@ metadata:
   name: mlflow-ingress
   namespace: platform
   annotations:
-    kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      if ($request_method !~ ^(GET|HEAD|OPTIONS)$ ) { return 405; }
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
         - mlflow.gokuladethya.uk
