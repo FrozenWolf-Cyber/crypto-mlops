@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow
+  namespace: platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      containers:
+        - name: mlflow
+          image: python:3.11-slim
+          command: ["bash", "-c"]
+          args:
+            - |
+              pip install --no-cache-dir mlflow psycopg2-binary boto3 &&
+              mlflow server \
+                --backend-store-uri $DATABASE_URL \
+                --default-artifact-root $S3_URL/ml-flow \
+                --host 0.0.0.0 \
+                --port 5000 \
+                --workers 1
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - secretRef:
+                name: platform-secrets
+          volumeMounts:
+            - name: shared
+              mountPath: /mlflow
+      volumes:
+        - name: shared
+          persistentVolumeClaim:
+            claimName: shared-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow
+  namespace: platform
+spec:
+  selector:
+    app: mlflow
+  ports:
+    - port: 5000
+      targetPort: 5000
+      nodePort: 30050
