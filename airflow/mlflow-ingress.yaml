@@ -22,3 +22,11 @@ spec:
                 name: mlflow
                 port:
                   number: 5000
+
+          - path: /.well-known/acme-challenge/
+            pathType: Prefix
+            backend:
+              service:
+                name: ingress-nginx-controller
+                port:
+                  number: 80
