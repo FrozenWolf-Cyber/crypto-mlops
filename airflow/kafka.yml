@@ -135,6 +135,12 @@ spec:
             - name: shared
               mountPath: /etc/schema-registry
 
+      volumes:
+        - name: shared
+          persistentVolumeClaim:
+            claimName: shared-pvc  # reuse existing PVC
+
+
 ---
 # 5️⃣ Schema Registry Service
 apiVersion: v1
