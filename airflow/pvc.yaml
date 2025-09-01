@@ -5,7 +5,7 @@ metadata:
   name: shared-pv
 spec:
   capacity:
-    storage: 70Gi
+    storage: 60Gi
   accessModes:
     - ReadWriteMany
   hostPath:
@@ -25,19 +25,5 @@ spec:
   resources:
     requests:
       storage: 60Gi
-  volumeName: shared-pv
-  storageClassName: ""   # ← this is required
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: kafka-pvc
-  namespace: platform
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 10Gi
   volumeName: shared-pv
   storageClassName: ""   # ← this is required
