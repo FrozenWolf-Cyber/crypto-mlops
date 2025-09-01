@@ -131,14 +131,14 @@ spec:
             - name: SCHEMA_REGISTRY_LISTENERS
               value: "http://0.0.0.0:8081"
 
-          volumeMounts:
-            - name: shared
-              mountPath: /etc/schema-registry
+      #     volumeMounts:
+      #       - name: shared
+      #         mountPath: /etc/schema-registry
 
-      volumes:
-        - name: shared
-          persistentVolumeClaim:
-            claimName: shared-pvc  # reuse existing PVC
+      # volumes:
+      #   - name: shared
+      #     persistentVolumeClaim:
+      #       claimName: shared-pvc  # reuse existing PVC
 
 
 ---
