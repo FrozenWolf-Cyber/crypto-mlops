@@ -46,6 +46,7 @@ metadata:
   name: mlflow
   namespace: platform
 spec:
+  type: NodePort 
   selector:
     app: mlflow
   ports:
