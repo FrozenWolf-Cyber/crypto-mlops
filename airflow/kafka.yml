@@ -130,6 +130,11 @@ spec:
               value: "kafka:29092"
             - name: SCHEMA_REGISTRY_LISTENERS
               value: "http://0.0.0.0:8081"
+
+          volumeMounts:
+            - name: shared
+              mountPath: /etc/schema-registry
+
 ---
 # 5️⃣ Schema Registry Service
 apiVersion: v1
