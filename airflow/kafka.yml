@@ -57,13 +57,15 @@ spec:
               value: "NDY5ZDJlOTYtM2QxYi00Nm" # replace with your generated UUID
             - name: KAFKA_LOG_RETENTION_HOURS
               value: "24"
+
           volumeMounts:
-            - name: kafka-data
-              mountPath: /tmp/kraft-combined-logs
+            - name: shared
+              mountPath: /tmp/kraft-combined-logs  # Kafka logs folder
       volumes:
-        - name: kafka-data
+        - name: shared
           persistentVolumeClaim:
-            claimName: kafka-pvc
+            claimName: shared-pvc  # reuse existing PVC
+
 ---
 # 3️⃣ Kafka Service
 apiVersion: v1
