@@ -1,0 +1,54 @@
+import os
+from s3_manager import S3Manager
+manager = S3Manager()
+import subprocess
+from consumer_utils import state_checker, state_write, delete_state, STATE_DIR
+
+manager = S3Manager()
+RETENTION_MIN = 60*24*365  # 1 year
+TEST_RETENTION_MIN = 60*24*30  # 90 days
+state_write("ALL", "producer", "main", "delete")
+data_path = "data/prices"
+
+cryptos = ["BTCUSDT", "ETHUSDT", "BNBUSDT"]
+
+def create_producer(crypto: str, model: str, version: str):
+    if os.path.exists(os.path.join(STATE_DIR, f"{crypto}_{model}_{version}.json")):
+        print(f"[WARNING] State file for {crypto} {model} {version} already exists, removing it first.")
+        os.remove(os.path.join(STATE_DIR, f"{crypto}_{model}_{version}.json"))
+    """Download datasets and launch consumer."""
+    print(f"[CREATE] Preparing producer for {crypto} {model} {version}")
+
+    cmd = [
+        "python", "producer.py"
+    ]
+    print("[CREATE] Launching:", " ".join(cmd))
+    subprocess.Popen(cmd)
+
+import pandas as pd
+
+for coin in cryptos:
+    print(f"Processing {coin}...")
+    train_df = pd.read_csv(f"{data_path}/{coin}.csv")
+    test_df = pd.read_csv(f"{data_path}/{coin}_test.csv")
+    train_df["open_time"] = pd.to_datetime(train_df["open_time"])
+    test_df["open_time"] = pd.to_datetime(test_df["open_time"])
+    full_df = pd.concat([train_df, test_df])
+    full_df = full_df.drop_duplicates(subset=["open_time"])
+    full_df = full_df.sort_values(by=["open_time"])
+    train_df, test_df = full_df[:-len(test_df)], full_df[-len(test_df):]
+    if len(train_df) > RETENTION_MIN:
+         test_df = test_df[-RETENTION_MIN:]
+    print(f"Train size: {len(train_df)}, Test size: {len(test_df)}")
+    print(f"Start date: {train_df.iloc[0]['open_time']}, End date: {test_df.iloc[-1]['open_time']}")
+    
+    train_df.to_csv(f"{data_path}/{coin}.csv", index=False)
+    test_df.to_csv(f"{data_path}/{coin}_test.csv", index=False)
+    manager.upload_df(f"{data_path}/{coin}.csv", bucket='mlops', key=f'prices/{coin}.parquet')
+    manager.upload_df(f"{data_path}/{coin}_test.csv", bucket='mlops', key=f'prices/{coin}_test.parquet')
+    
+
+
+
+
+create_producer("ALL", "producer", "main")

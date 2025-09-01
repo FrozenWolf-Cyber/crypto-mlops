@@ -1,0 +1,10 @@
+dags:
+  gitSync:
+    enabled: true
+    repo: "https://github.com/FrozenWolf-Cyber/crypto-mlops"
+    branch: "master"
+    subPath: "airflow"   # folder inside repo containing DAGs (empty = root)
+    wait: 60      # seconds between git pulls
+  persistence:
+    enabled: true
+
