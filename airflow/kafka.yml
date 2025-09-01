@@ -1,17 +1,3 @@
-# 1️⃣ PersistentVolumeClaim for Kafka logs
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: kafka-pvc
-  namespace: platform
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 10Gi
-  storageClassName: nfs
----
 # 2️⃣ Kafka Deployment (KRaft mode)
 apiVersion: apps/v1
 kind: Deployment

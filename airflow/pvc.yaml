@@ -1,3 +1,4 @@
+# PersistentVolume for shared storage
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -7,12 +8,12 @@ spec:
     storage: 70Gi
   accessModes:
     - ReadWriteMany
-  storageClassName: nfs
-  nfs:
-    path: /mnt/shared
-    server: 127.0.0.1
+  hostPath:
+    path: /mnt/shared   # make sure this folder exists on VM
+    type: DirectoryOrCreate
   persistentVolumeReclaimPolicy: Retain
 ---
+# PersistentVolumeClaim for shared storage
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -24,4 +25,17 @@ spec:
   resources:
     requests:
       storage: 60Gi
-  storageClassName: nfs
+  volumeName: shared-pv   # explicitly bind to PV
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kafka-pvc
+  namespace: platform
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  volumeName: shared-pv
