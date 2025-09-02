@@ -42,12 +42,15 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 10
           volumeMounts:
-            - name: grafana-storage
-              mountPath: /var/lib/grafana
+          - name: shared
+            mountPath: /var/lib/grafana
+            subPath: grafana
       volumes:
-        - name: grafana-storage
+        - name: shared
           persistentVolumeClaim:
             claimName: shared-pvc
+
+
 ---
 apiVersion: v1
 kind: Service
