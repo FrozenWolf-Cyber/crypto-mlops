@@ -4,8 +4,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels:
-    app: grafana
   name: grafana
   namespace: platform
 spec:
@@ -17,18 +15,11 @@ spec:
       labels:
         app: grafana
     spec:
-      securityContext:
-        fsGroup: 472
-        supplementalGroups:
-          - 0
       containers:
         - name: grafana
-          image: grafana/grafana:latest
-          imagePullPolicy: IfNotPresent
+          image: grafana/grafana:10.1.2
           ports:
             - containerPort: 3000
-              name: http-grafana
-              protocol: TCP
           env:
             - name: GF_SECURITY_ADMIN_PASSWORD
               value: "admin"
@@ -37,24 +28,6 @@ spec:
           envFrom:
             - secretRef:
                 name: platform-secrets
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /robots.txt
-              port: 3000
-              scheme: HTTP
-            initialDelaySeconds: 10
-            periodSeconds: 30
-            successThreshold: 1
-            timeoutSeconds: 2
-          livenessProbe:
-            failureThreshold: 3
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            successThreshold: 1
-            tcpSocket:
-              port: 3000
-            timeoutSeconds: 1
           volumeMounts:
           - name: shared
             mountPath: /var/lib/grafana
@@ -79,8 +52,6 @@ spec:
     - port: 3000
       targetPort: 3000
       nodePort: 32000
-      protocol: TCP
-      targetPort: http-grafana
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -123,7 +94,7 @@ spec:
               service:
                 name: grafana
                 port:
-                  number: 32000
+                  number: 3000
 
 ---
 apiVersion: v1
