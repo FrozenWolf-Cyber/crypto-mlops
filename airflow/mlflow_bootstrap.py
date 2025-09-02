@@ -1,7 +1,7 @@
 import os
 from mlflow.server import get_app_client
 
-tracking_uri = "http://127.0.0.1:30050"
+tracking_uri = "https://mlflow.gokuladethya.uk"
 
 # Bootstrap admin credentials (the default mlflow user)
 os.environ["MLFLOW_TRACKING_USERNAME"] = "admin"

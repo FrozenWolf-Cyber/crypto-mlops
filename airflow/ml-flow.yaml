@@ -34,13 +34,13 @@ spec:
             httpGet:
               path: /api/2.0/mlflow/experiments/list
               port: 5000
-            initialDelaySeconds: 30
+            initialDelaySeconds: 60
             periodSeconds: 20
           readinessProbe:
             httpGet:
               path: /api/2.0/mlflow/experiments/list
               port: 5000
-            initialDelaySeconds: 15
+            initialDelaySeconds: 60
             periodSeconds: 10
           envFrom:
             - secretRef:
