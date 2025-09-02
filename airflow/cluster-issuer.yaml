@@ -4,8 +4,8 @@ metadata:
   name: letsencrypt-prod
 spec:
   acme:
-    email: your-email@example.com
     server: https://acme-v02.api.letsencrypt.org/directory
+    email: gokul3112003.com@gmail.com      # your email
     privateKeySecretRef:
       name: letsencrypt-prod
     solvers:
