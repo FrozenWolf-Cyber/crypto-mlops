@@ -61,7 +61,7 @@ spec:
   ports:
     - port: 80
       targetPort: 3000
-      nodePort: 3000
+      nodePort: 32000
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
