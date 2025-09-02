@@ -117,7 +117,7 @@ spec:
     - host: grafana.gokuladethya.uk
       http:
         paths:
-          - path: /grafana
+          - path: /
             pathType: Prefix
             backend:
               service:
