@@ -75,6 +75,7 @@ metadata:
   name: prometheus
   namespace: platform
 spec:
+  type: NodePort 
   selector:
     app: prometheus
   ports:
