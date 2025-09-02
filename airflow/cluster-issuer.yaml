@@ -4,11 +4,12 @@ metadata:
   name: letsencrypt-prod
 spec:
   acme:
+    # change to your email
+    email: gokul3112003.com@gmail.com 
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: gokul3112003.com@gmail.com      # your email
     privateKeySecretRef:
       name: letsencrypt-prod
     solvers:
       - http01:
           ingress:
-            class: nginx
+            class: traefik
