@@ -20,12 +20,18 @@ spec:
           args:
             - |
               pip install --no-cache-dir mlflow psycopg2-binary boto3 &&
+              # write users.yaml from secret
+              echo "$MLFLOW_AUTH_USERS" | base64 -d > /etc/mlflow/users.yaml &&
+              echo "The S3 URL is: $S3_URL" &&
+              echo "MLFLOW_FLASK_SERVER_SECRET_KEY: $MLFLOW_FLASK_SERVER_SECRET_KEY" &&
               mlflow server \
                 --backend-store-uri $DATABASE_URL \
                 --default-artifact-root $S3_URL/ml-flow \
                 --host 0.0.0.0 \
                 --port 5000 \
-                --workers 1
+                --workers 1 \
+                --app-name basic-auth \
+                --app-config /etc/mlflow/users.yaml
           ports:
             - containerPort: 5000
           envFrom:
@@ -34,11 +40,14 @@ spec:
           volumeMounts:
             - name: shared
               mountPath: /mlflow
+            - name: mlflow-auth
+              mountPath: /etc/mlflow
       volumes:
         - name: shared
           persistentVolumeClaim:
             claimName: shared-pvc
-
+        - name: mlflow-auth
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
@@ -46,7 +55,7 @@ metadata:
   name: mlflow
   namespace: platform
 spec:
-  type: NodePort 
+  type: NodePort
   selector:
     app: mlflow
   ports:
