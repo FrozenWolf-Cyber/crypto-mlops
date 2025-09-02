@@ -1,7 +1,7 @@
 import os
 from mlflow.server import get_app_client
 
-tracking_uri = "http://127.0.0.1:5000"
+tracking_uri = "http://127.0.0.1:30050"
 
 # Bootstrap admin credentials (the default mlflow user)
 os.environ["MLFLOW_TRACKING_USERNAME"] = "admin"
@@ -17,23 +17,23 @@ auth_client = get_app_client("basic-auth", tracking_uri=tracking_uri)
 
 # Create admin user
 try:
-    user = auth_client.create_user(username=admin_user, password=admin_pass)
-    auth_client.assign_role(admin_user, "ADMIN")
-    print(f"✅ Created admin: {user.username} (ID: {user.id})")
+    auth_client.update_user_password(username="admin", password=admin_pass)
+    print(f"✅ Updated admin")
+    
 except Exception as e:
-    print("Admin creation skipped:", e)
+    print("Admin updation skipped:", e)
+
+os.environ["MLFLOW_TRACKING_PASSWORD"] = admin_pass
+
+# Get authenticated client
+auth_client = get_app_client("basic-auth", tracking_uri=tracking_uri)
 
 # Create readonly user
 try:
     user = auth_client.create_user(username=public_user, password=public_pass)
-    auth_client.assign_role(public_user, "READ_ONLY")
+    # auth_client.update_user_admin(username=public_user, is_admin=False)
+    
     print(f"✅ Created readonly user: {user.username} (ID: {user.id})")
 except Exception as e:
     print("Readonly creation skipped:", e)
 
-# Delete bootstrap admin
-try:
-    auth_client.delete_user("admin")
-    print("✅ Default bootstrap admin deleted")
-except Exception as e:
-    print("Admin deletion skipped:", e)
