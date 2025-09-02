@@ -23,8 +23,6 @@ spec:
               # write users.yaml from secret
               echo "The S3 URL is: $S3_URL" &&
               echo "MLFLOW_FLASK_SERVER_SECRET_KEY: $MLFLOW_FLASK_SERVER_SECRET_KEY" &&
-              echo "$MLFLOW_AUTH_USERS" | base64 -d > /etc/mlflow/users.yaml &&
-              export MLFLOW_AUTH_CONFIG_PATH=/etc/mlflow/users.yaml &&
               mlflow server \
                 --app-name basic-auth \
                 --backend-store-uri $DATABASE_URL \
