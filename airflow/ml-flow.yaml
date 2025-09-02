@@ -19,8 +19,9 @@ spec:
           command: ["bash", "-c"]
           args:
             - |
-              pip install --no-cache-dir mlflow psycopg2-binary boto3 &&
+              pip install --no-cache-dir mlflow[auth] psycopg2-binary boto3 &&
               # write users.yaml from secret
+              export MLFLOW_AUTH_CONFIG_PATH=/etc/mlflow/users.yaml
               echo "$MLFLOW_AUTH_USERS" > /etc/mlflow/users.yaml &&
               cat /etc/mlflow/users.yaml &&
               echo "The S3 URL is: $S3_URL" &&
@@ -31,8 +32,7 @@ spec:
                 --host 0.0.0.0 \
                 --port 5000 \
                 --workers 1 \
-                --app-name basic-auth \
-                --app-config /etc/mlflow/users.yaml
+                --app-name basic-auth 
           ports:
             - containerPort: 5000
           envFrom:
