@@ -44,30 +44,32 @@ spec:
             - "--storage.tsdb.path=/prometheus"
           ports:
             - containerPort: 9090
-          livenessProbe:
-            httpGet:
-              path: /-/healthy
-              port: 9090
-            initialDelaySeconds: 30
-            periodSeconds: 20
-          readinessProbe:
-            httpGet:
-              path: /-/ready
-              port: 9090
-            initialDelaySeconds: 15
-            periodSeconds: 10
+          # livenessProbe:
+          #   httpGet:
+          #     path: /-/healthy
+          #     port: 9090
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 20
+          # readinessProbe:
+          #   httpGet:
+          #     path: /-/ready
+          #     port: 9090
+          #   initialDelaySeconds: 15
+          #   periodSeconds: 10
           volumeMounts:
             - name: prometheus-config-volume
               mountPath: /etc/prometheus
-            - name: prometheus-data
-              mountPath: /prometheus
+            - name: shared
+              mountPath: /prometheus   # Prometheus TSDB on shared PVC
       volumes:
         - name: prometheus-config-volume
           configMap:
             name: prometheus-config
-        - name: prometheus-data
+        - name: shared
           persistentVolumeClaim:
             claimName: shared-pvc
+
+
 ---
 apiVersion: v1
 kind: Service
