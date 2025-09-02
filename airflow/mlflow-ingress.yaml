@@ -23,6 +23,7 @@ metadata:
       104.24.0.0/14,
       172.64.0.0/13,
       131.0.72.0/22
+    nginx.ingress.kubernetes.io/limit-method: "GET"
 
 spec:
   ingressClassName: nginx
