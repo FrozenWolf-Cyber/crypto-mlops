@@ -27,7 +27,7 @@ spec:
               #   --port 5000 \
               #   --workers 1 --app-name basic-auth
               
-              MLFLOW_TRACKING_DEBUG=1 mlflow server --app-name basic-auth --backend-store-uri sqlite:///mlflow.db --host 0.0.0.0 --port 5000 --workers 1
+              MLFLOW_TRACKING_DEBUG=1 mlflow server --app-name basic-auth --backend-store-uri sqlite:///mlflow.db --host 0.0.0.0 --port 5000
 
           ports:
             - containerPort: 5000
