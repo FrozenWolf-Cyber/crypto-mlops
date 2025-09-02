@@ -19,13 +19,16 @@ spec:
           command: ["bash", "-c"]
           args:
             - |
-              pip install --no-cache-dir mlflow psycopg2-binary boto3 &&
-              mlflow server \
-                --backend-store-uri $DATABASE_URL \
-                --default-artifact-root $S3_URL/ml-flow \
-                --host 0.0.0.0 \
-                --port 5000 \
-                --workers 1 
+              pip install --no-cache-dir mlflow[auth] psycopg2-binary boto3 &&
+              # mlflow server \
+              #   --backend-store-uri $DATABASE_URL \
+              #   --default-artifact-root $S3_URL/ml-flow \
+              #   --host 0.0.0.0 \
+              #   --port 5000 \
+              #   --workers 1 --app-name basic-auth
+              
+              MLFLOW_TRACKING_DEBUG=1 mlflow server --app-name basic-auth --backend-store-uri sqlite:///mlflow.db
+
           ports:
             - containerPort: 5000
           envFrom:
