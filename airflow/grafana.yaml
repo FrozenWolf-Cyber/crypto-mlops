@@ -123,7 +123,7 @@ spec:
               service:
                 name: grafana
                 port:
-                  number: 32000
+                  number: 3000
 
 ---
 apiVersion: v1
