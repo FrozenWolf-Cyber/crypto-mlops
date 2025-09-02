@@ -17,23 +17,23 @@ spec:
         - name: mlflow
           image: python:3.11-slim
           command: ["bash", "-c"]
-          args:
-            - |
-              pip install --no-cache-dir mlflow psycopg2-binary boto3 &&
-              # start mlflow with auth enabled
-              mlflow server \
-                --backend-store-uri $DATABASE_URL \
-                --default-artifact-root $S3_URL/ml-flow \
-                --host 0.0.0.0 \
-                --port 5000 \
-                --workers 1 \
-                --app-name basic-auth &
+          args: |
+            pip install --no-cache-dir mlflow psycopg2-binary boto3 &&
 
-              # wait for mlflow to start
-              sleep 30
+            # start mlflow with auth enabled
+            mlflow server \
+              --backend-store-uri $DATABASE_URL \
+              --default-artifact-root $S3_URL/ml-flow \
+              --host 0.0.0.0 \
+              --port 5000 \
+              --workers 1 \
+              --app-name basic-auth &
 
-              # create admin + public user
-              python <<'PYCODE'
+            # wait for mlflow to start
+            sleep 30
+
+            # create admin + public user
+            python <<'PYCODE'
 import os, time
 from mlflow.server.auth.client import AuthServiceClient
 
@@ -65,7 +65,8 @@ client.delete_user("admin")
 print("✅ Default admin user deleted")
 PYCODE
 
-              wait -n
+            wait -n
+
           ports:
             - containerPort: 5000
           envFrom:
