@@ -92,6 +92,7 @@ metadata:
       172.64.0.0/13,
       131.0.72.0/22
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
         - grafana.gokuladethya.uk
