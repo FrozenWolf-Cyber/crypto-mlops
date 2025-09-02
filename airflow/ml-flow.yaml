@@ -21,7 +21,8 @@ spec:
             - |
               pip install --no-cache-dir mlflow psycopg2-binary boto3 &&
               # write users.yaml from secret
-              echo "$MLFLOW_AUTH_USERS" | base64 -d > /etc/mlflow/users.yaml &&
+              echo "$MLFLOW_AUTH_USERS" > /etc/mlflow/users.yaml &&
+              cat /etc/mlflow/users.yaml &&
               echo "The S3 URL is: $S3_URL" &&
               echo "MLFLOW_FLASK_SERVER_SECRET_KEY: $MLFLOW_FLASK_SERVER_SECRET_KEY" &&
               mlflow server \
