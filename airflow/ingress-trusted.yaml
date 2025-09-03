@@ -1,6 +1,4 @@
 controller:
-  service:
-    externalTrafficPolicy: Local
   config:
     use-forwarded-headers: "true"
     compute-full-forwarded-for: "true"
@@ -19,18 +17,13 @@ controller:
       104.16.0.0/13,
       104.24.0.0/14,
       172.64.0.0/13,
-      131.0.72.0/22
-
-  # Optional: extra settings for stricter security
+      131.0.72.0/22,
+      2400:cb00::/32,
+      2606:4700::/32,
+      2803:f800::/32,
+      2405:b500::/32,
+      2405:8100::/32,
+      2a06:98c0::/29,
+      2c0f:f248::/32
   service:
-    annotations:
-      # Prevent bypass via LoadBalancer by restricting only HTTPS/HTTP
-      service.beta.kubernetes.io/hetzner-load-balancer-protocol: "https"
-      service.beta.kubernetes.io/hetzner-load-balancer-uses-proxyprotocol: "true"
-
-  # Enable access logs to debug whitelist behavior
-  extraArgs:
-    v: "2"
-
-defaultBackend:
-  enabled: true
+    externalTrafficPolicy: Local
