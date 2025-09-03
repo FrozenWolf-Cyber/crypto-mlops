@@ -1,34 +1,29 @@
-executor: "CeleryExecutor"
-
-dags:
-  gitSync:
-    enabled: true
-    repo: "https://github.com/FrozenWolf-Cyber/crypto-mlops"
-    branch: "master"
-    subPath: "airflow"
-    wait: 60
-  persistence:
-    enabled: true
-    existingClaim: shared-pvc
-    mountPath: /airflow
-    accessMode: ReadWriteMany
-
-
-metrics:
-  enabled: true
-  statsd:
-    enabled: true
-    host: airflow-statsd
-    port: 9125
-    prefix: airflow
-
-webserver:
-  ingress:
-    enabled: true
-    ingressClassName: nginx
-    hosts:
-      - airflow.gokuladethya.uk
-    tls:
-      - hosts:
-          - airflow.gokuladethya.uk
-        secretName: airflow-tls
+# PersistentVolume for shared storage
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: shared-pv
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /mnt/shared   # make sure this folder exists on VM
+    type: DirectoryOrCreate
+  persistentVolumeReclaimPolicy: Retain
+---
+# PersistentVolumeClaim for shared storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: shared-pvc
+  namespace: platform
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Gi
+  volumeName: shared-pv
+  storageClassName: ""   # ← this is required

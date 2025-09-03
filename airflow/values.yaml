@@ -1,16 +1,19 @@
+executor: "CeleryExecutor"
+
 dags:
   gitSync:
     enabled: true
     repo: "https://github.com/FrozenWolf-Cyber/crypto-mlops"
     branch: "master"
-    subPath: "airflow"   # folder inside repo containing DAGs (empty = root)
-    wait: 60      # seconds between git pulls
+    subPath: "airflow"
+    wait: 60
   persistence:
     enabled: true
-    existingClaim: "shared-pv"
-    
+    existingClaim: shared-pvc
+    mountPath: /airflow
+    accessMode: ReadWriteMany
 
-# airflow-values.yaml
+
 metrics:
   enabled: true
   statsd:
@@ -19,9 +22,6 @@ metrics:
     port: 9125
     prefix: airflow
 
-executor: "CeleryExecutor"
-
-# optionally enable ingress to Airflow UI
 webserver:
   ingress:
     enabled: true
@@ -32,9 +32,3 @@ webserver:
       - hosts:
           - airflow.gokuladethya.uk
         secretName: airflow-tls
-
-  defaultUser:
-    enabled: true
-    username: admin
-    password: mysecretpassword
-
