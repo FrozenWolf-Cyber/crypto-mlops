@@ -28,6 +28,10 @@ metrics:
     port: 9125
     prefix: airflow
 
+airflow:
+  database:
+    type: sqlite
+
 
 # ingress:
 #   enabled: true
