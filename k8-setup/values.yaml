@@ -14,9 +14,7 @@ dags:
 flower:
   enabled: false
 
-postgresql: 
-  enabled: false
-  
+
 redis: 
   enabled: false
 
@@ -28,9 +26,6 @@ metrics:
     port: 9125
     prefix: airflow
 
-airflow:
-  database:
-    type: sqlite
 
 
 # ingress:
