@@ -1,4 +1,6 @@
 controller:
+  service:
+    externalTrafficPolicy: Local
   config:
     use-forwarded-headers: "true"
     compute-full-forwarded-for: "true"
