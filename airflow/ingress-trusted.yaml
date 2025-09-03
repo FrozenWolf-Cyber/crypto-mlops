@@ -1,4 +1,7 @@
 controller:
+  service:
+    externalTrafficPolicy: Local
+
   config:
     use-forwarded-headers: "true"
     compute-full-forwarded-for: "true"
@@ -25,5 +28,3 @@ controller:
       2405:8100::/32,
       2a06:98c0::/29,
       2c0f:f248::/32
-  service:
-    externalTrafficPolicy: Local
