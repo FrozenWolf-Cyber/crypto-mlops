@@ -35,6 +35,9 @@ spec:
     metadata:
       labels:
         app: prometheus
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "10254"
     spec:
       containers:
         - name: prometheus
@@ -42,8 +45,10 @@ spec:
           args:
             - "--config.file=/etc/prometheus/prometheus.yml"
             - "--storage.tsdb.path=/prometheus"
+            - "--enable-metrics=true"
           ports:
-            - containerPort: 9090
+            - name: prometheus
+              containerPort: 10254
           # livenessProbe:
           #   httpGet:
           #     path: /-/healthy
@@ -81,6 +86,7 @@ spec:
   selector:
     app: prometheus
   ports:
-    - port: 9090
-      targetPort: 9090
+    - name: prometheus
+      port: 10254
+      targetPort: 10254
       nodePort: 31000
