@@ -10,8 +10,6 @@ dags:
   persistence:
     enabled: true
     existingClaim: shared-pvc
-    mountPath: /airflow
-    accessMode: ReadWriteMany
 
 
 metrics:
