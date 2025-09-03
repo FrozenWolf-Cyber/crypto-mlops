@@ -7,4 +7,34 @@ dags:
     wait: 60      # seconds between git pulls
   persistence:
     enabled: true
+    existingClaim: "shared-pv"
+    
+
+# airflow-values.yaml
+metrics:
+  enabled: true
+  statsd:
+    enabled: true
+    host: airflow-statsd
+    port: 9125
+    prefix: airflow
+
+executor: "CeleryExecutor"
+
+# optionally enable ingress to Airflow UI
+webserver:
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - airflow.gokuladethya.uk
+    tls:
+      - hosts:
+          - airflow.gokuladethya.uk
+        secretName: airflow-tls
+
+  defaultUser:
+    enabled: true
+    username: admin
+    password: mysecretpassword
 
