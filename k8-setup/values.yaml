@@ -1,4 +1,4 @@
-executor: "CeleryExecutor"
+executor: LocalExecutor
 
 dags:
   gitSync:
@@ -11,6 +11,14 @@ dags:
     enabled: true
     existingClaim: shared-pvc
 
+flower:
+  enabled: false
+
+postgresql: 
+  enabled: false
+  
+redis: 
+  enabled: false
 
 metrics:
   enabled: true
