@@ -20,13 +20,13 @@ metrics:
     port: 9125
     prefix: airflow
 
-webserver:
-  ingress:
-    enabled: true
-    ingressClassName: nginx
-    hosts:
-      - airflow.gokuladethya.uk
-    tls:
-      - hosts:
-          - airflow.gokuladethya.uk
-        secretName: airflow-tls
+
+# ingress:
+#   enabled: true
+#   ingressClassName: nginx
+#   hosts:
+#     - airflow.gokuladethya.uk
+#   tls:
+#     - hosts:
+#         - airflow.gokuladethya.uk
+#       secretName: airflow-tls
