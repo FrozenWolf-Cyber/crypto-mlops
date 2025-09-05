@@ -17,7 +17,10 @@ data:
 ### on start at first time - call ./fastapi_api.py
 ### docker compose up -d --build on k8-setup/kafka.yaml
 
-### trigger this dag once every 3 days and start now
+
+### python producer.py 
+### python hourly_scrapper.py
+### trigger this dag once every 3 days and start from now 
 ### python consumer.py (crypto, model, v1) -> 2x2x3 -> downloads dataset, predictions (trigger initially) from s3 if not present locally
 ### -> local csv writer 
 ### -> make sure no duplicates in either of the csv -> skip those while listening
@@ -26,9 +29,6 @@ data:
 ### -> psql writer (db.py session pool)
 ### resume all consumers based on available versions -> consumer_control.py
 
-### python producer.py 
-### python hourly_scrapper.py
-### mlflow server start
 ### python fastapi inference.py  -> fastapi_app.py
 ### prometheus fastapi_instrumentator
 ### training

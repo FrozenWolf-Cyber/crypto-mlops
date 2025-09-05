@@ -86,11 +86,3 @@ def predict(model_name: str, version: int, features: list = Body(...)):
     return {"predictions": predictions}
 
 
-
-@app.post("/refresh")
-def refresh_models():
-    """
-    Refresh production models from MLflow registry.
-    """
-    load_production_models()
-    return {"status": "refreshed", "models_loaded": list(models.keys())}

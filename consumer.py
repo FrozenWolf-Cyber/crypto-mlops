@@ -10,9 +10,9 @@ import gc
 import os
 from consumer_utils import state_checker, state_write
 from tqdm import tqdm
-KAFKA_BROKER = "localhost:9092"
+KAFKA_BROKER = f"{os.environ['KAFKA_HOST']}:9092"
 CONTROL_TOPIC = "control_topic"
-url = "http://localhost:8000/predict"
+url = "http://fastapi-ml:8000/predict"
 
 # Keep pause/resume state
 pause_flags = defaultdict(lambda: True)
@@ -47,7 +47,7 @@ def build_pipeline(app, crypto, model, version):
     pred_path = f"data/predictions/{crypto}/{model}/{version}.csv"
     print(f"[{key}] Assumed prediction path:", pred_path)
     params = {"model_name": f"{crypto.lower()}_{model.lower()}", "version": int(version[1:])-1}
-    is_available = requests.post(f"http://localhost:8000/is_model_available", params=params).json()['available']
+    is_available = requests.post(f"http://fastapi-ml:8000/is_model_available", params=params).json()['available']
     if not is_available:
         print(f"[{key}] Model not available yet, skipping historical inference.")
         df_pred = pd.DataFrame(columns=["open_time", "prediction"])

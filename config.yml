@@ -1,6 +1,0 @@
-tunnel: myk8s-tunnel
-credentials-file: /home/frozenwolf/.cloudflared/96d52309-02bc-4269-a74a-1e75ac197366.json
-
-ingress:
-  - hostname: mlflow.gokuladethya.uk
-    service: http://localhost:5000

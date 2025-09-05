@@ -1,0 +1,87 @@
+# -------------------------------
+# 1. Deployment
+# -------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-ml
+  namespace: platform
+  labels:
+    app: fastapi-ml
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fastapi-ml
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: fastapi-ml
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: fastapi-ml
+          image: fastapi-ml:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - secretRef:
+                name: platform-secrets
+
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: 8000
+            initialDelaySeconds: 600
+            periodSeconds: 15
+            failureThreshold: 5
+
+---
+
+# -------------------------------
+# 2. Service
+# -------------------------------
+# http://fastapi-ml:8000/docs
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-ml
+  namespace: platform
+  labels:
+    app: fastapi-ml
+spec:
+  selector:
+    app: fastapi-ml
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP
+
+---
+
+# -------------------------------
+# 3. Prometheus ServiceMonitor
+# -------------------------------
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: fastapi-ml
+  namespace: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: fastapi-ml
+  endpoints:
+    - port: 8000
+      path: /metrics
+      interval: 15s

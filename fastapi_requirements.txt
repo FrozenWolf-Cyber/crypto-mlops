@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+prometheus-fastapi-instrumentator
+mlflow
+numpy
+onnxruntime
+boto3

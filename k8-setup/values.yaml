@@ -1,5 +1,14 @@
 executor: LocalExecutor
 
+airflow:
+  extraEnvFrom:
+    - secretRef:
+        name: platform-secrets
+    - name: KAFKA_HOST
+      valueFrom:
+        fieldRef:
+          fieldPath: status.hostIP
+
 dags:
   gitSync:
     enabled: true

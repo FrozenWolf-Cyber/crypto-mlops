@@ -51,7 +51,7 @@ def main():
         # crypto_db.bulk_update_predictions(crypto.lower(), model, version, df)
         
         print(f"[INFO] Triggering FastAPI to refresh models...")
-        resp = requests.post("http://localhost:8000/refresh")
+        resp = requests.post("http://fastapi-ml:8000/refresh")
         print(resp.status_code, resp.text)
         
         print(f"[INFO] {crypto} {model} v{version} DB pushed successfully")
@@ -85,7 +85,7 @@ def main():
     ### trigger fastapi to load new models
 
     print(f"[INFO] Triggering FastAPI to refresh models...")
-    resp = requests.post("http://localhost:8000/refresh")
+    resp = requests.post("http://fastapi-ml:8000/refresh")
     print(resp.status_code, resp.text)
 
 
