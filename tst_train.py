@@ -96,11 +96,11 @@ def main(args):
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=batch_size)
 
-    mlflow.set_tracking_uri(args.tracking_uri)
+    mlflow.set_tracking_uri(os.getenv("MLFLOW_URI"))
     mlflow.set_experiment(f"{coin.lower()}-tst")
 
     # Model
-    mm = ModelManager(args.tracking_uri)
+    mm = ModelManager(os.getenv("MLFLOW_URI"))
     model, metadata = mm.load_latest_model(f'{coin.lower()}_tst')
     if model is None:
         model = TSTClassifier(
@@ -198,10 +198,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train TST crypto model with MLflow logging")
     parser.add_argument("--coin", type=str, default="BTCUSDT")
     parser.add_argument("--threshold", type=float, default=0.00015)
-    parser.add_argument("--tracking_uri", type=str, default="http://0.0.0.0:5000")
-    parser.add_argument("--seq_len", type=int, default=30)
+    parser.add_argument("--seq_len", type=int, default=20)
     parser.add_argument("--batch_size", type=int, default=128)
-    parser.add_argument("--epochs", type=int, default=30)
+    parser.add_argument("--epochs", type=int, default=20)
     parser.add_argument("--trainset_size", type=float, default=300000, help="Proportion of data to use for training")
     parser.add_argument("--hidden_dim", type=int, default=64)
     parser.add_argument("--num_heads", type=int, default=2)

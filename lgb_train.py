@@ -68,9 +68,9 @@ def main(args):
         "verbose": 1,
     }
 
-    mlflow.set_tracking_uri(uri=args.tracking_uri)
+    mlflow.set_tracking_uri(uri=os.getenv("MLFLOW_URI"))
     mlflow.set_experiment(f"{coin.lower()}-lightgbm")
-    mm = ModelManager(args.tracking_uri)
+    mm = ModelManager(os.getenv("MLFLOW_URI"))
 
     with mlflow.start_run() as run:
         mlflow.log_params(params)
@@ -151,7 +151,6 @@ if __name__ == "__main__":
     parser.add_argument("--coin", type=str, default="BTCUSDT", help="Crypto coin symbol, e.g., BTCUSDT")
     parser.add_argument('--epochs', type=int, default=500, help='Number of training epochs')
     parser.add_argument("--threshold", type=float, default=0.00015, help="Threshold for preprocessing")
-    parser.add_argument("--tracking_uri", type=str, default="http://0.0.0.0:5000", help="MLflow tracking URI")
     parser.add_argument("--trainset_size", type=float, default=150000, help="Proportion of data to use for training")
     args = parser.parse_args()
     main(args)

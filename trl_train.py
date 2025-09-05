@@ -148,10 +148,10 @@ def main(args):
         
     normalizer /= len(coins)
 
-    mlflow.set_tracking_uri(args.tracking_uri)
+    mlflow.set_tracking_uri(os.getenv("MLFLOW_URI"))
     mlflow.set_experiment(f"grpo-finbert")
 
-    mm = ModelManager(args.tracking_uri)
+    mm = ModelManager(os.getenv("MLFLOW_URI"))
     policy, latest_version = mm.load_latest_model(f'trl', model_type="trl")
         
     with mlflow.start_run() as run:
@@ -337,7 +337,6 @@ if __name__ == "__main__":
     parser.add_argument("--lr", type=float, default=2e-5)
     parser.add_argument("--reward_clip", type=float, default=None)
     parser.add_argument("--update_old_every_iter", type=bool, default=True)
-    parser.add_argument("--tracking_uri", type=str, default="http://0.0.0.0:5000")
     parser.add_argument("--max_time", type=int, default=60*20) ## seconds
     args = parser.parse_args()
     main(args)
