@@ -33,7 +33,7 @@ spec:
           image: fastapi-ml:latest
           ports:
             - containerPort: 8000
-          env:
+          envFrom:
             - secretRef:
                 name: platform-secrets
 
@@ -62,7 +62,8 @@ spec:
   selector:
     app: fastapi-ml
   ports:
-    - protocol: TCP
+    - name: fastapi-custom-port
+      protocol: TCP
       port: 8000
       targetPort: 8000
   type: ClusterIP
@@ -82,6 +83,6 @@ spec:
     matchLabels:
       app: fastapi-ml
   endpoints:
-    - port: 8000
+    - port: fastapi-custom-port
       path: /metrics
       interval: 15s
