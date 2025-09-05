@@ -12,3 +12,4 @@ saved_models/
 state/
 *.ipynb
 platform-secrets.yml
+start_training.sh
