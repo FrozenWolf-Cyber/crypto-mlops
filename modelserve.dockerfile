@@ -16,7 +16,7 @@ COPY model_manager.py .
 
 EXPOSE 8000
 
-CMD ["uvicorn", "fastapi_app:app", "--host", "0.0.0.0", "--port", "8000"]
+# CMD ["uvicorn", "fastapi_app:app", "--host", "0.0.0.0", "--port", "8000"]
 
 # docker build -t fastapi-ml:latest -f modelserve.dockerfile .
 # docker run --rm -p 8000:8000 fastapi-ml:latest
