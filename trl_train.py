@@ -77,7 +77,7 @@ def get_predictions(policy, tokenizer, dataloader, device):
 # Main script
 # ----------------------------
 from torch.utils.data import DataLoader
-
+from airflow_db import db
 # ----------------------------
 # Main script (DataLoader version)
 # ----------------------------
@@ -153,7 +153,8 @@ def main(args):
 
     mm = ModelManager(os.getenv("MLFLOW_URI"))
     policy, latest_version = mm.load_latest_model(f'trl', model_type="trl")
-        
+    db.set_state("trl", "ALL", "RUNNING")
+    
     with mlflow.start_run() as run:
         mlflow.log_params(vars(args))
 
@@ -318,6 +319,10 @@ def main(args):
         
         print("Training completed. MLflow run ID:", run.info.run_id)
         os.system("rm -rf trl_lora_weights") ## DEBUG
+        
+    
+
+    db.set_state("trl", "ALL", "SUCCESS")
  
 
 if __name__ == "__main__":
@@ -339,4 +344,8 @@ if __name__ == "__main__":
     parser.add_argument("--update_old_every_iter", type=bool, default=True)
     parser.add_argument("--max_time", type=int, default=60*20) ## seconds
     args = parser.parse_args()
-    main(args)
+    try:
+        main(args)
+    except Exception as e:
+        db.set_state("trl", args.coin.upper(), "FAILED", error_message=str(e))
+        raise e

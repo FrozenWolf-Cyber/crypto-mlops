@@ -9,6 +9,7 @@ import mlflow
 from train_utils import preprocess_crypto, download_s3_dataset, convert_to_onnx, log_classification_metrics
 from model_manager import ModelManager
 from s3_manager import S3Manager
+from airflow_db import db
 
 
 
@@ -73,6 +74,7 @@ def main(args):
     mm = ModelManager(os.getenv("MLFLOW_URI"))
 
     with mlflow.start_run() as run:
+        db.set_state("lightgbm", args.coin.upper(), "RUNNING")
         mlflow.log_params(params)
 
         model = lgb.train(
@@ -145,6 +147,9 @@ def main(args):
         df = df[["open_time", "pred"]]
         s3 = S3Manager()
         s3.add_pred_s3(df, coin, 'lightgbm')
+        
+    db.set_state("lightgbm", args.coin.upper(), "SUCCESS")
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train LightGBM crypto model with MLflow logging")
@@ -153,4 +158,9 @@ if __name__ == "__main__":
     parser.add_argument("--threshold", type=float, default=0.00015, help="Threshold for preprocessing")
     parser.add_argument("--trainset_size", type=float, default=150000, help="Proportion of data to use for training")
     args = parser.parse_args()
-    main(args)
+    
+    try:
+        main(args)
+    except Exception as e:
+        db.set_state("lightgbm", args.coin.upper(), "FAILED", error_message=str(e))
+        raise e

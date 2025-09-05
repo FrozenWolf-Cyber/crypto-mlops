@@ -11,7 +11,7 @@ from tqdm import tqdm
 from train_utils import  download_s3_dataset, convert_to_onnx, log_classification_metrics, preprocess_sequences
 from model_manager import ModelManager
 from s3_manager import S3Manager
-
+from airflow_db import db
 
 
 # -------------------------
@@ -125,7 +125,7 @@ def main(args):
         print("MLflow run ID:", run.info.run_id)
         mlflow.log_params(vars(args))
         mlflow.log_param("num_params", sum(p.numel() for p in model.parameters() if p.requires_grad))
-
+        db.set_state("tst", args.coin.upper(), "RUNNING")
         train_losses, val_losses = [], []
 
         for epoch in range(epochs):
@@ -193,7 +193,8 @@ def main(args):
 
         print("MLflow run completed:", run.info.run_id)
 
-
+    db.set_state("tst", args.coin.upper(), "SUCCESS")
+    
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train TST crypto model with MLflow logging")
     parser.add_argument("--coin", type=str, default="BTCUSDT")
@@ -208,4 +209,8 @@ if __name__ == "__main__":
     parser.add_argument("--num_layers", type=int, default=2)
     parser.add_argument("--lr", type=float, default=1e-3)
     args = parser.parse_args()
-    main(args)
+    try:
+        main(args)
+    except Exception as e:
+        db.set_state("tst", args.coin.upper(), "FAILED", error_message=str(e))
+        raise e

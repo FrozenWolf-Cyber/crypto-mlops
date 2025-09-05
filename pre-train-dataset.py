@@ -47,8 +47,8 @@ for coin in cryptos:
     manager.upload_df(f"{data_path}/{coin}.csv", bucket='mlops', key=f'prices/{coin}.parquet')
     manager.upload_df(f"{data_path}/{coin}_test.csv", bucket='mlops', key=f'prices/{coin}_test.parquet')
     
+articles=f"{data_path}/articles/articles.csv"
+manager.upload_df
 
 
-
-
-create_producer("ALL", "producer", "main")
+# create_producer("ALL", "producer", "main")
