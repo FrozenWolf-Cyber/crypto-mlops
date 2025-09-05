@@ -5,6 +5,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: fastapi-ml
+  imagePullPolicy: Never   # <-- don't pull from registry
   namespace: platform
   labels:
     app: fastapi-ml
