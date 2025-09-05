@@ -51,4 +51,4 @@ articles=f"{data_path}/articles/articles.csv"
 manager.upload_df
 
 
-# create_producer("ALL", "producer", "main")
+create_producer("ALL", "producer", "main")

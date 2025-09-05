@@ -1,5 +1,24 @@
-### start kafka server
-### python consumer_start.py (crypto, model, v1) -> 2x2x3 -> downloads dataset, predictions (trigger initially) from s3 if not present locally
+### DAG for entire pipeline orchestration
+### load secrets from
+
+'''apiVersion: v1
+kind: Secret
+metadata:
+  name: platform-secrets
+  namespace: platform
+type: Opaque
+data:
+  VASTAI_API_KEY: xxx
+  MLFLOW_URI: xxxxx
+  and so on
+
+'''
+
+### on start at first time - call ./fastapi_api.py
+### docker compose up -d --build on k8-setup/kafka.yaml
+
+### trigger this dag once every 3 days and start now
+### python consumer.py (crypto, model, v1) -> 2x2x3 -> downloads dataset, predictions (trigger initially) from s3 if not present locally
 ### -> local csv writer 
 ### -> make sure no duplicates in either of the csv -> skip those while listening
 ### -> V1 writes on main csv raw data, while V1, V2, V3 write its predictions to separate csvs
