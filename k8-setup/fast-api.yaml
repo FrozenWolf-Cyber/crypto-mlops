@@ -39,19 +39,17 @@ spec:
 
           env:
             - name: MLFLOW_TRACKING_URI
-              value: 
-                valueFrom:
-                  secretKeyRef:
-                    name: platform-secrets
-                    key: MLFLOW_URI
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: MLFLOW_URI
             - name: MLFLOW_TRACKING_USERNAME
               value: "admin"
             - name: MLFLOW_TRACKING_PASSWORD
-              value:
-                valueFrom:
-                  secretKeyRef:
-                    name: platform-secrets
-                    key: MLFLOW_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: MLFLOW_ADMIN_PASSWORD
           command: ["uvicorn"]
           args: ["fastapi_app:app", "--host", "0.0.0.0", "--port", "8000"]
 
