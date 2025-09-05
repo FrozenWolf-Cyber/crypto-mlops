@@ -16,7 +16,7 @@ prometheus-fastapi-instrumentator<6.0.0
 mlflow
 ta
 transformers
-oto3
+boto3
 vastai
 onnxruntime
 onnxmltools
