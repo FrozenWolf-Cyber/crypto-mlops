@@ -31,7 +31,6 @@ spec:
       containers:
         - name: fastapi-ml
           image: fastapi-ml:latest
-          imagePullPolicy: Never   # <-- don't pull from registry
           ports:
             - containerPort: 8000
           envFrom:
