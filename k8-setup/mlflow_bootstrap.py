@@ -1,7 +1,7 @@
 import os
 from mlflow.server import get_app_client
 
-tracking_uri = "https://mlflow.gokuladethya.uk"
+tracking_uri = os.getenv("MLFLOW_URI")
 
 # Bootstrap admin credentials (the default mlflow user)
 os.environ["MLFLOW_TRACKING_USERNAME"] = "admin"
@@ -12,6 +12,10 @@ admin_pass = os.environ["MLFLOW_ADMIN_PASSWORD"]
 public_user = os.environ["MLFLOW_PUBLIC_USERNAME"]
 public_pass = os.environ["MLFLOW_PUBLIC_PASSWORD"]
 
+print("Admin user:", admin_user)
+print("Public user:", public_user)
+print("Admin pass:", admin_pass)
+print("Public pass:", public_pass)
 # Get authenticated client
 auth_client = get_app_client("basic-auth", tracking_uri=tracking_uri)
 
