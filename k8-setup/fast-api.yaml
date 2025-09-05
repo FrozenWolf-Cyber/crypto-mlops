@@ -93,7 +93,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: fastapi-ml
-  namespace: prometheus
+  namespace: platform
 spec:
   selector:
     matchLabels:
