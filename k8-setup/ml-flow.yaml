@@ -19,6 +19,12 @@ spec:
           command: ["bash", "-c"]
           args:
             - |
+              echo "checking env variables"
+              echo $DATABASE_URL
+              echo $AWS_ACCESS_KEY_ID
+              echo $AWS_SECRET_ACCESS_KEY
+              echo $S3_URL
+              echo "Starting MLflow server..."
               pip install --no-cache-dir mlflow[auth] psycopg2-binary boto3 gunicorn &&
               mlflow server \
                 --backend-store-uri $DATABASE_URL \
@@ -42,9 +48,29 @@ spec:
           #     port: 5000
           #   initialDelaySeconds: 300
           #   periodSeconds: 10
-          envFrom:
-            - secretRef:
-                name: platform-secrets
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: MLFLOW_DATABASE_URL
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_DEFAULT_REGION
+              value: "auto"
+            - name: S3_URL
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: S3_URL
           volumeMounts:
             - name: shared
               mountPath: /mlflow
