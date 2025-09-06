@@ -120,7 +120,7 @@ def main(args):
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
 
-    run = wandb.init(project='mlops', entity="frozenwolf")
+    run = wandb.init(project='mlops', entity="frozenwolf", config=vars(args), notes=f"Training TST model on {coin}")
     with mlflow.start_run() as run:
         print("MLflow run ID:", run.info.run_id, flush=True)
         mlflow.log_params(vars(args))

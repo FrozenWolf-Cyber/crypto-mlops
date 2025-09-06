@@ -72,7 +72,7 @@ def main(args):
     mlflow.set_tracking_uri(uri=os.getenv("MLFLOW_URI"))
     mlflow.set_experiment(f"{coin.lower()}-lightgbm")
     mm = ModelManager(os.getenv("MLFLOW_URI"))
-    run = wandb.init(project='mlops', entity="frozenwolf")
+    run = wandb.init(project='mlops', entity="frozenwolf", config=vars(args), notes=f"Training Lgb model on {coin}")
     with mlflow.start_run() as run:
         db.set_state("lightgbm", args.coin.upper(), "RUNNING")
         mlflow.log_params(params)
