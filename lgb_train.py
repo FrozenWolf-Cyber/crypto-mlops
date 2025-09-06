@@ -12,6 +12,33 @@ from s3_manager import S3Manager
 from airflow_db import db
 import wandb
 
+import time
+
+
+def early_stopping_time(max_time: int, verbose: bool = True):
+    """
+    LightGBM callback for early stopping based on elapsed wall-clock time.
+
+    Args:
+        max_time (int): Maximum training time in seconds.
+        verbose (bool): Whether to print stop messages.
+    """
+    start_time = time.time()
+
+    def _callback(env):
+        elapsed = time.time() - start_time
+        if elapsed > max_time:
+            if verbose:
+                print(
+                    f"⏹️ Early stopping at iteration {env.iteration} "
+                    f"after {elapsed:.1f}s (limit={max_time}s)",
+                    flush=True,
+                    
+                )
+            raise lgb.callback.EarlyStopException(env.iteration)
+
+    _callback.order = 0  # run before metrics and other callbacks
+    return _callback
 
 def mlflow_lgb_callback(val_data, val_labels, name="val"):
     def _callback(env):
@@ -84,7 +111,8 @@ def main(args):
             valid_sets=[val_data],
             num_boost_round=args.epochs,
             callbacks=[
-                mlflow_lgb_callback(X_val, y_val, name="val")
+                mlflow_lgb_callback(X_val, y_val, name="val"),
+                        early_stopping_time(args.max_time)
             ]
         )
 
@@ -158,6 +186,7 @@ if __name__ == "__main__":
     parser.add_argument('--epochs', type=int, default=500, help='Number of training epochs')
     parser.add_argument("--threshold", type=float, default=0.00015, help="Threshold for preprocessing")
     parser.add_argument("--trainset_size", type=float, default=150000, help="Proportion of data to use for training")
+    parser.add_argument("--max_time", type=int, default=60*20) ## seconds
     args = parser.parse_args()
     
     try:

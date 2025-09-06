@@ -13,7 +13,7 @@ from model_manager import ModelManager
 from s3_manager import S3Manager
 from airflow_db import db
 import wandb
-
+import time
 # -------------------------
 # TST Model
 # -------------------------
@@ -128,10 +128,17 @@ def main(args):
         db.set_state("tst", args.coin.upper(), "RUNNING")
         train_losses, val_losses = [], []
 
+        start_time = time.time()
         for epoch in range(epochs):
             model.train()
             epoch_loss = 0
+            if time.time() - start_time > args.max_time:
+                print("Max time exceeded, stopping training.")
+                break
             for xb, yb in tqdm(train_loader, desc=f"Epoch {epoch+1}/{epochs}"):
+                if time.time() - start_time > args.max_time:
+                    print("Max time exceeded, stopping training.")
+                    break
                 optimizer.zero_grad()
                 xb, yb = xb.to(device), yb.to(device)
                 out = model(xb)
@@ -204,6 +211,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train TST crypto model with MLflow logging")
     parser.add_argument("--coin", type=str, default="BTCUSDT")
     parser.add_argument("--threshold", type=float, default=0.00015)
+    parser.add_argument("--max_time", type=int, default=60*20) ## seconds
     parser.add_argument("--seq_len", type=int, default=20)
     parser.add_argument("--batch_size", type=int, default=128)
     parser.add_argument("--epochs", type=int, default=20)
