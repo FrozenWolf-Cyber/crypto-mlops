@@ -25,7 +25,7 @@ spec:
                 --default-artifact-root s3://mlops/ml-flow \
                 --host 0.0.0.0 \
                 --port 5000 \
-                --app-name basic-auth  --gunicorn-opts "--workers 1"
+                --app-name basic-auth  --gunicorn-opts "--workers 0"
 
               
           ports:
