@@ -53,7 +53,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: platform-secrets
-                  key: MLFLOW_DATABASE_URL
+                  key: DATABASE_URL
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
