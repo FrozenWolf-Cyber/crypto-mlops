@@ -49,6 +49,11 @@ spec:
           #   initialDelaySeconds: 300
           #   periodSeconds: 10
           env:
+            - name: MLFLOW_FLASK_SERVER_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: MLFLOW_FLASK_SERVER_SECRET_KEY
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
