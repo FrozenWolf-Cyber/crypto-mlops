@@ -284,15 +284,14 @@ def log_classification_metrics(y_pred, y_true, name="val", step=None, class_labe
     if class_labels is None:
         class_labels = [k for k in report.keys() if k not in ["accuracy", "macro avg", "weighted avg"]]
 
+    dict = {}
     for cls in class_labels:
         mlflow.log_metric(f"{name}_f1_class_{cls}", report[cls]["f1-score"], step=step)
-        wandb.log({f"{name}_f1_class_{cls}": report[cls]["f1-score"]}, step=step)
+        dict[f"{name}_f1_class_{cls}"] = report[cls]["f1-score"]
     mlflow.log_metric(f"{name}_f1_macro", report["macro avg"]["f1-score"], step=step)
     mlflow.log_metric(f"{name}_accuracy", report["accuracy"], step=step)
-    
-    wandb.log({f"{name}_f1_macro": report["macro avg"]["f1-score"]}, step=step)
-    wandb.log({f"{name}_accuracy": report["accuracy"]}, step=step)
-
+    dict[f"{name}_f1_macro"] = report["macro avg"]["f1-score"]
+    wandb.log(dict)
     return report
 
 

@@ -143,7 +143,7 @@ def main(args):
             avg_train_loss = epoch_loss / len(train_loader)
             train_losses.append(avg_train_loss)
             mlflow.log_metric("train_loss", avg_train_loss, step=epoch)
-            wandb.log({"train_loss": avg_train_loss}, step=epoch)
+            wandb.log({"train_loss": avg_train_loss})
 
             # Validation
             model.eval()
@@ -159,7 +159,7 @@ def main(args):
 
             # Log classification metrics
             log_metrics(model, val_loader, name="val", step=epoch)
-            wandb.log({"val_loss": avg_val_loss}, step=epoch)
+            wandb.log({"val_loss": avg_val_loss})
             
             print(f"Epoch {epoch+1}/{epochs} - Train Loss: {avg_train_loss:.4f}, Val Loss: {avg_val_loss:.4f}", flush=True)
 
