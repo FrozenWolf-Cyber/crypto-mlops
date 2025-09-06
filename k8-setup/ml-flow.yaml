@@ -22,7 +22,7 @@ spec:
               pip install --no-cache-dir mlflow[auth] psycopg2-binary boto3 gunicorn &&
               mlflow server \
                 --backend-store-uri $DATABASE_URL \
-                --default-artifact-root s3://ml-flow \
+                --default-artifact-root s3://mlops/ml-flow \
                 --host 0.0.0.0 \
                 --port 5000 \
                 --app-name basic-auth  --gunicorn-opts "--workers 1"
