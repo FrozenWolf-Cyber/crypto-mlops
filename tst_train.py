@@ -139,6 +139,7 @@ def main(args):
                 loss.backward()
                 optimizer.step()
                 epoch_loss += loss.item()
+                wandb.log({"batch_loss": loss.item()})
             avg_train_loss = epoch_loss / len(train_loader)
             train_losses.append(avg_train_loss)
             mlflow.log_metric("train_loss", avg_train_loss, step=epoch)

@@ -17,6 +17,7 @@ def mlflow_lgb_callback(val_data, val_labels, name="val"):
     def _callback(env):
         for data_name, metric_name, value, _ in env.evaluation_result_list:
             mlflow.log_metric(f"{data_name}_{metric_name}", value, step=env.iteration)
+            wandb.log({f"{data_name}_{metric_name}": value}, step=env.iteration)
 
         print(f"Iteration {env.iteration}, validation multi_logloss: {env.evaluation_result_list[0][2]}", flush=True)
         if (env.iteration%100 == 0) or (env.iteration == env.end_iteration):

@@ -16,16 +16,6 @@ spec:
       containers:
         - name: mlflow
           image: python:3.11-slim
-          command: ["bash", "-c"]
-          args:
-            - |
-              pip install --no-cache-dir mlflow[auth] psycopg2-binary boto3 gunicorn &&
-              mlflow server \
-                --backend-store-uri $DATABASE_URL \
-                --default-artifact-root $S3_URL/ml-flow \
-                --host 0.0.0.0 \
-                --port 5000 \
-                --app-name basic-auth  --gunicorn-opts "--workers 1"
 
               
           ports:
@@ -45,6 +35,19 @@ spec:
           envFrom:
             - secretRef:
                 name: platform-secrets
+          command: ["bash", "-c"]
+          args:
+            - |
+              echo S3_URL: $S3_URL
+              echo DATABASE_URL: $DATABASE_URL
+              pip install --no-cache-dir mlflow[auth] psycopg2-binary boto3 gunicorn &&
+              mlflow server \
+                --backend-store-uri $DATABASE_URL \
+                --default-artifact-root $S3_URL/ml-flow \
+                --host 0.0.0.0 \
+                --port 5000 \
+                --app-name basic-auth  --gunicorn-opts "--workers 1"
+
           volumeMounts:
             - name: shared
               mountPath: /mlflow
