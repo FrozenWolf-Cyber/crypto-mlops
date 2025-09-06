@@ -14,7 +14,7 @@ for coin in COINS:
     tst_cmd = [
         "python", os.path.join(full_path, "tst_train.py"),
         "--coin", coin,
-        "--epochs", "20",
+        "--epochs", "10",
         "--batch_size", "128",
         "--seq_len", "30"
     ]
@@ -44,7 +44,7 @@ p = subprocess.Popen(trl_cmd, stdout=trl_log, stderr=subprocess.STDOUT)
 processes.append(p)
 
 # Optional: wait for all to finish (or just leave them running in parallel)
-# for p in processes:
-#     p.wait()
+for p in processes:
+    p.wait()
 
 print("All training scripts started in parallel.")

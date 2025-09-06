@@ -278,7 +278,7 @@ def convert_to_onnx(model, type="lightgbm", tokenizer=None, sample_input=None):
 def log_classification_metrics(y_pred, y_true, name="val", step=None, class_labels=None):
     from sklearn.metrics import classification_report
     import mlflow
-
+    import wandb
     report = classification_report(y_true, y_pred, output_dict=True)
 
     if class_labels is None:
@@ -286,9 +286,12 @@ def log_classification_metrics(y_pred, y_true, name="val", step=None, class_labe
 
     for cls in class_labels:
         mlflow.log_metric(f"{name}_f1_class_{cls}", report[cls]["f1-score"], step=step)
-
+        wandb.log({f"{name}_f1_class_{cls}": report[cls]["f1-score"]}, step=step)
     mlflow.log_metric(f"{name}_f1_macro", report["macro avg"]["f1-score"], step=step)
     mlflow.log_metric(f"{name}_accuracy", report["accuracy"], step=step)
+    
+    wandb.log({f"{name}_f1_macro": report["macro avg"]["f1-score"]}, step=step)
+    wandb.log({f"{name}_accuracy": report["accuracy"]}, step=step)
 
     return report
 

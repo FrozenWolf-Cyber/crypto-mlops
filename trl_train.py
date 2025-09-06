@@ -17,6 +17,7 @@ from model_manager import ModelManager
 from train_utils import download_s3_dataset, log_classification_metrics
 from s3_manager import S3Manager
 import time
+import wandb
 # ----------------------------
 # Dataset wrapper
 # ----------------------------
@@ -129,7 +130,7 @@ def main(args):
     df_combined['label'] = df_combined['price_change'].apply(lambda x: get_label(x, args.threshold))
     ### assign labels
     
-    print(f"Total rows in df_combined before deduplication: {len(df_combined)}")
+    print(f"Total rows in df_combined before deduplication: {len(df_combined)}", flush=True)
     print(df_combined['label'].value_counts())
     
     ds = NewsDataset(df_combined)
@@ -142,9 +143,9 @@ def main(args):
     train_dataset, val_dataset = random_split(ds, [n_train, n_val])
 
     
-    print(f"Total combined dataset size: {len(ds)}")
+    print(f"Total combined dataset size: {len(ds)}", flush=True)
     dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
-    print(f"DataLoader created with {len(dataloader)} batches of size {args.batch_size}")
+    print(f"DataLoader created with {len(dataloader)} batches of size {args.batch_size}", flush=True)
         
     normalizer /= len(coins)
 
@@ -154,7 +155,7 @@ def main(args):
     mm = ModelManager(os.getenv("MLFLOW_URI"))
     policy, latest_version = mm.load_latest_model(f'trl', model_type="trl")
     db.set_state("trl", "ALL", "RUNNING")
-    
+    run = wandb.init(project='mlops', entity="frozenwolf")
     with mlflow.start_run() as run:
         mlflow.log_params(vars(args))
 
@@ -168,7 +169,7 @@ def main(args):
         policy.to(device)
         policy.enable_adapter_layers()
         policy.print_trainable_parameters()
-        print(f"Number of trainable parameters: {sum(p.numel() for p in policy.parameters() if p.requires_grad)}")
+        print(f"Number of trainable parameters: {sum(p.numel() for p in policy.parameters() if p.requires_grad)}", flush=True)
         
         reference = AutoModelForSequenceClassification.from_pretrained(args.model_name, num_labels=3).to(device)
         for p in reference.parameters():
@@ -282,7 +283,7 @@ def main(args):
                 mlflow.log_metric("epoch_loss", loss.item(), step=iters)
                 mlflow.log_metric("epoch_surrogate", loss_surrogate.item(), step=iters)
                 mlflow.log_metric("epoch_kl", kl_term.item() , step=iters)
-
+                wandb.log({"loss": loss.item(), "surrogate": loss_surrogate.item(), "kl": kl_term.item()})
                         
             if batch_idx % args.grad_accum_steps != 0:
                 optimizer.step()
@@ -292,8 +293,8 @@ def main(args):
             mlflow.log_metric("epoch_loss", epoch_loss / len(dataloader), step=epoch)
             mlflow.log_metric("epoch_surrogate", epoch_surrogate / len(dataloader), step=epoch)
             mlflow.log_metric("epoch_kl", epoch_kl / len(dataloader), step=epoch)
-            print(f"Epoch {epoch}: Loss={epoch_loss/len(dataloader):.4f}, Surrogate={epoch_surrogate/len(dataloader):.4f}, KL={epoch_kl/len(dataloader):.4f}")
-
+            print(f"Epoch {epoch}: Loss={epoch_loss/len(dataloader):.4f}, Surrogate={epoch_surrogate/len(dataloader):.4f}, KL={epoch_kl/len(dataloader):.4f}", flush=True)
+            wandb.log({"epoch_loss": epoch_loss / len(dataloader), "epoch_surrogate": epoch_surrogate / len(dataloader), "epoch_kl": epoch_kl / len(dataloader)})
 
         val_preds = get_predictions(policy, tokenizer, DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False), device)
         val_labels = [item['label'] for item in val_dataset]

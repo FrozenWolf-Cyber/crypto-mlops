@@ -10,7 +10,7 @@ from train_utils import preprocess_crypto, download_s3_dataset, convert_to_onnx,
 from model_manager import ModelManager
 from s3_manager import S3Manager
 from airflow_db import db
-
+import wandb
 
 
 def mlflow_lgb_callback(val_data, val_labels, name="val"):
@@ -18,7 +18,7 @@ def mlflow_lgb_callback(val_data, val_labels, name="val"):
         for data_name, metric_name, value, _ in env.evaluation_result_list:
             mlflow.log_metric(f"{data_name}_{metric_name}", value, step=env.iteration)
 
-
+        print(f"Iteration {env.iteration}, validation multi_logloss: {env.evaluation_result_list[0][2]}", flush=True)
         if (env.iteration%100 == 0) or (env.iteration == env.end_iteration):
             y_pred_probs = env.model.predict(val_data, num_iteration=env.model.best_iteration)
             y_pred = np.argmax(y_pred_probs, axis=1)
@@ -54,7 +54,7 @@ def main(args):
 
 
     
-    print(f"Train size: {len(X_train)}, Val size: {len(X_val)}, Test size: {len(X_test)}")
+    print(f"Train size: {len(X_train)}, Val size: {len(X_val)}, Test size: {len(X_test)}", flush=True)
 
     train_data = lgb.Dataset(X_train, label=y_train)
     val_data = lgb.Dataset(X_val, label=y_val)
@@ -72,7 +72,7 @@ def main(args):
     mlflow.set_tracking_uri(uri=os.getenv("MLFLOW_URI"))
     mlflow.set_experiment(f"{coin.lower()}-lightgbm")
     mm = ModelManager(os.getenv("MLFLOW_URI"))
-
+    run = wandb.init(project='mlops', entity="frozenwolf")
     with mlflow.start_run() as run:
         db.set_state("lightgbm", args.coin.upper(), "RUNNING")
         mlflow.log_params(params)
@@ -88,7 +88,7 @@ def main(args):
         )
 
         ## get best iteration
-        print("Best iteration:", model.best_iteration)
+        print("Best iteration:", model.best_iteration, flush=True)
         
         # ------------------------------
         # Validation metrics

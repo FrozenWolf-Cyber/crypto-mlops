@@ -12,7 +12,7 @@ from train_utils import  download_s3_dataset, convert_to_onnx, log_classificatio
 from model_manager import ModelManager
 from s3_manager import S3Manager
 from airflow_db import db
-
+import wandb
 
 # -------------------------
 # TST Model
@@ -114,15 +114,15 @@ def main(args):
         
     model = model.to(device)
 
-    print("Trainable parameters:", sum(p.numel() for p in model.parameters() if p.requires_grad))
+    print("Trainable parameters:", sum(p.numel() for p in model.parameters() if p.requires_grad), flush=True)
 
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
 
-    
+    run = wandb.init(project='mlops', entity="frozenwolf")
     with mlflow.start_run() as run:
-        print("MLflow run ID:", run.info.run_id)
+        print("MLflow run ID:", run.info.run_id, flush=True)
         mlflow.log_params(vars(args))
         mlflow.log_param("num_params", sum(p.numel() for p in model.parameters() if p.requires_grad))
         db.set_state("tst", args.coin.upper(), "RUNNING")
@@ -142,6 +142,7 @@ def main(args):
             avg_train_loss = epoch_loss / len(train_loader)
             train_losses.append(avg_train_loss)
             mlflow.log_metric("train_loss", avg_train_loss, step=epoch)
+            wandb.log({"train_loss": avg_train_loss}, step=epoch)
 
             # Validation
             model.eval()
@@ -157,6 +158,9 @@ def main(args):
 
             # Log classification metrics
             log_metrics(model, val_loader, name="val", step=epoch)
+            wandb.log({"val_loss": avg_val_loss}, step=epoch)
+            
+            print(f"Epoch {epoch+1}/{epochs} - Train Loss: {avg_train_loss:.4f}, Val Loss: {avg_val_loss:.4f}", flush=True)
 
         # -------------------------
         # Test evaluation
@@ -191,7 +195,7 @@ def main(args):
         mm.enforce_retention(f"{coin.lower()}_tst", max_versions=10, delete_s3=True)
         mm.set_production(f"{coin.lower()}_tst", keep_latest_n=2)
 
-        print("MLflow run completed:", run.info.run_id)
+        print("MLflow run completed:", run.info.run_id, flush=True)
 
     db.set_state("tst", args.coin.upper(), "SUCCESS")
     
