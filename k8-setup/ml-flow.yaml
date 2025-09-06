@@ -46,7 +46,7 @@ spec:
                 --default-artifact-root $S3_URL/ml-flow \
                 --host 0.0.0.0 \
                 --port 5000 \
-                --app-name basic-auth  --gunicorn-opts "--workers 1"
+                --app-name basic-auth  --uvicorn-opts "--workers 1"
 
           volumeMounts:
             - name: shared
