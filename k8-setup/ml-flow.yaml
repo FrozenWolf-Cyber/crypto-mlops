@@ -20,14 +20,14 @@ spec:
           args:
             - |
               echo "checking env variables"
-              echo $DATABASE_URL
+              echo $MLFLOW_DB
               echo $AWS_ACCESS_KEY_ID
               echo $AWS_SECRET_ACCESS_KEY
               echo $S3_URL
               echo "Starting MLflow server..."
               pip install --no-cache-dir mlflow[auth] psycopg2-binary boto3 gunicorn &&
               mlflow server \
-                --backend-store-uri $DATABASE_URL \
+                --backend-store-uri $MLFLOW_DB \
                 --default-artifact-root s3://mlops/ml-flow \
                 --host 0.0.0.0 \
                 --port 5000 \
@@ -54,11 +54,11 @@ spec:
                 secretKeyRef:
                   name: platform-secrets
                   key: MLFLOW_FLASK_SERVER_SECRET_KEY
-            - name: DATABASE_URL
+            - name: MLFLOW_DB
               valueFrom:
                 secretKeyRef:
                   name: platform-secrets
-                  key: DATABASE_URL
+                  key: MLFLOW_DB
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
