@@ -277,7 +277,7 @@ def main(args):
                     if args.update_old_every_iter:
                         theta_old.load_state_dict(policy.state_dict())
                         
-                if time.time() - start > args.max_time:
+                if time.time() - start_time > args.max_time:
                     print(f"Reached time limit of {args.max_time} seconds, stopping training.")
                     break
                 
