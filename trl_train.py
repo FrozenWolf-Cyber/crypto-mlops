@@ -84,7 +84,8 @@ from airflow_db import db
 # ----------------------------
 def main(args):
     download_s3_dataset("all", trl_model=True)
-
+    run = wandb.init(project='mlops', entity="frozenwolf", config=vars(args), notes=f"Training TRL model on with GRPO")
+    
 
     coin = args.coin
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -155,7 +156,6 @@ def main(args):
     mm = ModelManager(os.getenv("MLFLOW_URI"))
     policy, latest_version = mm.load_latest_model(f'trl', model_type="trl")
     db.set_state("trl", "ALL", "RUNNING")
-    run = wandb.init(project='mlops', entity="frozenwolf", config=vars(args), notes=f"Training TRL model on with GRPO")
     with mlflow.start_run() as run:
         mlflow.log_params(vars(args))
 
