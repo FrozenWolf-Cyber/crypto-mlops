@@ -49,7 +49,7 @@ processes.append(p)
 
 
 # # Optional: wait for all to finish (or just leave them running in parallel)
-# for p in processes:
-#     p.wait()
+for p in processes:
+    p.wait()
 
 print("All training scripts started in parallel.")
