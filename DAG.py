@@ -60,17 +60,15 @@ from airflow.utils.trigger_rule import TriggerRule
 import time
 
 # Import your scripts
-from scripts import (
-    pre_train,
-    vast_ai_train,
-    post_train_reconcile,
-    post_train_trl,
-    kill_vast_ai_instances,
-    airflow_db,
-    past_news_scrape,
-    trl_onnx_masker,
-    trl_inference
-)
+import pre_train_dataset
+import vast_ai_train
+import post_train_reconcile
+import post_train_trl
+import kill_vast_ai_instances
+import airflow_db
+import past_news_scrape
+import trl_inference
+import trl_onnx_maker
 
 # =========================
 # DAG 1: Training Pipeline
@@ -96,8 +94,8 @@ def create_dag1():
     ) as dag:
 
         start_pretrain = PythonOperator(
-            task_id='pre_train',
-            python_callable=pre_train.run
+            task_id='pre_train_dataset',
+            python_callable=pre_train_dataset.run
         )
 
         flush_and_init = PythonOperator(
@@ -111,12 +109,19 @@ def create_dag1():
         )
 
         # List of models created
-        models = [
-            "crypto_1_model_1", "crypto_1_model_2",
-            "crypto_2_model_1", "crypto_2_model_2",
-            "crypto_3_model_1", "crypto_3_model_2",
-            "trl_model"
-        ]
+        # models = [
+        #     "crypto_1_model_1", "crypto_1_model_2",
+        #     "crypto_2_model_1", "crypto_2_model_2",
+        #     "crypto_3_model_1", "crypto_3_model_2",
+        #     "trl_model"
+        # ]
+        cryptos = ["BTCUSDT", "ETHUSDT"]
+        models_ = ["lightgbm", "trl"]
+        models = ["trl_model"]
+        for crypto in cryptos:
+            for model in models_:
+                models.append(f"{crypto}_{model}")
+            
 
         monitor_tasks = {}
         post_tasks = {}
@@ -184,7 +189,7 @@ with DAG(
 
     trl_masker_task = PythonOperator(
         task_id='trl_onnx_masker',
-        python_callable=trl_onnx_masker.run
+        python_callable=trl_onnx_maker.run
     )
 
     trl_inference_task = PythonOperator(
@@ -207,6 +212,6 @@ with DAG(
 ) as dag3:
 
     daily_pretrain = PythonOperator(
-        task_id='pre_train_backup',
-        python_callable=pre_train.run
+        task_id='pre_train_dataset_backup',
+        python_callable=pre_train_dataset.run
     )

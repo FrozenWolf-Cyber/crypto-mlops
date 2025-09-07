@@ -32,7 +32,7 @@ for coin in COINS:
         "python", os.path.join(full_path, "tst_train.py"),
         "--coin", coin,
         "--epochs", "10",
-        "--batch_size", "200",
+        "--batch_size", "96",
         "--seq_len", "30",
         "--max_time", str(max_time)
     ]
