@@ -23,6 +23,7 @@ import wandb
 # ----------------------------
 class NewsDataset(Dataset):
     def __init__(self, df):
+        df['news_text'] = df['title'] + ":\n" + df['text']
         self.texts = df['news_text'].tolist()
         self.labels = df['label'].astype(int).tolist()
         self.price_changes = df['price_change'].astype(float).tolist()
