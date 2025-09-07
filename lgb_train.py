@@ -35,7 +35,8 @@ def early_stopping_time(max_time: int, verbose: bool = True):
                     flush=True,
                     
                 )
-            raise lgb.callback.EarlyStopException(env.iteration)
+            raise lgb.callback.EarlyStopException(env.iteration, best_score=None)
+
 
     _callback.order = 0  # run before metrics and other callbacks
     return _callback
