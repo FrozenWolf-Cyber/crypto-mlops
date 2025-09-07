@@ -166,7 +166,7 @@ def main(args):
 
             # Log classification metrics
             log_metrics(model, val_loader, name="val", step=epoch)
-            wandb.log({"val_loss": avg_val_loss})
+            wandb.log({"val_loss": avg_val_loss, "epoch": epoch})
             
             print(f"Epoch {epoch+1}/{epochs} - Train Loss: {avg_train_loss:.4f}, Val Loss: {avg_val_loss:.4f}", flush=True)
 

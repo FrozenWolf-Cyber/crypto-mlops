@@ -294,7 +294,7 @@ def main(args):
             mlflow.log_metric("epoch_surrogate", epoch_surrogate / len(dataloader), step=epoch)
             mlflow.log_metric("epoch_kl", epoch_kl / len(dataloader), step=epoch)
             print(f"Epoch {epoch}: Loss={epoch_loss/len(dataloader):.4f}, Surrogate={epoch_surrogate/len(dataloader):.4f}, KL={epoch_kl/len(dataloader):.4f}", flush=True)
-            wandb.log({"epoch_loss": epoch_loss / len(dataloader), "epoch_surrogate": epoch_surrogate / len(dataloader), "epoch_kl": epoch_kl / len(dataloader)})
+            wandb.log({"epoch_loss": epoch_loss / len(dataloader), "epoch_surrogate": epoch_surrogate / len(dataloader), "epoch_kl": epoch_kl / len(dataloader), "epoch": epoch})
 
         val_preds = get_predictions(policy, tokenizer, DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False), device)
         val_labels = [item['label'] for item in val_dataset]
