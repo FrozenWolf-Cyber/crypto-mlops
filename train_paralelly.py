@@ -1,14 +1,15 @@
 # start_training.py
 import subprocess
 import os
-
-COINS = ["BTCUSDT", "ETHUSDT", "BNBUSDT"]  # your coins list
+from train_utils import save_start_time
+save_start_time()
+COINS = ["BTCUSDT", "ETHUSDT"]  # your coins list
 full_path = os.path.dirname(os.path.abspath(__file__))  # repo root
 logs_path = os.path.join(full_path, "logs")
 os.makedirs(logs_path, exist_ok=True)
 
 processes = []
-max_time = 50*60
+max_time = 5*60
 
 # trl_train
 trl_cmd = [
@@ -42,6 +43,7 @@ for coin in COINS:
         "python", os.path.join(full_path, "lgb_train.py"),
         "--coin", coin,
         "--epochs", "200"
+        "--max_time", str(max_time)
     ]
     lgb_log = open(os.path.join(logs_path, f"{coin}_lgbm.log"), "w")
     p = subprocess.Popen(lgb_cmd, stdout=lgb_log, stderr=subprocess.STDOUT)

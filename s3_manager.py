@@ -255,7 +255,7 @@ if __name__ == "__main__":
     s3_manager = S3Manager(
   )
 
-    coins = ["BTCUSDT", "ETHUSDT", "BNBUSDT"]
+    coins = ["BTCUSDT", "ETHUSDT"]
     article_path = f"data/articles/articles.csv"   
     s3_manager.upload_df(article_path, bucket='mlops', key=f'articles/articles.parquet')
     s3_manager.download_df(article_path, bucket='mlops', key=f'articles/articles.parquet')

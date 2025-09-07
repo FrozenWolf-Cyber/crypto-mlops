@@ -206,7 +206,7 @@ def download_s3_dataset(coin, trl_model=False):
     s3_manager = S3Manager(
    )
     
-    coins = ["BTCUSDT", "ETHUSDT", "BNBUSDT"] if trl_model else [coin]
+    coins = ["BTCUSDT", "ETHUSDT"] if trl_model else [coin]
     if trl_model:
         article_path = f"data/articles/articles.csv" 
         s3_manager.download_df(article_path, bucket='mlops', key=f'articles/articles.parquet')
@@ -218,7 +218,6 @@ def download_s3_dataset(coin, trl_model=False):
         prices_path = f"data/prices/{coin}.csv"
         s3_manager.download_df(prices_path, bucket='mlops', key=f'prices/{coin}.parquet')
         
-            
             
 def convert_to_onnx(model, type="lightgbm", tokenizer=None, sample_input=None):
     """
@@ -362,3 +361,21 @@ def preprocess_common_batch(model, df, seq_len=30, horizon=1, threshold=0.00015,
         X = X.values.tolist()
 
     return X
+
+
+import time, os
+START_FILE = "train_start_time.txt"
+
+
+def save_start_time(path=START_FILE):
+    """Save the current time to a file."""
+    with open(path, "w") as f:
+        f.write(str(time.time()))
+
+
+def load_start_time(path=START_FILE):
+    """Load start time from file, or create it if missing."""
+    if not os.path.exists(path):
+        save_start_time(path)
+    with open(path, "r") as f:
+        return float(f.read().strip())

@@ -14,7 +14,7 @@ import mlflow
 from train_utils import annotate_news
 from tqdm import tqdm
 from model_manager import ModelManager
-from train_utils import download_s3_dataset, log_classification_metrics
+from train_utils import load_start_time, download_s3_dataset, log_classification_metrics
 from s3_manager import S3Manager
 import time
 import wandb
@@ -100,7 +100,7 @@ def main(args):
     )
 
     # Load data and generate news
-    coins = ["BTCUSDT", "ETHUSDT", "BNBUSDT"]
+    coins = ["BTCUSDT", "ETHUSDT"]
     ds_combined = []
     normalizer = 0
     df_combined = pd.read_csv(f"data/articles/articles.csv")
@@ -183,7 +183,7 @@ def main(args):
 
         optimizer = AdamW(policy.parameters(), lr=args.lr)
         epoch = 0
-        start = time.time()
+        start_time = load_start_time()
         for epoch in tqdm(range(1, args.epochs + 1)):
             
             val_preds = get_predictions(policy, tokenizer, DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False), device)

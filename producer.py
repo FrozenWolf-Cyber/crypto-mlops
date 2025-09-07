@@ -10,7 +10,7 @@ from consumer_utils import state_write, state_checker, delete_state
 BASE_URL = "https://api.binance.com/api/v3/klines"
 # Configuration
 KAFKA_BROKER = "localhost:9092"
-SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT"]
+SYMBOLS = ["BTCUSDT", "ETHUSDT"]
 INTERVAL = "1m"
 
 # Create Quix application

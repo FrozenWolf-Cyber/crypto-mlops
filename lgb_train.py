@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 import mlflow
-from train_utils import preprocess_crypto, download_s3_dataset, convert_to_onnx, log_classification_metrics
+from train_utils import load_start_time, preprocess_crypto, download_s3_dataset, convert_to_onnx, log_classification_metrics
 from model_manager import ModelManager
 from s3_manager import S3Manager
 from airflow_db import db
@@ -14,7 +14,7 @@ import wandb
 
 import time
 
-
+start_time = load_start_time()
 def early_stopping_time(max_time: int, verbose: bool = True):
     """
     LightGBM callback for early stopping based on elapsed wall-clock time.
@@ -23,7 +23,7 @@ def early_stopping_time(max_time: int, verbose: bool = True):
         max_time (int): Maximum training time in seconds.
         verbose (bool): Whether to print stop messages.
     """
-    start_time = time.time()
+
 
     def _callback(env):
         elapsed = time.time() - start_time
@@ -33,13 +33,14 @@ def early_stopping_time(max_time: int, verbose: bool = True):
                     f"⏹️ Early stopping at iteration {env.iteration} "
                     f"after {elapsed:.1f}s (limit={max_time}s)",
                     flush=True,
-                    
                 )
-            raise lgb.callback.EarlyStopException(env.iteration, best_score=None)
-
+            # Signal LightGBM to stop
+            env.model.stop_training = True
+            env.model.best_iteration = env.iteration
 
     _callback.order = 0  # run before metrics and other callbacks
     return _callback
+
 
 def mlflow_lgb_callback(val_data, val_labels, name="val"):
     def _callback(env):

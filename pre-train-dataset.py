@@ -15,7 +15,7 @@ TEST_RETENTION_MIN = 60*24*30  # 90 days
 state_write("ALL", "producer", "main", "delete")
 data_path = "data/prices"
 
-cryptos = ["BTCUSDT", "ETHUSDT", "BNBUSDT"]
+cryptos = ["BTCUSDT", "ETHUSDT"]
 
 def create_producer(crypto: str, model: str, version: str):
     if os.path.exists(os.path.join(STATE_DIR, f"{crypto}_{model}_{version}.json")):

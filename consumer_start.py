@@ -13,7 +13,7 @@ def create_dir(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
-cryptos = ["BTCUSDT", "ETHUSDT", "BNBUSDT"]
+cryptos = ["BTCUSDT", "ETHUSDT"]
 models = ["lightgbm", "trl"]
 versions = ["v1", "v2", "v3"]
 

@@ -103,7 +103,7 @@ db = BatchStatusDB(AIRFLOW_DB)
 #
 # --- In Airflow DAG start (reset + init jobs) ---
 # db.flush()
-# db.init_entries(models=["tst", "lightgbm", "trl"], coins=["BTCUSDT", "ETHUSDT", "BNBUSDT"])
+# db.init_entries(models=["tst", "lightgbm", "trl"], coins=["BTCUSDT", "ETHUSDT"])
 #
 # --- In training script ---
 # db.set_state("tst", "BTCUSDT", "RUNNING")

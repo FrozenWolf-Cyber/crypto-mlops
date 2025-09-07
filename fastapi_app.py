@@ -23,7 +23,7 @@ def load_production_models():
     global models
     models = {}
     log_model = {}
-    for coin in ["BTCUSDT", "ETHUSDT", "BNBUSDT"]:
+    for coin in ["BTCUSDT", "ETHUSDT"]:
         for name in ["lightgbm", "tst"]:
             name = f"{coin.lower()}_{name}"
 

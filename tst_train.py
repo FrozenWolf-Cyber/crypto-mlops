@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader, TensorDataset, random_split
 from sklearn.metrics import classification_report
 import mlflow
 from tqdm import tqdm
-from train_utils import  download_s3_dataset, convert_to_onnx, log_classification_metrics, preprocess_sequences
+from train_utils import load_start_time, download_s3_dataset, convert_to_onnx, log_classification_metrics, preprocess_sequences
 from model_manager import ModelManager
 from s3_manager import S3Manager
 from airflow_db import db
@@ -128,7 +128,7 @@ def main(args):
         db.set_state("tst", args.coin.upper(), "RUNNING")
         train_losses, val_losses = [], []
 
-        start_time = time.time()
+        start_time = load_start_time()
         for epoch in range(epochs):
             model.train()
             epoch_loss = 0

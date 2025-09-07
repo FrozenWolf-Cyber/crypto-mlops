@@ -591,7 +591,7 @@ class CryptoDB:
 
 # Usage example
 db_url = os.getenv("DATABASE_URL")
-coins = ["BTCUSDT", "ETHUSDT", "BNBUSDT"]
+coins = ["BTCUSDT", "ETHUSDT"]
 engine = create_engine(
     db_url,
     pool_size=3,
