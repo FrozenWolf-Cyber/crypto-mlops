@@ -42,11 +42,11 @@ class BatchStatusDB:
         with self.engine.begin() as conn:
             conn.execute(text("TRUNCATE batch_status RESTART IDENTITY;"))
 
-    def init_entries(self, coins):
+    def init_entries(self):
         """Insert initial rows with PENDING state."""
         with self.engine.begin() as conn:
             for model in ["lightgbm", "tst"]:
-                for coin in coins:
+                for coin in ["BTCUSDT", "ETHUSDT"]:
                     conn.execute(
                         text("""
                         INSERT INTO batch_status (model, coin, state)

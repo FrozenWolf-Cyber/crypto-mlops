@@ -18,12 +18,9 @@ start_time = load_start_time()
 def early_stopping_time(max_time: int, verbose: bool = True):
     """
     LightGBM callback for early stopping based on elapsed wall-clock time.
-
-    Args:
-        max_time (int): Maximum training time in seconds.
-        verbose (bool): Whether to print stop messages.
     """
 
+    start_time = time.time()
 
     def _callback(env):
         elapsed = time.time() - start_time
@@ -34,13 +31,11 @@ def early_stopping_time(max_time: int, verbose: bool = True):
                     f"after {elapsed:.1f}s (limit={max_time}s)",
                     flush=True,
                 )
-            # Signal LightGBM to stop
-            env.model.stop_training = True
-            env.model.best_iteration = env.iteration
+            # Raise exception to stop training immediately
+            raise lgb.callback.EarlyStopException(env.iteration, env.evaluation_result_list)
 
-    _callback.order = 0  # run before metrics and other callbacks
+    _callback.order = 0
     return _callback
-
 
 def mlflow_lgb_callback(val_data, val_labels, name="val"):
     def _callback(env):

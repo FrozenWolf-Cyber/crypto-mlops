@@ -54,9 +54,10 @@
  
  
 from airflow import DAG
-from airflow.operators.python import PythonOperator, BranchPythonOperator
+from airflow.operators.python import PythonOperator, BranchPythonOperator, BashOperator
 from airflow.utils.dates import days_ago
 from airflow.utils.trigger_rule import TriggerRule
+from datetime import timedelta
 import time
 
 # Import your scripts
@@ -80,9 +81,8 @@ def monitor_model_state(model_name, **context):
     elif status == "FAILED":
         return "skip_model"
     else:
-        # Re-check after delay
-        time.sleep(60)
-        return "monitor_model_state_task"
+        raise ValueError(f"Model {model_name} not ready yet, still {status}")
+
 
 def create_dag1():
     with DAG(
@@ -93,19 +93,20 @@ def create_dag1():
         max_active_runs=1
     ) as dag:
 
-        start_pretrain = PythonOperator(
+        start_pretrain = BashOperator(
             task_id='pre_train_dataset',
-            python_callable=pre_train_dataset.run
+            bash_command='python /path/to/pre_train_dataset.py'
         )
+
 
         flush_and_init = PythonOperator(
             task_id='flush_and_init',
             python_callable=airflow_db.flush_and_init_entries
         )
 
-        train_models = PythonOperator(
+        train_models = BashOperator(
             task_id='vast_ai_train',
-            python_callable=vast_ai_train.run
+            bash_command='python /path/to/vast_ai_train.py'
         )
 
         # List of models created
@@ -131,31 +132,38 @@ def create_dag1():
                 task_id=f"monitor_{model}",
                 python_callable=monitor_model_state,
                 op_kwargs={"model_name": model},
+                retries=100,          # how many times to retry
+                retry_delay=timedelta(minutes=1),  # wait between retries
                 provide_context=True
             )
 
             if model != "trl_model":
-                post_tasks[model] = PythonOperator(
+                crypto, model_type = model.split("_", 1)
+                post_tasks[model] = BashOperator(
                     task_id=f"post_train_{model}",
-                    python_callable=post_train_reconcile.run,
-                    op_kwargs={"crypto": model.split("_")[1], "model": model.split("_")[2]},
-                    trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS
+                    bash_command=f"python /path/to/post_train_reconcile.py --crypto {crypto} --model {model_type}",
+                    trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
+                    retries=100,
+                    retry_delay=timedelta(minutes=1)
                 )
             else:
-                post_tasks[model] = PythonOperator(
-                    task_id=f"post_train_trl",
-                    python_callable=post_train_trl.run,
-                    trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS
+                post_tasks[model] = BashOperator(
+                    task_id="post_train_trl",
+                    bash_command="python /path/to/post_train_trl.py",
+                    trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
+                    retries=100,
+                    retry_delay=timedelta(minutes=1)
                 )
 
-        skip_task = PythonOperator(
+
+        skip_task = BashOperator(
             task_id="skip_model",
-            python_callable=lambda: print("Model failed, skipping post-training.")
+            bash_command='echo "Model failed, skipping post-training."'
         )
 
-        kill_instances = PythonOperator(
+        kill_instances = BashOperator(
             task_id="kill_vast_ai_instances",
-            python_callable=kill_vast_ai_instances.run,
+            bash_command="python /path/to/kill_vast_ai_instances.py",
             trigger_rule=TriggerRule.ALL_DONE
         )
 

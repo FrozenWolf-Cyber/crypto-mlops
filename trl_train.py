@@ -297,6 +297,10 @@ def main(args):
             print(f"Epoch {epoch}: Loss={epoch_loss/len(dataloader):.4f}, Surrogate={epoch_surrogate/len(dataloader):.4f}, KL={epoch_kl/len(dataloader):.4f}", flush=True)
             wandb.log({"epoch_loss": epoch_loss / len(dataloader), "epoch_surrogate": epoch_surrogate / len(dataloader), "epoch_kl": epoch_kl / len(dataloader), "epoch": epoch})
 
+            if time.time() - start_time > args.max_time:
+                print(f"Reached time limit of {args.max_time} seconds, stopping training.")
+                break
+
         val_preds = get_predictions(policy, tokenizer, DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False), device)
         val_labels = [item['label'] for item in val_dataset]
         val_preds = np.array(val_preds).argmax(axis=1).tolist()
