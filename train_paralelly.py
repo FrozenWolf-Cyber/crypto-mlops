@@ -8,7 +8,21 @@ logs_path = os.path.join(full_path, "logs")
 os.makedirs(logs_path, exist_ok=True)
 
 processes = []
-max_time = 50*60 
+max_time = 50*60
+
+# trl_train
+trl_cmd = [
+    "python", os.path.join(full_path, "trl_train.py"),
+    "--epochs", "10",
+    "--batch_size", "12",
+    "--max_time", str(max_time)  
+]
+trl_log = open(os.path.join(logs_path, "trl.log"), "w")
+p = subprocess.Popen(trl_cmd, stdout=trl_log, stderr=subprocess.STDOUT)
+processes.append(p)
+
+
+ 
 for coin in COINS:
     # tst_train
     tst_cmd = [
@@ -33,16 +47,6 @@ for coin in COINS:
     p = subprocess.Popen(lgb_cmd, stdout=lgb_log, stderr=subprocess.STDOUT)
     processes.append(p)
 
-# trl_train
-trl_cmd = [
-    "python", os.path.join(full_path, "trl_train.py"),
-    "--epochs", "10",
-    "--batch_size", "12",
-    "--max_time", str(max_time)  
-]
-trl_log = open(os.path.join(logs_path, "trl.log"), "w")
-p = subprocess.Popen(trl_cmd, stdout=trl_log, stderr=subprocess.STDOUT)
-processes.append(p)
 
 # Optional: wait for all to finish (or just leave them running in parallel)
 for p in processes:
