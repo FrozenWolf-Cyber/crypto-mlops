@@ -11,12 +11,12 @@ logs_path = os.path.join(full_path, "logs")
 os.makedirs(logs_path, exist_ok=True)
 
 processes = []
-max_time = 5 * 60
+max_time = 55 * 60
 
 # trl_train
 trl_cmd = [
     "python", os.path.join(full_path, "trl_train.py"),
-    "--epochs", "10",
+    "--epochs", "20",
     "--batch_size", "12",
     "--max_time", str(max_time)
 ]
@@ -31,7 +31,7 @@ for coin in COINS:
     tst_cmd = [
         "python", os.path.join(full_path, "tst_train.py"),
         "--coin", coin,
-        "--epochs", "10",
+        "--epochs", "30",
         "--batch_size", "96",
         "--seq_len", "30",
         "--max_time", str(max_time)
@@ -45,7 +45,7 @@ for coin in COINS:
     lgb_cmd = [
         "python", os.path.join(full_path, "lgb_train.py"),
         "--coin", coin,
-        "--epochs", "200",
+        "--epochs", "500",
         "--max_time", str(max_time)
     ]
     with open(os.path.join(logs_path, f"{coin}_lgbm.log"), "w") as lgb_log:
