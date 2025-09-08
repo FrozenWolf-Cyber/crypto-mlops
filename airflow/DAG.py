@@ -59,8 +59,11 @@ from airflow import DAG
 from airflow.providers.standard.operators.python import PythonOperator, BranchPythonOperator
 from airflow.providers.standard.operators.bash import BashOperator
 from airflow.utils.trigger_rule import TriggerRule
-from ..database.status_db import status_db
-from ..database.airflow_db import db
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+
+from database.status_db import status_db
+from database.airflow_db import db
 from datetime import timedelta
 import time
 from airflow.utils.timezone import datetime

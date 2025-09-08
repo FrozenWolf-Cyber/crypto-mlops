@@ -28,7 +28,6 @@ dags:
     enabled: true
     repo: "https://github.com/FrozenWolf-Cyber/crypto-mlops"
     branch: "master"
-    subPath: "airflow"
     wait: 60
   persistence:
     enabled: true
