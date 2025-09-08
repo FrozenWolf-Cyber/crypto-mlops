@@ -125,7 +125,7 @@ print("Using env vars:\n", export_string)
 onstart_cmd = (
     f"{export_string} && cd /app && "
     f"git clone https://github.com/FrozenWolf-Cyber/crypto-mlops && pip install wandb && wandb login 283c41dda88b658ba85c2d8ee7d37230f3341d8c &&"
-    f"cd crypto-mlops &&"
+    f"cd crypto-mlops && "
     f"python -m trainer.train_paralelly"
 )
 
