@@ -167,7 +167,7 @@ def create_dag1():
 
         train_models = BashOperator(
             task_id='vast_ai_train',
-            bash_command='python -m utils.vast_ai_train.py',
+            bash_command='python -m utils.vast_ai_train',
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
                 on_failure_callback=log_failure,
@@ -276,7 +276,7 @@ with DAG(
 
     trl_maker_task = BashOperator(
         task_id="trl_onnx_maker",
-        bash_command="python -m serve.trl_onnx_maker.py",
+        bash_command="python -m serve.trl_onnx_maker",
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
                 on_failure_callback=log_failure,
@@ -284,7 +284,7 @@ with DAG(
 
     trl_inference_task = BashOperator(
         task_id="trl_inference",
-        bash_command="python -m serve.trl_inference.py",
+        bash_command="python -m serve.trl_inference",
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
                 on_failure_callback=log_failure,
