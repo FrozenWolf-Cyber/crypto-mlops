@@ -15,7 +15,7 @@ max_time = 55 * 60
 
 # trl_train
 trl_cmd = [
-    "python -m", os.path.join(full_path, "trl_train.py"),
+    "python", "-m", os.path.join(full_path, "trl_train.py"),
     "--epochs", "20",
     "--batch_size", "12",
     "--max_time", str(max_time)
@@ -29,7 +29,7 @@ with open(os.path.join(logs_path, "trl.log"), "w") as trl_log:
 for coin in COINS:
     # tst_train
     tst_cmd = [
-        "python -m", os.path.join(full_path, "tst_train.py"),
+        "python", "-m", os.path.join(full_path, "tst_train.py"),
         "--coin", coin,
         "--epochs", "30",
         "--batch_size", "96",
@@ -43,7 +43,7 @@ for coin in COINS:
 
     # lgb_train (fixed missing comma)
     lgb_cmd = [
-        "python -m", os.path.join(full_path, "lgb_train.py"),
+        "python", "-m", os.path.join(full_path, "lgb_train.py"),
         "--coin", coin,
         "--epochs", "500",
         "--max_time", str(max_time)
