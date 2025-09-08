@@ -146,7 +146,7 @@ def create_dag1():
 
         start_pretrain = BashOperator(
             task_id='pre_train_dataset',
-            bash_command='python ../utils/pre_train_dataset.py',
+            bash_command='python -m utils.pre_train_dataset',
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
                 on_failure_callback=log_failure,
@@ -167,7 +167,7 @@ def create_dag1():
 
         train_models = BashOperator(
             task_id='vast_ai_train',
-            bash_command='python ../utils/vast_ai_train.py',
+            bash_command='python -m utils.vast_ai_train.py',
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
                 on_failure_callback=log_failure,
@@ -205,7 +205,7 @@ def create_dag1():
                 crypto, model_type = model.split("_", 1)
                 post_tasks[model] = BashOperator(
                     task_id=f"post_train_{model}",
-                    bash_command=f"python ../utils/post_train_reconcile.py --crypto {crypto} --model {model_type}",
+                    bash_command=f"python -m utils.post_train_reconcile --crypto {crypto} --model {model_type}",
                     trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
                     retries=100,
                     retry_delay=timedelta(minutes=1),
@@ -216,7 +216,7 @@ def create_dag1():
             else:
                 post_tasks[model] = BashOperator(
                     task_id="post_train_trl",
-                    bash_command="python ../utils/post_train_trl.py",
+                    bash_command="python -m utils.post_train_trl",
                     trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
                     retries=100,
                     retry_delay=timedelta(minutes=1),
@@ -236,7 +236,7 @@ def create_dag1():
 
         kill_instances = BashOperator(
             task_id="kill_vast_ai_instances",
-            bash_command="python ../utils/kill_vast_ai_instances.py",
+            bash_command="python -m utils.kill_vast_ai_instances",
             trigger_rule=TriggerRule.ALL_DONE,
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
@@ -268,7 +268,7 @@ with DAG(
 
     past_news_task = BashOperator(
         task_id="past_news_scrape",
-        bash_command="python ../articles_runner/past_news_scrape.py",
+        bash_command="python -m articles_runner.past_news_scrape",
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
                 on_failure_callback=log_failure,
@@ -276,7 +276,7 @@ with DAG(
 
     trl_maker_task = BashOperator(
         task_id="trl_onnx_maker",
-        bash_command="python ../serve/trl_onnx_maker.py",
+        bash_command="python -m serve.trl_onnx_maker.py",
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
                 on_failure_callback=log_failure,
@@ -284,7 +284,7 @@ with DAG(
 
     trl_inference_task = BashOperator(
         task_id="trl_inference",
-        bash_command="python ../serve/trl_inference.py",
+        bash_command="python -m serve.trl_inference.py",
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
                 on_failure_callback=log_failure,
