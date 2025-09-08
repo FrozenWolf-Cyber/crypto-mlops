@@ -1,10 +1,14 @@
 executor: LocalExecutor
 
-airflow:
-  env:
-    - name: AIRFLOW__CORE__DAGS_FOLDER
-      value: /opt/airflow/dags/repo/dags/
 
+env:
+  - name: AIRFLOW__CORE__DAGS_FOLDER
+    value: /opt/airflow/dags/repo/dags/
+
+airflow:
+  config:
+    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags/repo/dags/
+    
   extraEnvFrom:
     - secretRef:
         name: platform-secrets
