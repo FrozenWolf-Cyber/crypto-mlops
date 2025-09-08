@@ -5,7 +5,7 @@ import pandas as pd
 from datetime import datetime
 from quixstreams import Application
 from tqdm import tqdm
-from ..database.db import crypto_db
+from database.db import crypto_db
 from consumer_utils import state_write, state_checker, delete_state
 BASE_URL = "https://api.binance.com/api/v3/klines"
 # Configuration

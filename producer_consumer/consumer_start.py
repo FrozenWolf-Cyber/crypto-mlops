@@ -1,7 +1,7 @@
 import os
 import subprocess
-from ..artifact_control.s3_manager import S3Manager
-from ..trainer.train_utils import download_s3_dataset
+from artifact_control.s3_manager import S3Manager
+from trainer.train_utils import download_s3_dataset
 from .consumer_utils import state_write, state_checker, STATE_DIR, delete_all_states
 import time
 manager = S3Manager()

@@ -1,11 +1,11 @@
-from ..artifact_control.model_manager import ModelManager
+from artifact_control.model_manager import ModelManager
 import os
-from ..artifact_control.s3_manager import S3Manager
+from artifact_control.s3_manager import S3Manager
 from transformers.onnx import FeaturesManager
 from pathlib import Path
 import mlflow
 import subprocess
-from ..database.db import crypto_db
+from database.db import crypto_db
 import pandas as pd
 
 mlflow.set_tracking_uri(os.getenv("MLFLOW_URI"))
@@ -15,7 +15,7 @@ models = []
 prod_versions = sorted(prod_versions, key=lambda v: v.version)
 print(f"Production versions for trl: {[v.version for v in prod_versions]}")
 
-from ..artifact_control.s3_manager import S3Manager
+from artifact_control.s3_manager import S3Manager
 manager = S3Manager()
 existing_versions = manager.get_existing_versions("preds", "trl")
 print("Existing versions in S3:", existing_versions)

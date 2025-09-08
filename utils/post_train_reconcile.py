@@ -2,13 +2,13 @@ import argparse
 import time
 import subprocess
 import os
-from ..artifact_control.s3_manager import S3Manager
-from ..database.db import crypto_db
+from artifact_control.s3_manager import S3Manager
+from database.db import crypto_db
 import pandas as pd
 import requests
 manager = S3Manager()
 # from control_consumer import send_control_command
-from ..producer_consumer.consumer_utils import state_checker, state_write, delete_state, STATE_DIR
+from producer_consumer.consumer_utils import state_checker, state_write, delete_state, STATE_DIR
 
 
 def create_consumer(crypto: str, model: str, version: str):

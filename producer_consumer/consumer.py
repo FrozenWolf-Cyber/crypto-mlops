@@ -3,8 +3,8 @@ from collections import defaultdict
 from quixstreams import Application
 import time
 import pandas as pd
-from ..database.db import crypto_db
-from ..trainer.train_utils import preprocess_common, preprocess_common_batch
+from database.db import crypto_db
+from trainer.train_utils import preprocess_common, preprocess_common_batch
 import requests
 import gc
 import os

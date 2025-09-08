@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import ta
-from ..artifact_control.s3_manager import S3Manager
+from artifact_control.s3_manager import S3Manager
 
 def preprocess_crypto(df, horizon=1, threshold=0.001, balanced=False):
     """

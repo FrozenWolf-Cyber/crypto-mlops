@@ -1,7 +1,7 @@
 # start_training.py
 import subprocess
 import os
-from train_utils import save_start_time
+from .train_utils import save_start_time
 
 save_start_time()
 
