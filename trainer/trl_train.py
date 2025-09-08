@@ -13,9 +13,9 @@ from peft import LoraConfig, get_peft_model
 import mlflow
 from train_utils import annotate_news
 from tqdm import tqdm
-from model_manager import ModelManager
+from ..artifact_control.model_manager import ModelManager
 from train_utils import load_start_time, download_s3_dataset, log_classification_metrics
-from s3_manager import S3Manager
+from ..artifact_control.s3_manager import S3Manager
 import time
 import wandb
 # ----------------------------
@@ -79,7 +79,7 @@ def get_predictions(policy, tokenizer, dataloader, device):
 # Main script
 # ----------------------------
 from torch.utils.data import DataLoader
-from airflow_db import db
+from ..database.airflow_db import db
 # ----------------------------
 # Main script (DataLoader version)
 # ----------------------------
@@ -104,11 +104,11 @@ def main(args):
     coins = ["BTCUSDT", "ETHUSDT"]
     ds_combined = []
     normalizer = 0
-    df_combined = pd.read_csv(f"data/articles/articles.csv")
+    df_combined = pd.read_csv(f"/data/articles/articles.csv")
     df_combined = df_combined.drop_duplicates(subset=['link'])
     price_changes = []
     for coin in coins:
-        df_prices = pd.read_csv(f"data/prices/{coin}.csv")
+        df_prices = pd.read_csv(f"/data/prices/{coin}.csv")
         df_news = annotate_news(df_prices, df_combined.copy(), window_hours=args.window_hours, threshold=args.threshold)
         price_changes.append(df_news['price_change'].tolist())
         # ds = NewsDataset(df_news)
@@ -311,7 +311,7 @@ def main(args):
         dataloader = DataLoader(ds, batch_size=args.batch_size, shuffle=False)
         all_preds = get_predictions(policy, tokenizer, dataloader, device)
         all_labels = [item['label'] for item in ds]
-        log_classification_metrics(all_labels, np.array(all_preds).argmax(axis=1).tolist(), 'all_data_final', args.epochs)
+        log_classification_metrics(all_labels, np.array(all_preds).argmax(axis=1).tolist(), 'past_perf', args.epochs)
         df_combined['pred'] = all_preds
         s3 = S3Manager()
         s3.add_pred_s3(df_combined, "preds", 'trl')

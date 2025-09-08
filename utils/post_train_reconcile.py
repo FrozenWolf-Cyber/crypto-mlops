@@ -2,13 +2,13 @@ import argparse
 import time
 import subprocess
 import os
-from s3_manager import S3Manager
-from db import crypto_db
+from ..artifact_control.s3_manager import S3Manager
+from ..database.db import crypto_db
 import pandas as pd
 import requests
 manager = S3Manager()
 # from control_consumer import send_control_command
-from consumer_utils import state_checker, state_write, delete_state, STATE_DIR
+from ..producer_consumer.consumer_utils import state_checker, state_write, delete_state, STATE_DIR
 
 
 def create_consumer(crypto: str, model: str, version: str):
@@ -47,7 +47,7 @@ def main():
         manager.download_available_predictions(crypto, model)
         
         print(f"[INFO] Reading predictions from CSV and pushing to DB...")
-        df = pd.read_csv(f"data/predictions/{crypto}/{model}/v{version}.csv")
+        df = pd.read_csv(f"/data/predictions/{crypto}/{model}/v{version}.csv")
         # crypto_db.bulk_update_predictions(crypto.lower(), model, version, df)
         
         print(f"[INFO] Triggering FastAPI to refresh models...")
@@ -95,8 +95,8 @@ def main():
     crypto_db.shift_predictions(crypto.lower(), model, from_version=3, to_version=2)
     
     ### cp v3 csv to v2 csv in s3
-    os.remove(f"data/predictions/{crypto}/{model}/v2.csv")
-    os.rename(f"data/predictions/{crypto}/{model}/v3.csv", f"data/predictions/{crypto}/{model}/v2.csv")
+    os.remove(f"/data/predictions/{crypto}/{model}/v2.csv")
+    os.rename(f"/data/predictions/{crypto}/{model}/v3.csv", f"/data/predictions/{crypto}/{model}/v2.csv")
 
     print(f" Creating new v2 consumers")
     ### start v2 consumer
@@ -112,7 +112,7 @@ def main():
 
     print(f"[STAGE 4] Pushing new v3 predictions to DB and creating consumer")
     ### push new v3 pred to v3 column in psql
-    df = pd.read_csv(f"data/predictions/{crypto}/{model}/v3.csv")
+    df = pd.read_csv(f"/data/predictions/{crypto}/{model}/v3.csv")
     df['open_time'] = pd.to_datetime(df['open_time'])
 
     crypto_db.bulk_update_predictions(crypto.lower(), model, 3, df)
@@ -130,5 +130,5 @@ def main():
         
     print(f"[DONE] {crypto} {model} v3 restarted successfully")
 
-if __name__ == "__main__":
-    main()
+
+main()

@@ -52,30 +52,78 @@
 ### on crash:
 	### upload datasets and predictions to s3 -> s3_manager.py util
  
- 
+
+
+
 from airflow import DAG
-from airflow.operators.python import PythonOperator, BranchPythonOperator, BashOperator
-from airflow.utils.dates import days_ago
+from airflow.providers.standard.operators.python import PythonOperator, BranchPythonOperator
+from airflow.providers.standard.operators.bash import BashOperator
 from airflow.utils.trigger_rule import TriggerRule
+from ..database.status_db import status_db
+from ..database.airflow_db import db
 from datetime import timedelta
 import time
+from airflow.utils.timezone import datetime
+
+from airflow.models import TaskInstance
+
+from datetime import timedelta
+
+start_date = datetime(2025, 9, 1) 
+
+def log_start(context):
+    ti: TaskInstance = context['ti']
+    status_db.log_event(
+        dag_name=ti.dag_id,
+        task_name=ti.task_id,
+        model_name=ti.xcom_pull(task_ids='get_model_name') or "N/A",  # optional
+        run_id=ti.run_id,
+        event_type="START",
+        status="RUNNING",
+        message="Task started."
+    )
+
+def log_success(context):
+    ti: TaskInstance = context['ti']
+    status_db.log_event(
+        dag_name=ti.dag_id,
+        task_name=ti.task_id,
+        model_name="N/A",
+        run_id=ti.run_id,
+        event_type="COMPLETE",
+        status="SUCCESS",
+        message="Task completed successfully."
+    )
+
+def log_failure(context):
+    ti: TaskInstance = context['ti']
+    status_db.log_event(
+        dag_name=ti.dag_id,
+        task_name=ti.task_id,
+        model_name="N/A",
+        run_id=ti.run_id,
+        event_type="COMPLETE",
+        status="FAILED",
+        message=str(context.get("exception"))
+    )
+
+
 
 # Import your scripts
-import pre_train_dataset
-import vast_ai_train
-import post_train_reconcile
-import post_train_trl
-import kill_vast_ai_instances
-import airflow_db
-import past_news_scrape
-import trl_inference
-import trl_onnx_maker
+# import pre_train_dataset
+# import vast_ai_train
+# import post_train_reconcile
+# import post_train_trl
+# import kill_vast_ai_instances
+# import past_news_scrape
+# import trl_inference
+# import trl_onnx_maker
 
 # =========================
 # DAG 1: Training Pipeline
 # =========================
 def monitor_model_state(model_name, **context):
-    status = airflow_db.get_status(model_name)
+    status = db.get_status(model_name)
     if status == "SUCCESS":
         return f"post_train_{model_name}"
     elif status == "FAILED":
@@ -88,25 +136,38 @@ def create_dag1():
     with DAG(
         'training_pipeline',
         schedule_interval='0 0 */3 * *',  # Every 3 days
-        start_date=days_ago(0),
+        start_date=start_date,
         catchup=False,
         max_active_runs=1
     ) as dag:
 
         start_pretrain = BashOperator(
             task_id='pre_train_dataset',
-            bash_command='python /path/to/pre_train_dataset.py'
+            bash_command='python ../utils/pre_train_dataset.py',
+                on_execute_callback=log_start,
+                on_success_callback=log_success,
+                on_failure_callback=log_failure,
         )
 
 
+        def flush_and_init_callable():
+            db.flush()
+            db.init_entries()
+
         flush_and_init = PythonOperator(
             task_id='flush_and_init',
-            python_callable=airflow_db.flush_and_init_entries
+            python_callable=flush_and_init_callable,
+                on_execute_callback=log_start,
+                on_success_callback=log_success,
+                on_failure_callback=log_failure,
         )
 
         train_models = BashOperator(
             task_id='vast_ai_train',
-            bash_command='python /path/to/vast_ai_train.py'
+            bash_command='python ../utils/vast_ai_train.py',
+                on_execute_callback=log_start,
+                on_success_callback=log_success,
+                on_failure_callback=log_failure,
         )
 
         # List of models created
@@ -141,30 +202,42 @@ def create_dag1():
                 crypto, model_type = model.split("_", 1)
                 post_tasks[model] = BashOperator(
                     task_id=f"post_train_{model}",
-                    bash_command=f"python /path/to/post_train_reconcile.py --crypto {crypto} --model {model_type}",
+                    bash_command=f"python ../utils/post_train_reconcile.py --crypto {crypto} --model {model_type}",
                     trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
                     retries=100,
-                    retry_delay=timedelta(minutes=1)
+                    retry_delay=timedelta(minutes=1),
+                on_execute_callback=log_start,
+                on_success_callback=log_success,
+                on_failure_callback=log_failure,
                 )
             else:
                 post_tasks[model] = BashOperator(
                     task_id="post_train_trl",
-                    bash_command="python /path/to/post_train_trl.py",
+                    bash_command="python ../utils/post_train_trl.py",
                     trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
                     retries=100,
-                    retry_delay=timedelta(minutes=1)
+                    retry_delay=timedelta(minutes=1),
+                on_execute_callback=log_start,
+                on_success_callback=log_success,
+                on_failure_callback=log_failure,
                 )
 
 
         skip_task = BashOperator(
             task_id="skip_model",
-            bash_command='echo "Model failed, skipping post-training."'
+            bash_command='echo "Model failed, skipping post-training."',
+                on_execute_callback=log_start,
+                on_success_callback=log_success,
+                on_failure_callback=log_failure,
         )
 
         kill_instances = BashOperator(
             task_id="kill_vast_ai_instances",
-            bash_command="python /path/to/kill_vast_ai_instances.py",
-            trigger_rule=TriggerRule.ALL_DONE
+            bash_command="python ../utils/kill_vast_ai_instances.py",
+            trigger_rule=TriggerRule.ALL_DONE,
+                on_execute_callback=log_start,
+                on_success_callback=log_success,
+                on_failure_callback=log_failure,
         )
 
         # DAG dependencies
@@ -185,41 +258,53 @@ dag1 = create_dag1()
 with DAG(
     'trl_inference_pipeline',
     schedule_interval='*/30 * * * *',  # Every 30 mins
-    start_date=days_ago(0),
+    start_date=start_date,
     catchup=False,
     max_active_runs=1
 ) as dag2:
 
-    past_news_task = PythonOperator(
-        task_id='past_news_scrape',
-        python_callable=past_news_scrape.run
+    past_news_task = BashOperator(
+        task_id="past_news_scrape",
+        bash_command="python ../articles_runner/past_news_scrape.py",
+                on_execute_callback=log_start,
+                on_success_callback=log_success,
+                on_failure_callback=log_failure,
     )
 
-    trl_masker_task = PythonOperator(
-        task_id='trl_onnx_masker',
-        python_callable=trl_onnx_maker.run
+    trl_maker_task = BashOperator(
+        task_id="trl_onnx_maker",
+        bash_command="python ../serve/trl_onnx_maker.py",
+                on_execute_callback=log_start,
+                on_success_callback=log_success,
+                on_failure_callback=log_failure,
     )
 
-    trl_inference_task = PythonOperator(
-        task_id='trl_inference',
-        python_callable=trl_inference.run
+    trl_inference_task = BashOperator(
+        task_id="trl_inference",
+        bash_command="python ../serve/trl_inference.py",
+                on_execute_callback=log_start,
+                on_success_callback=log_success,
+                on_failure_callback=log_failure,
     )
 
-    past_news_task >> trl_masker_task >> trl_inference_task
+
+    past_news_task >> trl_maker_task >> trl_inference_task
 
 
-# =========================
-# DAG 3: Daily Pre-Train Backup
-# =========================
+import datetime
+def cleanup():
+    db.cleanup_old_events(days=365)
+
 with DAG(
-    'daily_pretrain_backup',
-    schedule_interval='0 2 * * *',  # Every day at 2AM
-    start_date=days_ago(0),
+    "cleanup_old_events",
+    schedule_interval="0 0 * * *",  # daily
+    start_date=datetime(2024, 1, 1),
     catchup=False,
-    max_active_runs=1
-) as dag3:
-
-    daily_pretrain = PythonOperator(
-        task_id='pre_train_dataset_backup',
-        python_callable=pre_train_dataset.run
+) as dag:
+    PythonOperator(
+        task_id="cleanup_old_events",
+        python_callable=cleanup,
+                on_execute_callback=log_start,
+                on_success_callback=log_success,
+                on_failure_callback=log_failure,
     )

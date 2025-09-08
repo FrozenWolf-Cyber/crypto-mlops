@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import ta
-from s3_manager import S3Manager
+from ..artifact_control.s3_manager import S3Manager
 
 def preprocess_crypto(df, horizon=1, threshold=0.001, balanced=False):
     """
@@ -208,14 +208,14 @@ def download_s3_dataset(coin, trl_model=False):
     
     coins = ["BTCUSDT", "ETHUSDT"] if trl_model else [coin]
     if trl_model:
-        article_path = f"data/articles/articles.csv" 
+        article_path = f"/data/articles/articles.csv" 
         s3_manager.download_df(article_path, bucket='mlops', key=f'articles/articles.parquet')
         
     for coin in coins:
-        price_test_path = f"data/prices/{coin}_test.csv"
+        price_test_path = f"/data/prices/{coin}_test.csv"
         s3_manager.download_df(price_test_path, bucket='mlops', key=f'prices/{coin}_test.parquet')
     
-        prices_path = f"data/prices/{coin}.csv"
+        prices_path = f"/data/prices/{coin}.csv"
         s3_manager.download_df(prices_path, bucket='mlops', key=f'prices/{coin}.parquet')
         
             

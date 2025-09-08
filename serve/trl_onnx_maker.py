@@ -1,4 +1,4 @@
-from model_manager import ModelManager
+from ..artifact_control.model_manager import ModelManager
 import os
 from transformers.onnx import FeaturesManager
 from pathlib import Path
@@ -68,3 +68,6 @@ def create_trl_onnx_model():
     import json
     with open("trl_onnx_models/trl_onnx_config.json", "w") as f:
         json.dump(config, f)
+        
+        
+create_trl_onnx_model()

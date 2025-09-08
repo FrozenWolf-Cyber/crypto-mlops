@@ -1,6 +1,6 @@
 from playwright.sync_api import sync_playwright
 import time
-from scrape import scrape_post
+from .scrape import scrape_post
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 def scroll_until_end(page, back_off=1, max_wait=8, max_scrolls=50):

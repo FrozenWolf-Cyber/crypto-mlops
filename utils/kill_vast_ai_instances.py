@@ -30,5 +30,5 @@ def kill_all_vastai_instances():
         print("Error:", e.stderr)
 
 
-if __name__ == "__main__":
-    kill_all_vastai_instances()
+
+kill_all_vastai_instances()

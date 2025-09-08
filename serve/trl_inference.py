@@ -1,12 +1,12 @@
 import argparse
 import json
 import pandas as pd
-from db import crypto_db
+from ..database.db import crypto_db
 from tokenizers import Tokenizer
 import numpy as np
 import onnxruntime as ort
 from tqdm import tqdm
-from train_utils import annotate_news
+from ..trainer.train_utils import annotate_news
 
 
 def get_label(price_change, threshold):
@@ -157,16 +157,15 @@ def main(args):
         print(f"Saved updated predictions for version {version} at {out_path}")
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run FinBERT TRL inference pipeline")
-    parser.add_argument("--config_path", type=str, default="trl_onnx_models/trl_onnx_config.json", help="Path to model config JSON")
-    parser.add_argument("--articles_path", type=str, default="data/articles/articles.csv", help="Path to articles CSV")
-    parser.add_argument("--pred_dir", type=str, default="data/predictions/preds/trl", help="Directory for saving predictions")
-    parser.add_argument("--prices_dir", type=str, default="data/prices", help="Directory with price CSVs")
-    parser.add_argument("--threshold", type=float, default=0.005, help="Price change threshold for labeling")
-    parser.add_argument("--window_hours", type=int, default=12, help="Lookback window in hours for price changes")
-    parser.add_argument("--max_len", type=int, default=512, help="Maximum token sequence length")
-    parser.add_argument("--batch_size", type=int, default=4, help="Batch size for inference")
-    args = parser.parse_args()
-
-    main(args)
+# if __name__ == "__main__":
+parser = argparse.ArgumentParser(description="Run FinBERT TRL inference pipeline")
+parser.add_argument("--config_path", type=str, default="trl_onnx_models/trl_onnx_config.json", help="Path to model config JSON")
+parser.add_argument("--articles_path", type=str, default="/data/articles/articles.csv", help="Path to articles CSV")
+parser.add_argument("--pred_dir", type=str, default="/data/predictions/preds/trl", help="Directory for saving predictions")
+parser.add_argument("--prices_dir", type=str, default="/data/prices", help="Directory with price CSVs")
+parser.add_argument("--threshold", type=float, default=0.005, help="Price change threshold for labeling")
+parser.add_argument("--window_hours", type=int, default=12, help="Lookback window in hours for price changes")
+parser.add_argument("--max_len", type=int, default=512, help="Maximum token sequence length")
+parser.add_argument("--batch_size", type=int, default=4, help="Batch size for inference")
+args = parser.parse_args()
+main(args)

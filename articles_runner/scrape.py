@@ -1,13 +1,11 @@
 from playwright.sync_api import sync_playwright
-import pickle
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 import pandas as pd
-import time
 import os
 
 def scrape_post(links, page):
-    df_path = f"data/articles/articles.csv"
+    df_path = f"/data/articles/articles.csv"
     if os.path.exists(df_path):
         df = pd.read_csv(df_path)
     else:

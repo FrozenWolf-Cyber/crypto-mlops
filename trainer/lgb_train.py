@@ -6,10 +6,10 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 import mlflow
-from train_utils import load_start_time, preprocess_crypto, download_s3_dataset, convert_to_onnx, log_classification_metrics
-from model_manager import ModelManager
-from s3_manager import S3Manager
-from airflow_db import db
+from .train_utils import load_start_time, preprocess_crypto, download_s3_dataset, convert_to_onnx, log_classification_metrics
+from ..artifact_control.model_manager import ModelManager
+from ..artifact_control.s3_manager import S3Manager
+from ..database.airflow_db import db
 import wandb
 
 import time
@@ -68,9 +68,9 @@ def main(args):
 
     download_s3_dataset(coin, trl_model=False)
 
-    df = pd.read_csv(f"data/prices/{coin}.csv")
+    df = pd.read_csv(f"/data/prices/{coin}.csv")
     df = df[-args.trainset_size:]
-    X_test, y_test = preprocess_crypto(pd.read_csv(f"data/prices/{coin}_test.csv"), horizon=1, threshold=thresh)
+    X_test, y_test = preprocess_crypto(pd.read_csv(f"/data/prices/{coin}_test.csv"), horizon=1, threshold=thresh)
     X, y = preprocess_crypto(df, horizon=1, threshold=thresh, balanced=True)
 
     X_train, X_val, y_train, y_val = train_test_split(
@@ -163,10 +163,21 @@ def main(args):
         mm.set_production(f"{coin.lower()}_lightgbm", keep_latest_n=2)
 
         print("MLflow run completed:", run.info.run_id)
-        df = pd.read_csv(f"data/prices/{coin}.csv")
+        df = pd.read_csv(f"/data/prices/{coin}.csv")
         ### generate predictions for the entire dataset
         X_all, y_all = preprocess_crypto(df, horizon=1, threshold=thresh)
         y_pred_probs = model.predict(X_all, num_iteration=model.best_iteration)
+        
+        y_pred = np.argmax(y_pred_probs, axis=1)
+
+        report_test = log_classification_metrics(
+            y_pred=y_pred,
+            y_true=y_all,
+            name="past_perf",
+            step=None
+        )
+        print("past_perf:\n", report_test)
+        
         y_pred_probs = y_pred_probs.tolist()
         ## add null predictions for the initial rows that were dropped during preprocessing
         df[f"pred"] = y_pred_probs

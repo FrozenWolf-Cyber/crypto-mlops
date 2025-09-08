@@ -58,3 +58,13 @@ def delete_state(crypto: str, model: str, version: str):
         print(f"[STATE] Deleted state file for {crypto} {model} {version}")
     else:
         print(f"[STATE] No state file to delete for {crypto} {model} {version}")
+        
+def delete_all_states():
+    """
+    Delete all state files in the STATE_DIR.
+    """
+    for filename in os.listdir(STATE_DIR):
+        if filename.endswith(".json"):
+            file_path = os.path.join(STATE_DIR, filename)
+            os.remove(file_path)
+            print(f"[STATE] Deleted state file {file_path}")

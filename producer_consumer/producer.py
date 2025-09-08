@@ -5,7 +5,7 @@ import pandas as pd
 from datetime import datetime
 from quixstreams import Application
 from tqdm import tqdm
-from db import crypto_db
+from ..database.db import crypto_db
 from consumer_utils import state_write, state_checker, delete_state
 BASE_URL = "https://api.binance.com/api/v3/klines"
 # Configuration
@@ -116,7 +116,7 @@ def send_df_to_quix(symbol, df, producer, batch_size=10000):
 
 def get_data(symbol):
     """Read last open_time from CSV for symbol"""
-    CSV_PATH = f"data/prices/{symbol}.csv"
+    CSV_PATH = f"/data/prices/{symbol}.csv"
     past_data = pd.read_csv(CSV_PATH)
     past_data["open_time"] = pd.to_datetime(past_data["open_time"])
     return past_data
@@ -141,7 +141,7 @@ def fetch_binance_data(symbol, start_time=None):
 def main():
     state_write("ALL", "producer", "main", "running")
     # Initialize last_open_time per symbol
-    csv_path = {symbol: f"data/prices/{symbol}.csv" for symbol in SYMBOLS}
+    csv_path = {symbol: f"/data/prices/{symbol}.csv" for symbol in SYMBOLS}
     csv_data = {symbol: get_data(symbol) for symbol in SYMBOLS}
     csv_last_times = {symbol: csv_data[symbol]["open_time"].iloc[-1] for symbol in SYMBOLS}
     
@@ -219,5 +219,5 @@ def main():
             time.sleep(sleep_time)
 
 
-if __name__ == "__main__":
-    main()
+
+main()
