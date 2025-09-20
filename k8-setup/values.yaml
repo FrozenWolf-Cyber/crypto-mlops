@@ -8,6 +8,9 @@ env:
 
 # Use your custom image everywhere
 airflow:
+  image:
+    repository: frozenwolf2003/mlops-airflow
+    tag: latest
 
   config:
     AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags/repo/dags/

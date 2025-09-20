@@ -1,10 +1,8 @@
-FROM apache/airflow:3.0.2-python3.12
+FROM apache/airflow:3.0.2
 
 WORKDIR /app
 
-# Install minimal system dependencies
-# RUN sudo apt-get update && sudo apt-get install -y git build-essential && rm -rf /var/lib/apt/lists/*
-USER airflow
+
 # Copy Python requirements
 COPY requirements.txt .
 
