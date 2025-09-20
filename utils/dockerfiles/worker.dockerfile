@@ -7,9 +7,9 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir  -r requirements.txt
 
 # Install Playwright and its Python package
-RUN pip install playwright
+RUN pip install --no-cache-dir  playwright
 RUN playwright install
