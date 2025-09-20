@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install minimal system dependencies
 # RUN sudo apt-get update && sudo apt-get install -y git build-essential && rm -rf /var/lib/apt/lists/*
-USER root
+USER airflow
 # Copy Python requirements
 COPY requirements.txt .
 
