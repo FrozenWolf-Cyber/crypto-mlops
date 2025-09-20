@@ -15,5 +15,3 @@ RUN pip install -r requirements.txt
 # Install Playwright and its Python package
 RUN pip install playwright
 RUN playwright install
-
-CMD ["bash"]
