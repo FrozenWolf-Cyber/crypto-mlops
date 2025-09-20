@@ -13,3 +13,4 @@ RUN pip install --no-cache-dir  -r requirements.txt
 # Install Playwright and its Python package
 RUN pip install --no-cache-dir  playwright
 RUN playwright install
+RUN pip install --no-cache-dir "apache-airflow==${AIRFLOW_VERSION}"
