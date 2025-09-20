@@ -1,9 +1,5 @@
 executor: LocalExecutor
 
-image:
-  repository: frozenwolf2003/mlops-airflow
-  tag: latest           # specify the tag you pushed
-
 
 env:
   - name: AIRFLOW__CORE__DAGS_FOLDER
@@ -11,6 +7,11 @@ env:
   - name: PYTHONPATH
     value: /opt/airflow/dags/repo
 airflow:
+  image:
+    repository: frozenwolf2003/mlops-airflow
+    tag: latest           # specify the tag you pushed
+
+
   config:
     AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags/repo/dags/
   env:
