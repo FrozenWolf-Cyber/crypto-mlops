@@ -1,7 +1,7 @@
 executor: LocalExecutor
 
 image:
-  repository: frozenwolf2003/mlops-airflow]
+  repository: frozenwolf2003/mlops-airflow
   tag: latest           # specify the tag you pushed
 
 
