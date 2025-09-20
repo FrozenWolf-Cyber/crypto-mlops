@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM apache/airflow:3.0.2-python3.12
 
 WORKDIR /app
 
