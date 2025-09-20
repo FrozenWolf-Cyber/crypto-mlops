@@ -6,7 +6,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y git build-essential && rm -rf /var/lib/apt/lists/*
 
 # Copy Python requirements
-COPY ../../requirements.txt .
+COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --upgrade pip
