@@ -40,21 +40,6 @@ airflow:
           key: MLFLOW_ADMIN_PASSWORD
 
 # Ensure DAG processor, scheduler, triggerer all use your image
-dagProcessor:
-  image:
-    repository: frozenwolf2003/mlops-airflow
-    tag: latest
-
-scheduler:
-  image:
-    repository: frozenwolf2003/mlops-airflow
-    tag: latest
-
-triggerer:
-  image:
-    repository: frozenwolf2003/mlops-airflow
-    tag: latest
-
 # DAGs
 dags:
   gitSync:
