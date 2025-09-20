@@ -55,15 +55,44 @@
 
 
 
+
+import sys
+from pathlib import Path
+
+# ---------------------------
+# Optional: for local testing
+# ---------------------------
+# Add project root to sys.path so utils.utils can be imported
+project_root = Path(__file__).resolve().parents[1]  # mlops/
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+
+
+import os
+import sys
+
+def airflow_execution_info():
+    print("===== AIRFLOW EXECUTION INFO =====")
+    print(f"__file__          : {__file__}")          # Path to this DAG file
+    print(f"__name__          : {__name__}")          # Module name
+    print(f"Current working dir: {os.getcwd()}")     # cwd at execution
+    print(f"sys.path:")                              
+    for p in sys.path:                              
+        print(f"  {p}")
+    print("=================================")
+
+airflow_execution_info()
+
 from airflow import DAG
 from airflow.providers.standard.operators.python import PythonOperator, BranchPythonOperator
 from airflow.providers.standard.operators.bash import BashOperator
 from airflow.utils.trigger_rule import TriggerRule
-import sys, os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-from utils.vast_ai_train import create_instance
-from database.status_db import status_db
-from database.airflow_db import db
+import sys
+import os
+from utils.utils.vast_ai_train import create_instance
+from utils.database.status_db import status_db
+from utils.database.airflow_db import db
 from datetime import timedelta
 import time
 from airflow.utils.timezone import datetime
