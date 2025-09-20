@@ -1,5 +1,9 @@
 executor: LocalExecutor
 
+image:
+  repository: frozenwolf2003/mlops-airflow]
+  tag: latest           # specify the tag you pushed
+
 
 env:
   - name: AIRFLOW__CORE__DAGS_FOLDER
