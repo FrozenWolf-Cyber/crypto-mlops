@@ -3,13 +3,13 @@ FROM apache/airflow:3.0.6
 WORKDIR /app
 
 # Install system dependencies (jq, curl, etc.)
-USER root
+# USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
     jq curl \
  && rm -rf /var/lib/apt/lists/*
 
 # Back to airflow user
-USER airflow
+# USER airflow
 
 # Copy Python requirements
 COPY requirements.txt .

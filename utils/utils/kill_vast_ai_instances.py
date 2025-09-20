@@ -1,4 +1,5 @@
 import subprocess
+import json
 
 def kill_all_vastai_instances():
     try:
@@ -8,12 +9,9 @@ def kill_all_vastai_instances():
             capture_output=True, text=True, check=True
         )
 
-        # Extract IDs with jq
-        ids = subprocess.run(
-            ["jq", "-r", ".[].id"],
-            input=result.stdout,
-            capture_output=True, text=True, check=True
-        ).stdout.splitlines()
+        # Parse JSON and extract IDs
+        instances = json.loads(result.stdout)
+        ids = [str(inst["id"]) for inst in instances]
 
         if not ids:
             print("No Vast.ai instances running.")
@@ -28,7 +26,7 @@ def kill_all_vastai_instances():
 
     except subprocess.CalledProcessError as e:
         print("Error:", e.stderr)
-
-
+    except json.JSONDecodeError as e:
+        print("Failed to parse JSON from Vast.ai:", e)
 
 kill_all_vastai_instances()
