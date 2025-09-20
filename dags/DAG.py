@@ -61,7 +61,7 @@ from airflow.providers.standard.operators.bash import BashOperator
 from airflow.utils.trigger_rule import TriggerRule
 import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-
+from utils.vast_ai_train import create_instance
 from database.status_db import status_db
 from database.airflow_db import db
 from datetime import timedelta
@@ -76,10 +76,14 @@ start_date = datetime(2025, 9, 1)
 
 def log_start(context):
     ti: TaskInstance = context['ti']
+    task_id = ti.task_id
+    model_name = "N/A"
+    if task_id.startswith("train_"):
+        model_name = task_id.replace("train_", "")
     status_db.log_event(
         dag_name=ti.dag_id,
         task_name=ti.task_id,
-        model_name=ti.xcom_pull(task_ids='get_model_name') or "N/A",  # optional
+        model_name=model_name,  # optional
         run_id=ti.run_id,
         event_type="START",
         status="RUNNING",
@@ -88,10 +92,14 @@ def log_start(context):
 
 def log_success(context):
     ti: TaskInstance = context['ti']
+    task_id = ti.task_id
+    model_name = "N/A"
+    if task_id.startswith("train_"):
+        model_name = task_id.replace("train_", "")
     status_db.log_event(
         dag_name=ti.dag_id,
         task_name=ti.task_id,
-        model_name="N/A",
+        model_name=model_name,  # optional
         run_id=ti.run_id,
         event_type="COMPLETE",
         status="SUCCESS",
@@ -100,10 +108,14 @@ def log_success(context):
 
 def log_failure(context):
     ti: TaskInstance = context['ti']
+    task_id = ti.task_id
+    model_name = "N/A"
+    if task_id.startswith("train_"):
+        model_name = task_id.replace("train_", "")
     status_db.log_event(
         dag_name=ti.dag_id,
         task_name=ti.task_id,
-        model_name="N/A",
+        model_name=model_name,  # optional
         run_id=ti.run_id,
         event_type="COMPLETE",
         status="FAILED",
@@ -165,12 +177,21 @@ def create_dag1():
                 on_failure_callback=log_failure,
         )
 
-        train_models = BashOperator(
+        # train_models = BashOperator(
+        #     task_id='vast_ai_train',
+        #     bash_command='python -m utils.vast_ai_train',
+        #         on_execute_callback=log_start,
+        #         on_success_callback=log_success,
+        #         on_failure_callback=log_failure,
+        # )
+        
+        train_models = PythonOperator(
             task_id='vast_ai_train',
-            bash_command='python -m utils.vast_ai_train',
+            python_callable=create_instance,
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
                 on_failure_callback=log_failure,
+            
         )
 
         # List of models created
@@ -196,7 +217,7 @@ def create_dag1():
                 task_id=f"monitor_{model}",
                 python_callable=monitor_model_state,
                 op_kwargs={"model_name": model},
-                retries=100,          # how many times to retry
+                retries=0,          # how many times to retry
                 retry_delay=timedelta(minutes=1),  # wait between retries
                 provide_context=True
             )
@@ -207,7 +228,7 @@ def create_dag1():
                     task_id=f"post_train_{model}",
                     bash_command=f"python -m utils.post_train_reconcile --crypto {crypto} --model {model_type}",
                     trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
-                    retries=100,
+                    retries=0,
                     retry_delay=timedelta(minutes=1),
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
@@ -218,7 +239,7 @@ def create_dag1():
                     task_id="post_train_trl",
                     bash_command="python -m utils.post_train_trl",
                     trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
-                    retries=100,
+                    retries=0,
                     retry_delay=timedelta(minutes=1),
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
