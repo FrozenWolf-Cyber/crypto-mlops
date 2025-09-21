@@ -4,9 +4,9 @@ WORKDIR /app
 
 # Install system dependencies (jq, curl, etc.)
 # USER root
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    jq curl \
- && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && apt-get install -y --no-install-recommends \
+#     jq curl \
+#  && rm -rf /var/lib/apt/lists/*
 
 # Back to airflow user
 # USER airflow
