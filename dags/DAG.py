@@ -248,7 +248,6 @@ def create_dag1():
                 op_kwargs={"model_name": model},
                 retries=0,          # how many times to retry
                 retry_delay=timedelta(minutes=1),  # wait between retries
-                provide_context=True
             )
 
             if model != "trl_model":
