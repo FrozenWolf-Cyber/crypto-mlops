@@ -208,14 +208,14 @@ def download_s3_dataset(coin, trl_model=False):
     
     coins = ["BTCUSDT"] if trl_model else [coin]
     if trl_model:
-        article_path = f"/data/articles/articles.csv" 
+        article_path = f"./data/articles/articles.csv" 
         s3_manager.download_df(article_path, bucket='mlops', key=f'articles/articles.parquet')
         
     for coin in coins:
-        price_test_path = f"/data/prices/{coin}_test.csv"
+        price_test_path = f"./data/prices/{coin}_test.csv"
         s3_manager.download_df(price_test_path, bucket='mlops', key=f'prices/{coin}_test.parquet')
     
-        prices_path = f"/data/prices/{coin}.csv"
+        prices_path = f"./data/prices/{coin}.csv"
         s3_manager.download_df(prices_path, bucket='mlops', key=f'prices/{coin}.parquet')
         
             

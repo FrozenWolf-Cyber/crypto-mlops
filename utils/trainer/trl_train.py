@@ -104,11 +104,11 @@ def main(args):
     coins = ["BTCUSDT"]
     ds_combined = []
     normalizer = 0
-    df_combined = pd.read_csv(f"/data/articles/articles.csv")
+    df_combined = pd.read_csv(f"./data/articles/articles.csv")
     df_combined = df_combined.drop_duplicates(subset=['link'])
     price_changes = []
     for coin in coins:
-        df_prices = pd.read_csv(f"/data/prices/{coin}.csv")
+        df_prices = pd.read_csv(f"./data/prices/{coin}.csv")
         df_news = annotate_news(df_prices, df_combined.copy(), window_hours=args.window_hours, threshold=args.threshold)
         price_changes.append(df_news['price_change'].tolist())
         # ds = NewsDataset(df_news)

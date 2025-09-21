@@ -86,7 +86,7 @@ def main(args):
 
     download_s3_dataset(coin, trl_model=False)
 
-    df_train = pd.read_csv(f"/data/prices/{coin}.csv")
+    df_train = pd.read_csv(f"./data/prices/{coin}.csv")
     df_train = df_train[-args.trainset_size:]
     X_seq, y_seq = preprocess_sequences(df_train, seq_len=seq_len, threshold=thresh)
     val_size = int(0.2 * len(X_seq))
@@ -173,14 +173,14 @@ def main(args):
         # -------------------------
         # Test evaluation
         # -------------------------
-        X_test_seq, y_test_seq = preprocess_sequences(pd.read_csv(f"/data/prices/{coin}_test.csv"), seq_len=seq_len, threshold=thresh)
+        X_test_seq, y_test_seq = preprocess_sequences(pd.read_csv(f"./data/prices/{coin}_test.csv"), seq_len=seq_len, threshold=thresh)
         test_loader = DataLoader(TensorDataset(X_test_seq, y_test_seq), batch_size=batch_size)
         test_report = log_metrics(model, test_loader, name="test")
 
         # -------------------------
         # Save model
         # -------------------------
-        df_train = pd.read_csv(f"/data/prices/{coin}.csv")
+        df_train = pd.read_csv(f"./data/prices/{coin}.csv")
         X_seq, y_seq = preprocess_sequences(df_train, seq_len=seq_len, threshold=thresh, return_first=True)
         dataloader = DataLoader(TensorDataset(X_seq, y_seq), batch_size=batch_size, shuffle=False)
         log_metrics(model, dataloader, name="past_perf")

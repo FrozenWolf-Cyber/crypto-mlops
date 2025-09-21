@@ -13,9 +13,13 @@ def create_dir(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
-create_dir("/data/predictions")
-create_dir("/data/prices")
-create_dir("/data/articles")
+### PRINT CURRENT PATH AND FROM WHERE IT IS RUNNING
+print(f"Current working directory: {os.getcwd()}")
+print(f"Script directory: {os.path.dirname(os.path.abspath(__file__))}")
+
+create_dir("./data/predictions")
+create_dir("./data/prices")
+create_dir("./data/articles")
 
 
 class S3Manager:
@@ -114,12 +118,12 @@ class S3Manager:
     
     def download_available_predictions(self, coin, model_name):
         existing_versions = self.get_existing_versions(coin, model_name)
-        create_dir(f"/data/predictions/{coin}")
-        create_dir(f"/data/predictions/{coin}/{model_name}")
+        create_dir(f"./data/predictions/{coin}")
+        create_dir(f"./data/predictions/{coin}/{model_name}")
         
         print(f"Existing versions for {coin}: {existing_versions}")
         for v in existing_versions:
-            local_file = f"/data/predictions/{coin}/{model_name}/v{v.split('/')[-1].split('.')[0][1:]}.csv"
+            local_file = f"./data/predictions/{coin}/{model_name}/v{v.split('/')[-1].split('.')[0][1:]}.csv"
             if not os.path.exists(local_file):
                 self.download_df(local_file=local_file, bucket='mlops', key=v)
                 print(f"Downloaded {v} to {local_file}")
@@ -137,7 +141,7 @@ class S3Manager:
         print(f"Chosen version for download: {chosen_version}")
         ### Delete local file if exists
         if chosen_version is not None:
-            local_file = f"/data/predictions/{coin}/{model_name}/v{chosen_version.split('/')[-1].split('.')[0][1:]}.csv"
+            local_file = f"./data/predictions/{coin}/{model_name}/v{chosen_version.split('/')[-1].split('.')[0][1:]}.csv"
             if os.path.exists(local_file):
                 os.remove(local_file)
                 print(f"Deleted existing local file: {local_file}")
@@ -148,7 +152,7 @@ class S3Manager:
         if upload_s3:
             print("Updating previous version predictions from local csv files to s3") ## backup
             for v in existing_versions[:-1]:
-                local_file = f"/data/predictions/{coin}/{model_name}/v{v.split('/')[-1].split('.')[0][1:]}.csv"
+                local_file = f"./data/predictions/{coin}/{model_name}/v{v.split('/')[-1].split('.')[0][1:]}.csv"
                 if os.path.exists(local_file):
                     df = pd.read_csv(local_file)
                     self.upload_df(df, bucket='mlops', key=v)
@@ -256,14 +260,14 @@ if __name__ == "__main__":
   )
 
     coins = ["BTCUSDT"]
-    article_path = f"/data/articles/articles.csv"   
+    article_path = f"./data/articles/articles.csv"   
     s3_manager.upload_df(article_path, bucket='mlops', key=f'articles/articles.parquet')
     s3_manager.download_df(article_path, bucket='mlops', key=f'articles/articles.parquet')
         
     for coin in coins:
             
-        prices_path = f"/data/prices/{coin}.csv"
-        price_test_path = f"/data/prices/{coin}_test.csv"
+        prices_path = f"./data/prices/{coin}.csv"
+        price_test_path = f"./data/prices/{coin}_test.csv"
         
         
         s3_manager.upload_df(prices_path, bucket='mlops', key=f'prices/{coin}.parquet')

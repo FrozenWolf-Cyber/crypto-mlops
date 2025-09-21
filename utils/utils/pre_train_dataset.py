@@ -4,7 +4,7 @@ manager = S3Manager()
 import subprocess
 from ..producer_consumer.consumer_utils import state_checker, state_write, delete_state, STATE_DIR
 from ..trainer.train_utils import download_s3_dataset
-0/0
+
 
 download_s3_dataset("BTCUSDT", trl_model=True)
 
@@ -13,7 +13,7 @@ manager = S3Manager()
 RETENTION_MIN = 60*24*365  # 1 year
 TEST_RETENTION_MIN = 60*24*30  # 90 days
 state_write("ALL", "producer", "main", "delete")
-data_path = "/data/prices"
+data_path = "./data/prices"
 
 cryptos = ["BTCUSDT"]
 
@@ -53,7 +53,7 @@ for coin in cryptos:
     manager.upload_df(f"{data_path}/{coin}_test.csv", bucket='mlops', key=f'prices/{coin}_test.parquet')
     
 
-articles=f"/data/articles/articles.csv"
+articles=f"./data/articles/articles.csv"
 manager.upload_df(articles, bucket='mlops', key='articles/articles.parquet')
 
 
