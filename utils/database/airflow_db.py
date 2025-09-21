@@ -46,7 +46,7 @@ class BatchStatusDB:
         """Insert initial rows with PENDING state."""
         with self.engine.begin() as conn:
             for model in ["lightgbm", "tst"]:
-                for coin in ["BTCUSDT", "ETHUSDT"]:
+                for coin in ["BTCUSDT"]:
                     conn.execute(
                         text("""
                         INSERT INTO batch_status (model, coin, state)
@@ -103,7 +103,7 @@ db = BatchStatusDB(AIRFLOW_DB)
 #
 # --- In Airflow DAG start (reset + init jobs) ---
 # db.flush()
-# db.init_entries(models=["tst", "lightgbm", "trl"], coins=["BTCUSDT", "ETHUSDT"])
+# db.init_entries(models=["tst", "lightgbm", "trl"], coins=["BTCUSDT"])
 #
 # --- In training script ---
 # db.set_state("tst", "BTCUSDT", "RUNNING")

@@ -162,7 +162,7 @@ def create_instance(DEBUG=False):
             "pip install wandb && "
             "wandb login 283c41dda88b658ba85c2d8ee7d37230f3341d8c && "
             "cd crypto-mlops/dags && "
-            "python -m trainer.train_paralelly"
+            "python -m ..trainer.train_paralelly"
         )
 
         cmd = [

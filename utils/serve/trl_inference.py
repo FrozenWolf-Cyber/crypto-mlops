@@ -1,12 +1,12 @@
 import argparse
 import json
 import pandas as pd
-from database.db import crypto_db
+from ..database.db import crypto_db
 from tokenizers import Tokenizer
 import numpy as np
 import onnxruntime as ort
 from tqdm import tqdm
-from trainer.train_utils import annotate_news
+from ..trainer.train_utils import annotate_news
 
 
 def get_label(price_change, threshold):

@@ -1,10 +1,10 @@
 import os
-from artifact_control.s3_manager import S3Manager
+from ..artifact_control.s3_manager import S3Manager
 manager = S3Manager()
 import subprocess
-from producer_consumer.consumer_utils import state_checker, state_write, delete_state, STATE_DIR
-from trainer.train_utils import download_s3_dataset
-
+from ..producer_consumer.consumer_utils import state_checker, state_write, delete_state, STATE_DIR
+from ..trainer.train_utils import download_s3_dataset
+0/0
 
 download_s3_dataset("BTCUSDT", trl_model=True)
 
@@ -15,7 +15,7 @@ TEST_RETENTION_MIN = 60*24*30  # 90 days
 state_write("ALL", "producer", "main", "delete")
 data_path = "/data/prices"
 
-cryptos = ["BTCUSDT", "ETHUSDT"]
+cryptos = ["BTCUSDT"]
 
 def create_producer(crypto: str, model: str, version: str):
     if os.path.exists(os.path.join(STATE_DIR, f"{crypto}_{model}_{version}.json")):

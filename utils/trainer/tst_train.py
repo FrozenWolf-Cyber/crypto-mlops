@@ -9,9 +9,9 @@ from sklearn.metrics import classification_report
 import mlflow
 from tqdm import tqdm
 from .train_utils import load_start_time, download_s3_dataset, convert_to_onnx, log_classification_metrics, preprocess_sequences
-from artifact_control.model_manager import ModelManager
-from artifact_control.s3_manager import S3Manager
-from database.airflow_db import db
+from ..artifact_control.model_manager import ModelManager
+from ..artifact_control.s3_manager import S3Manager
+from ..database.airflow_db import db
 import wandb
 import time
 # -------------------------

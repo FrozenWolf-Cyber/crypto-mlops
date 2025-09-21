@@ -1,4 +1,4 @@
-from artifact_control.model_manager import ModelManager
+from ..artifact_control.model_manager import ModelManager
 import os
 from transformers.onnx import FeaturesManager
 from pathlib import Path

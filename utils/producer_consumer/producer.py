@@ -5,12 +5,12 @@ import pandas as pd
 from datetime import datetime
 from quixstreams import Application
 from tqdm import tqdm
-from database.db import crypto_db
-from consumer_utils import state_write, state_checker, delete_state
+from ..database.db import crypto_db
+from .consumer_utils import state_write, state_checker, delete_state
 BASE_URL = "https://api.binance.com/api/v3/klines"
 # Configuration
 KAFKA_BROKER = "localhost:9092"
-SYMBOLS = ["BTCUSDT", "ETHUSDT"]
+SYMBOLS = ["BTCUSDT"]
 INTERVAL = "1m"
 
 # Create Quix application

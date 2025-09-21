@@ -13,9 +13,9 @@ from peft import LoraConfig, get_peft_model
 import mlflow
 from .train_utils import annotate_news
 from tqdm import tqdm
-from artifact_control.model_manager import ModelManager
+from ..artifact_control.model_manager import ModelManager
 from .train_utils import load_start_time, download_s3_dataset, log_classification_metrics
-from artifact_control.s3_manager import S3Manager
+from ..artifact_control.s3_manager import S3Manager
 import time
 import wandb
 # ----------------------------
@@ -79,7 +79,7 @@ def get_predictions(policy, tokenizer, dataloader, device):
 # Main script
 # ----------------------------
 from torch.utils.data import DataLoader
-from database.airflow_db import db
+from ..database.airflow_db import db
 # ----------------------------
 # Main script (DataLoader version)
 # ----------------------------

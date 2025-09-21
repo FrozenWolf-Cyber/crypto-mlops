@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Body
-from artifact_control.model_manager import ModelManager
+from ..artifact_control.model_manager import ModelManager
 from prometheus_fastapi_instrumentator import Instrumentator
 import mlflow.pyfunc
 import logging
@@ -23,7 +23,7 @@ def load_production_models():
     global models
     models = {}
     log_model = {}
-    for coin in ["BTCUSDT", "ETHUSDT"]:
+    for coin in ["BTCUSDT"]:
         for name in ["lightgbm", "tst"]:
             name = f"{coin.lower()}_{name}"
 
