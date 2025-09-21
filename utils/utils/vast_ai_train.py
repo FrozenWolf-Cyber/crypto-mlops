@@ -72,13 +72,15 @@ def wait_for_pod(instance_id: str, timeout: int = 600) -> bool:
 
         if result.returncode != 0:
             print("Error checking instance:", result.stderr)
+            kill_all_vastai_instances()
             return False
 
         try:
             data = json.loads(result.stdout)
         except json.JSONDecodeError:
             print("Failed to parse JSON:", result.stdout)
-            return False
+            time.sleep(30)
+            continue
 
         print("Number of instances:", len(data))
         instance = None
@@ -91,7 +93,8 @@ def wait_for_pod(instance_id: str, timeout: int = 600) -> bool:
 
         if not instance:
             print(f"Instance {instance_id} not found")
-            return False
+            time.sleep(30)
+            continue
 
         state = instance.get("actual_status")
         print(f"Instance {instance_id} is {state}")
