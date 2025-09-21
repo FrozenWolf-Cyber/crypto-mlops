@@ -102,7 +102,7 @@ from airflow.models import TaskInstance
 from datetime import timedelta
 
 start_date = datetime(2025, 9, 1) 
-start_date_earlier = datetime(2023, 1, 1),
+start_date_earlier = datetime(2023, 1, 1)
 
 def log_start(context):
     ti: TaskInstance = context['ti']
