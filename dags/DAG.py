@@ -308,7 +308,7 @@ dag1 = create_dag1()
 def create_dag_initial():
     with DAG(
         'consumer_start',
-        schedule_interval='@once',  # Runs exactly once
+        schedule='@once',  # Runs exactly once
         start_date=start_date_earlier,
         catchup=False,
         max_active_runs=1
