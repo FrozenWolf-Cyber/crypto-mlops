@@ -30,7 +30,15 @@ def create_consumer(crypto: str, model: str, version: str):
     f"--crypto {crypto} --model {model} --version {version}"
     ]
     print("[CREATE] Launching:", " ".join(cmd))
-    subprocess.Popen(cmd)
+    subprocess.Popen(
+    cmd,
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
+    stdin=subprocess.DEVNULL,
+    close_fds=True,
+    start_new_session=True
+)
+
 
 procs = []
 for crypto in cryptos:

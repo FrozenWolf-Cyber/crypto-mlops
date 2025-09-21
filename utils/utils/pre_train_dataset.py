@@ -26,7 +26,14 @@ def create_producer(crypto: str, model: str, version: str):
 
     cmd = ["bash", "-c", "PYTHONPATH=..:$PYTHONPATH python -m utils.producer_consumer.producer"]
     print("[CREATE] Launching:", " ".join(cmd))
-    subprocess.Popen(cmd)
+    subprocess.Popen(
+    cmd,
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
+    stdin=subprocess.DEVNULL,
+    close_fds=True,
+    start_new_session=True
+)
 
 import pandas as pd
 
