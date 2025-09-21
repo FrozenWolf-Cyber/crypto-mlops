@@ -19,9 +19,12 @@ RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir  -r requirements.txt
 
 # Install Playwright and its Python package
-RUN pip install --no-cache-dir  playwright
-RUN playwright install
+# Install Playwright and its browsers
+RUN pip install --no-cache-dir playwright
 USER root
+RUN playwright install
+RUN sudo playwright install-deps
+
 # Install system dependencies required by Playwright
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget curl gnupg ca-certificates \
@@ -32,15 +35,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxrender1 libxinerama1 libharfbuzz0b libfribidi0 \
     && rm -rf /var/lib/apt/lists/*
 
+
+USER airflow
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright and its browsers
-RUN pip install --no-cache-dir playwright
-RUN playwright install
-RUN sudo playwright install-deps
 
-USER airflow
 RUN pip install --no-cache-dir "apache-airflow==${AIRFLOW_VERSION}"
