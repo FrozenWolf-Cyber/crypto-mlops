@@ -11,8 +11,8 @@ COPY fastapi_requirements.txt .
 RUN pip install --no-cache-dir -r fastapi_requirements.txt
 
 # Copy code
-COPY fastapi_app.py .
-COPY model_manager.py .
+COPY ../serve/fastapi_app.py .
+COPY ../artifact_control .
 
 EXPOSE 8000
 
