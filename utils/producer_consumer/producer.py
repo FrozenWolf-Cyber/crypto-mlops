@@ -9,7 +9,7 @@ from ..database.db import crypto_db
 from .consumer_utils import state_write, state_checker, delete_state
 BASE_URL = "https://api.binance.com/api/v3/klines"
 # Configuration
-KAFKA_BROKER = "localhost:9092"
+KAFKA_BROKER = f"{os.environ['KAFKA_HOST']}:9092"
 SYMBOLS = ["BTCUSDT"]
 INTERVAL = "1m"
 
