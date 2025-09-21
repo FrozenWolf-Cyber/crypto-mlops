@@ -158,10 +158,11 @@ class CryptoBatchDB:
         """Delete events older than N days (default 1 year)."""
         query = text("""
             DELETE FROM crypto_batch_events
-            WHERE created_at < NOW() - INTERVAL :days || ' days';
+            WHERE created_at < NOW() - :interval::interval;
         """)
         with self.engine.begin() as conn:
-            conn.execute(query, {"days": days})
+            conn.execute(query, {"interval": f"{days} days"})
+
 
 import os
 db_url = os.getenv("STATUS_DB")
