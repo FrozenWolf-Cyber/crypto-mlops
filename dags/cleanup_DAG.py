@@ -32,7 +32,7 @@ from airflow import DAG
 from airflow.providers.standard.operators.python import PythonOperator
 import sys
 import os
-from utils.database.status_db import status_db
+from utils...database.status_db import status_db
 from airflow.utils.timezone import datetime
 from airflow.models import TaskInstance
 
