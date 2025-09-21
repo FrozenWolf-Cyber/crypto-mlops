@@ -5,9 +5,9 @@ import os
 import pickle
 from pathlib import Path
 
-key = os.getenv("VAST_API_KEY")
+key = os.getenv("VASTAI_API_KEY")
 if not key:
-    raise ValueError("VAST_API_KEY environment variable not set.")
+    raise ValueError("VASTAI_API_KEY environment variable not set.")
 
 subprocess.run(["vastai", "set", "api-key", key], check=True)
 print("Vast.ai API key set successfully: ", key[:4] + "****")
