@@ -8,11 +8,7 @@ env:
   - name: TEST_ENV
     value: "GOKULADETHYA"
 
-extraEnvFrom:
-  - secretRef:
-      name: platform-secrets
-
-extraEnv:  
+extraEnv: |
   - name: KAFKA_HOST
     valueFrom:
       fieldRef:
@@ -29,6 +25,11 @@ extraEnv:
       secretKeyRef:
         name: platform-secrets
         key: MLFLOW_ADMIN_PASSWORD
+
+extraEnvFrom: |
+  - secretRef:
+      name: platform-secrets
+
 
 # Use your custom image everywhere
 airflow:
