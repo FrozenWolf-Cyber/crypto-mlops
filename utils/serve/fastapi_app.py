@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Body
-from artifact_control.model_manager import ModelManager
+from model_manager import ModelManager
 from prometheus_fastapi_instrumentator import Instrumentator
 import mlflow.pyfunc
 import logging
