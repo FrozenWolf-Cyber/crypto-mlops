@@ -1,4 +1,4 @@
-FROM apache/airflow:3.0.6
+FROM apache/airflow:3.0.2
 
 WORKDIR /app
 
