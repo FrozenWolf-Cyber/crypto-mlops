@@ -22,24 +22,25 @@ RUN pip install --no-cache-dir  -r requirements.txt
 RUN pip install --no-cache-dir  playwright
 RUN playwright install
 USER root
+# Install system dependencies required by Playwright
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget curl gnupg ca-certificates \
+    libglib2.0-0 libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libatspi2.0-0 \
+    libcups2 libx11-6 libxcomposite1 libxdamage1 libxext6 libxfixes3 libxrandr2 \
+    libgbm1 libpango-1.0-0 libxkbcommon0 libasound2 fonts-liberation libgtk-3-0 \
+    libxshmfence1 libwayland-client0 libwayland-egl1 libdrm2 libexpat1 \
+    libxrender1 libxinerama1 libharfbuzz0b libfribidi0 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install Playwright and its browsers
+RUN pip install --no-cache-dir playwright
+RUN playwright install
 RUN sudo playwright install-deps
-RUN sudo apt-get update && sudo apt-get install -y \
-    libglib2.0-0 \
-    libnspr4 \
-    libnss3 \
-    libdbus-1-3 \
-    libatk1.0-0 \
-    libatspi2.0-0 \
-    libx11-6 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxext6 \
-    libxfixes3 \
-    libxrandr2 \
-    libgbm1 \
-    libxcb1 \
-    libxkbcommon0 \
-    libasound2
 
 USER airflow
 RUN pip install --no-cache-dir "apache-airflow==${AIRFLOW_VERSION}"
