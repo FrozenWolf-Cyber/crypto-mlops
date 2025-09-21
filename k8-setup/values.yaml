@@ -8,27 +8,27 @@ env:
   - name: TEST_ENV
     value: "GOKULADETHYA"
 
-# extraEnvFrom:
-#   - secretRef:
-#       name: platform-secrets
+extraEnvFrom:
+  - secretRef:
+      name: platform-secrets
 
-# extraEnv:  
-#   - name: KAFKA_HOST
-#     valueFrom:
-#       fieldRef:
-#         fieldPath: status.hostIP
-#   - name: MLFLOW_TRACKING_URI
-#     valueFrom:
-#       secretKeyRef:
-#         name: platform-secrets
-#         key: MLFLOW_URI
-#   - name: MLFLOW_TRACKING_USERNAME
-#     value: "admin"
-#   - name: MLFLOW_TRACKING_PASSWORD
-#     valueFrom:
-#       secretKeyRef:
-#         name: platform-secrets
-#         key: MLFLOW_ADMIN_PASSWORD
+extraEnv:  
+  - name: KAFKA_HOST
+    valueFrom:
+      fieldRef:
+        fieldPath: status.hostIP
+  - name: MLFLOW_TRACKING_URI
+    valueFrom:
+      secretKeyRef:
+        name: platform-secrets
+        key: MLFLOW_URI
+  - name: MLFLOW_TRACKING_USERNAME
+    value: "admin"
+  - name: MLFLOW_TRACKING_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: platform-secrets
+        key: MLFLOW_ADMIN_PASSWORD
 
 # Use your custom image everywhere
 airflow:
