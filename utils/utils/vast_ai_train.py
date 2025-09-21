@@ -4,6 +4,15 @@ import time
 import os
 import pickle
 from pathlib import Path
+
+key = os.getenv("VAST_API_KEY")
+if not key:
+    raise ValueError("VAST_API_KEY environment variable not set.")
+
+subprocess.run(["vastai", "set", "api-key", key], check=True)
+print("Vast.ai API key set successfully: ", key[:4] + "****")
+
+
 from .kill_vast_ai_instances import kill_all_vastai_instances
 kill_all_vastai_instances()
 BLACKLIST_FILE = Path("blacklisted_machines.pkl")

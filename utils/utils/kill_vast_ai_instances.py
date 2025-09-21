@@ -1,5 +1,15 @@
 import subprocess
 import json
+import os
+## vastai set api-key
+
+key = os.getenv("VAST_API_KEY")
+if not key:
+    raise ValueError("VAST_API_KEY environment variable not set.")
+
+subprocess.run(["vastai", "set", "api-key", key], check=True)
+print("Vast.ai API key set successfully: ", key[:4] + "****")
+
 
 def kill_all_vastai_instances():
     try:
@@ -9,6 +19,7 @@ def kill_all_vastai_instances():
             capture_output=True, text=True, check=True
         )
 
+        print(result.stdout)  # Debug: print the raw output
         # Parse JSON and extract IDs
         instances = json.loads(result.stdout)
         ids = [str(inst["id"]) for inst in instances]
