@@ -598,5 +598,5 @@ engine = create_engine(
     max_overflow=0,
     pool_pre_ping=True,
 )
-
+print("Connected to database at ", db_url[:20] + "****...")
 crypto_db = CryptoDB(engine, coins)
