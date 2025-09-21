@@ -206,7 +206,7 @@ def download_s3_dataset(coin, trl_model=False):
     s3_manager = S3Manager(
    )
     
-    coins = ["BTCUSDT", "ETHUSDT"] if trl_model else [coin]
+    coins = ["BTCUSDT"] if trl_model else [coin]
     if trl_model:
         article_path = f"/data/articles/articles.csv" 
         s3_manager.download_df(article_path, bucket='mlops', key=f'articles/articles.parquet')

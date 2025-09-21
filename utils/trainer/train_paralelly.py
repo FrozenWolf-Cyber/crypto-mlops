@@ -5,7 +5,7 @@ from .train_utils import save_start_time
 
 save_start_time()
 
-COINS = ["BTCUSDT", "ETHUSDT"]  # your coins list
+coins = ["BTCUSDT"]  # your coins list
 full_path = os.path.dirname(os.path.abspath(__file__))  # repo root
 logs_path = os.path.join(full_path, "logs")
 os.makedirs(logs_path, exist_ok=True)

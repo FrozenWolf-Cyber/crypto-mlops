@@ -101,7 +101,7 @@ def main(args):
     )
 
     # Load data and generate news
-    coins = ["BTCUSDT", "ETHUSDT"]
+    coins = ["BTCUSDT"]
     ds_combined = []
     normalizer = 0
     df_combined = pd.read_csv(f"/data/articles/articles.csv")

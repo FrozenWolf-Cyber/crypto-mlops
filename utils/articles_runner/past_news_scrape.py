@@ -30,7 +30,7 @@ with sync_playwright() as p:
     page.set_default_timeout(60000)              # affects waits/selectors
     page.set_default_navigation_timeout(60000)   # affects navigation
 
-    coins = ["BTCUSDT", "ETHUSDT"]
+    coins = ["BTCUSDT"]
     all_articles = {}
     for coin in tqdm(coins):
         page.goto(f"https://finance.yahoo.com/quote/{coin}/news/", wait_until="domcontentloaded")

@@ -76,7 +76,7 @@ def scrape_post(links, page):
     return articles_scrapped
     
 if __name__ == "__main__":
-    coins = ["BTCUSDT", "ETHUSDT"]
+    coins = ["BTCUSDT"]
 
 
     with sync_playwright() as p:

@@ -60,7 +60,7 @@ def main(args):
 
     print("Loaded config:", config)
 
-    coins = ["BTCUSDT", "ETHUSDT"]
+    coins = ["BTCUSDT"]
 
     df_combined = pd.read_csv(args.articles_path)
     
