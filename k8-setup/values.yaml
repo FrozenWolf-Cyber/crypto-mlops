@@ -31,6 +31,7 @@ extraEnvFrom: |
       name: platform-secrets
 
 
+webserverSecretKeySecretName: my-webserver-secret
 # Use your custom image everywhere
 airflow:
   image:
