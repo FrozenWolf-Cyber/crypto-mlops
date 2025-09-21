@@ -87,7 +87,7 @@ def log_failure(context):
 from airflow.utils.timezone import datetime  # keep this import
 
 def cleanup():
-    status_db.cleanup_old_events(days=365)
+    status_db.cleanup_old_events()
 
 with DAG(
     "cleanup_old_events",

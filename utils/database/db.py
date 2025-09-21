@@ -592,11 +592,12 @@ class CryptoDB:
 # Usage example
 db_url = os.getenv("DATABASE_URL")
 coins = ["BTCUSDT"]
+print("Connecting to database at ", db_url[:20] + "****...")
 engine = create_engine(
     db_url,
     pool_size=3,
     max_overflow=0,
     pool_pre_ping=True,
 )
-print("Connected to database at ", db_url[:20] + "****...")
+print("----------------Connected to database at ", db_url[:20] + "****...")
 crypto_db = CryptoDB(engine, coins)

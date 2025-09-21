@@ -212,4 +212,4 @@ def create_instance(DEBUG=False):
 
     
 if __name__ == "__main__":
-    create_instance(DEBUG=True)  # set DEBUG=False to actually create instance
+    create_instance(DEBUG=False)  # set DEBUG=False to actually create instance

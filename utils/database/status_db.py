@@ -154,15 +154,15 @@ class CryptoBatchDB:
     # ---------------------------
     # Maintenance
     # ---------------------------
-    def cleanup_old_events(self, days: int = 365):
-        """Delete events older than N days (default 1 year)."""
+    def cleanup_old_events(self):
+        """Delete events older than 365 days."""
         query = text("""
             DELETE FROM crypto_batch_events
-            WHERE created_at < NOW() - :interval::interval;
+            WHERE created_at < NOW() - INTERVAL '365 days';
         """)
         with self.engine.begin() as conn:
-            conn.execute(query, {"interval": f"{days} days"})
-
+            conn.execute(query)
+    
 
 import os
 db_url = os.getenv("STATUS_DB")
