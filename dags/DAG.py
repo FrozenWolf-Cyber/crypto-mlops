@@ -187,7 +187,7 @@ def create_dag1():
 
         start_pretrain = BashOperator(
             task_id='pre_train_dataset',
-            bash_command='python -m utils.pre_train_dataset',
+            bash_command='PYTHONPATH=..:$PYTHONPATH python -m utils.utils.pre_train_dataset',
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
                 on_failure_callback=log_failure,
@@ -208,7 +208,7 @@ def create_dag1():
 
         # train_models = BashOperator(
         #     task_id='vast_ai_train',
-        #     bash_command='python -m utils.vast_ai_train',
+        #     bash_command='PYTHONPATH=..:$PYTHONPATH python -m utils.utils.vast_ai_train',
         #         on_execute_callback=log_start,
         #         on_success_callback=log_success,
         #         on_failure_callback=log_failure,
@@ -230,7 +230,7 @@ def create_dag1():
         #     "crypto_3_model_1", "crypto_3_model_2",
         #     "trl_model"
         # ]
-        cryptos = ["BTCUSDT", "ETHUSDT"]
+        cryptos = ["BTCUSDT"]
         models_ = ["lightgbm", "trl"]
         models = ["trl_model"]
         for crypto in cryptos:
@@ -254,7 +254,7 @@ def create_dag1():
                 crypto, model_type = model.split("_", 1)
                 post_tasks[model] = BashOperator(
                     task_id=f"post_train_{model}",
-                    bash_command=f"python -m utils.post_train_reconcile --crypto {crypto} --model {model_type}",
+                    bash_command=f"PYTHONPATH=..:$PYTHONPATH python -m utils.utils.post_train_reconcile --crypto {crypto} --model {model_type}",
                     trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
                     retries=0,
                     retry_delay=timedelta(minutes=1),
@@ -265,7 +265,7 @@ def create_dag1():
             else:
                 post_tasks[model] = BashOperator(
                     task_id="post_train_trl",
-                    bash_command="python -m utils.post_train_trl",
+                    bash_command="PYTHONPATH=..:$PYTHONPATH python -m utils.utils.post_train_trl",
                     trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
                     retries=0,
                     retry_delay=timedelta(minutes=1),
@@ -285,7 +285,7 @@ def create_dag1():
 
         kill_instances = BashOperator(
             task_id="kill_vast_ai_instances",
-            bash_command="python -m utils.kill_vast_ai_instances",
+            bash_command="PYTHONPATH=..:$PYTHONPATH python -m utils.utils.kill_vast_ai_instances",
             trigger_rule=TriggerRule.ALL_DONE,
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
