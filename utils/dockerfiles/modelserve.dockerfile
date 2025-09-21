@@ -12,6 +12,7 @@ RUN pip install --no-cache-dir -r fastapi_requirements.txt
 
 # Copy code
 COPY ../serve/fastapi_app.py .
+COPY ../serve/trl_inference.py .
 COPY ../artifact_control/model_manager.py .
 
 EXPOSE 8000
