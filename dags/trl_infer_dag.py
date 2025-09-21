@@ -92,7 +92,7 @@ def log_failure(context):
 # =========================
 with DAG(
     'trl_inference_pipeline',
-    schedule_interval='*/30 * * * *',  # Every 30 mins
+    schedule='*/30 * * * *',  # Every 30 mins
     start_date=start_date,
     catchup=False,
     max_active_runs=1

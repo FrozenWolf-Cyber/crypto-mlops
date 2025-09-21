@@ -84,13 +84,14 @@ def log_failure(context):
         message=str(context.get("exception"))
     )
 
-import datetime
+from airflow.utils.timezone import datetime  # keep this import
+
 def cleanup():
     status_db.cleanup_old_events(days=365)
 
 with DAG(
     "cleanup_old_events",
-    schedule_interval="0 0 * * *",  # daily
+    schedule="0 0 * * *",  # daily
     start_date=datetime(2024, 1, 1),
     catchup=False,
 ) as dag:

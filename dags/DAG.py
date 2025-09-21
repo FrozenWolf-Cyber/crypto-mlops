@@ -179,7 +179,7 @@ def monitor_model_state(model_name, **context):
 def create_dag1():
     with DAG(
         'training_pipeline',
-        schedule_interval='0 0 */3 * *',  # Every 3 days
+        schedule='0 0 */3 * *',  # Every 3 days
         start_date=start_date,
         catchup=False,
         max_active_runs=1

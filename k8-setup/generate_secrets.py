@@ -21,7 +21,8 @@ secret_env_vars = [
    "MLFLOW_PUBLIC_PASSWORD",
    "GF_SECURITY_ADMIN_PASSWORD",
    "MLFLOW_DB",
-   "STATUS_DB"
+   "STATUS_DB",
+   "AIRFLOW_DB"
 ]
 
 secret_name = "platform-secrets"
