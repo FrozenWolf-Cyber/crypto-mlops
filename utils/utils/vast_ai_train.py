@@ -170,8 +170,8 @@ def create_instance(DEBUG=False):
             "git clone https://github.com/FrozenWolf-Cyber/crypto-mlops && "
             "pip install wandb && "
             "wandb login 283c41dda88b658ba85c2d8ee7d37230f3341d8c && "
-            "cd crypto-mlops/dags && "
-            "python -m ..trainer.train_paralelly"
+            "cd crypto-mlops/utils && "
+            "python -m trainer.train_paralelly"
         )
 
         cmd = [

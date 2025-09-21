@@ -102,6 +102,7 @@ from airflow.models import TaskInstance
 from datetime import timedelta
 
 start_date = datetime(2025, 9, 1) 
+start_date_earlier = datetime(2023, 1, 1),
 
 def log_start(context):
     ti: TaskInstance = context['ti']
@@ -304,3 +305,22 @@ def create_dag1():
 dag1 = create_dag1()
 
 
+def create_dag_initial():
+    with DAG(
+        'consumer_start',
+        schedule_interval='@once',  # Runs exactly once
+        start_date=start_date_earlier,
+        catchup=False,
+        max_active_runs=1
+    ) as dag:
+
+        start_pretrain = BashOperator(
+            task_id='consumer_start',
+            bash_command='PYTHONPATH=..:$PYTHONPATH python -m utils.producer_consumer.consumer_start',
+                on_execute_callback=log_start,
+                on_success_callback=log_success,
+                on_failure_callback=log_failure,
+        )
+    return dag
+
+dag_initial = create_dag_initial()

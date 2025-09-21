@@ -5,17 +5,18 @@ from .train_utils import save_start_time
 
 save_start_time()
 
-coins = ["BTCUSDT"]  # your coins list
+COINS = ["BTCUSDT"]  # your coins list
 full_path = os.path.dirname(os.path.abspath(__file__))  # repo root
 logs_path = os.path.join(full_path, "logs")
 os.makedirs(logs_path, exist_ok=True)
 
+print(full_path)
 processes = []
 max_time = 55 * 60
 
 # trl_train
 trl_cmd = [
-    "python", "-m", os.path.join(full_path, "trl_train.py"),
+    "python", "-m",  "utils.trainer.trl_train",
     "--epochs", "20",
     "--batch_size", "12",
     "--max_time", str(max_time)
@@ -29,7 +30,7 @@ with open(os.path.join(logs_path, "trl.log"), "w") as trl_log:
 for coin in COINS:
     # tst_train
     tst_cmd = [
-        "python", "-m", os.path.join(full_path, "tst_train.py"),
+        "python", "-m",  "utils.trainer.tst_train",
         "--coin", coin,
         "--epochs", "30",
         "--batch_size", "96",
@@ -43,7 +44,7 @@ for coin in COINS:
 
     # lgb_train (fixed missing comma)
     lgb_cmd = [
-        "python", "-m", os.path.join(full_path, "lgb_train.py"),
+         "python", "-m",  "utils.trainer.lgb_train",
         "--coin", coin,
         "--epochs", "500",
         "--max_time", str(max_time)

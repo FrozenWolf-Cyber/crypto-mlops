@@ -25,10 +25,9 @@ def create_consumer(crypto: str, model: str, version: str):
     print(f"[CREATE] Preparing consumer for {crypto} {model} {version}")
 
     cmd = [
-        "python", "consumer.py",
-        "--crypto", crypto,
-        "--model", model,
-        "--version", version,
+    "bash", "-c",
+    f"PYTHONPATH=..:$PYTHONPATH python -m utils.producer_consumer.consumer.py"
+    f"--crypto {crypto} --model {model} --version {version}"
     ]
     print("[CREATE] Launching:", " ".join(cmd))
     subprocess.Popen(cmd)

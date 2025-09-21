@@ -100,7 +100,7 @@ with DAG(
 
     past_news_task = BashOperator(
         task_id="past_news_scrape",
-        bash_command="python -m articles_runner.past_news_scrape",
+        bash_command="PYTHONPATH=..:$PYTHONPATH python -m articles_runner.past_news_scrape",
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
                 on_failure_callback=log_failure,
@@ -108,7 +108,7 @@ with DAG(
 
     trl_maker_task = BashOperator(
         task_id="trl_onnx_maker",
-        bash_command="python -m serve.trl_onnx_maker",
+        bash_command="PYTHONPATH=..:$PYTHONPATH python -m serve.trl_onnx_maker",
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
                 on_failure_callback=log_failure,
@@ -116,7 +116,7 @@ with DAG(
 
     trl_inference_task = BashOperator(
         task_id="trl_inference",
-        bash_command="python -m serve.trl_inference",
+        bash_command="PYTHONPATH=..:$PYTHONPATH python -m serve.trl_inference",
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
                 on_failure_callback=log_failure,

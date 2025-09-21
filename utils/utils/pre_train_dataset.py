@@ -24,9 +24,7 @@ def create_producer(crypto: str, model: str, version: str):
     """Download datasets and launch consumer."""
     print(f"[CREATE] Preparing producer for {crypto} {model} {version}")
 
-    cmd = [
-        "python", "producer.py"
-    ]
+    cmd = ["bash", "-c", "PYTHONPATH=..:$PYTHONPATH python -m utils.producer_consumer.producer"]
     print("[CREATE] Launching:", " ".join(cmd))
     subprocess.Popen(cmd)
 
