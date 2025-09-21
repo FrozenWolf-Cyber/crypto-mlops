@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y git build-essential && rm -rf /var/lib/
 WORKDIR /app
 
 # Copy requirements
-COPY fastapi_requirements.txt .
+COPY dockerfiles/fastapi_requirements.txt .
 
 RUN pip install --no-cache-dir -r fastapi_requirements.txt
 
