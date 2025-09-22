@@ -56,16 +56,16 @@ airflow:
 
 # Ensure DAG processor, scheduler, triggerer all use your image
 # DAGs
-# dags:
-#   gitSync:
-#     enabled: true
-#     repo: "https://github.com/FrozenWolf-Cyber/crypto-mlops"
-#     branch: "master"
-#     wait: 60
-#   persistence:
-#     enabled: true
-#     existingClaim: shared-pvc-airflow
-#     accessMode: ReadWriteMany
+dags:
+  gitSync:
+    enabled: true
+    repo: "https://github.com/FrozenWolf-Cyber/crypto-mlops"
+    branch: "master"
+    wait: 60
+  persistence:
+    enabled: true
+    existingClaim: shared-pvc-airflow
+    accessMode: ReadWriteMany
 
 flower:
   enabled: false
