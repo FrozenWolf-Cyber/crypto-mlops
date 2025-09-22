@@ -28,7 +28,7 @@ spec:
   volumeName: shared-pv-airflow
   storageClassName: ""   # ← this is required
 
-
+---
 # PersistentVolume for shared storage
 apiVersion: v1
 kind: PersistentVolume
