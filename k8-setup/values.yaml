@@ -75,13 +75,14 @@ dags:
     repo: "https://github.com/FrozenWolf-Cyber/crypto-mlops"
     branch: "master"
     wait: 60
+    extraVolumeMounts:
+      - name: shared-storage
+        mountPath: /opt/airflow/shared
+
   persistence:
     enabled: true
     existingClaim: shared-pvc
 
-  extraVolumeMounts:
-    - name: shared-storage
-      mountPath: /opt/airflow/shared
 
 flower:
   enabled: false
