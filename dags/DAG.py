@@ -168,13 +168,35 @@ def log_failure(context):
 # DAG 1: Training Pipeline
 # =========================
 def monitor_model_state(model_name, **context):
-    status = db.get_status(model_name)
-    if status == "SUCCESS":
-        return f"post_train_{model_name}"
-    elif status == "FAILED":
-        return "skip_model"
-    else:
-        raise ValueError(f"Model {model_name} not ready yet, still {status}")
+    time_limit = 3700 # 1 hour and 10 minutes
+    start_time = time.time()
+    print(f"Monitoring model: {model_name}")
+    model, coin = tuple(model_name.split("_"))
+    
+    while True:
+        if time.time() - start_time > time_limit:
+            ### If time limit exceeded, return skip_model
+            print(f"Time limit exceeded for model {model_name}. Marking as FAILED.")
+            db.set_state(model, coin, "FAILED")
+            return "skip_model"
+        
+            #         status -> [
+            #     {"model": r[0], "coin": r[1], "state": r[2], "error_message": r[3]}
+            #     for r in rows
+            # ]
+        status = db.get_status()
+        print(f"Current status from DB: {status}")
+        status = next((item for item in status if item["model"] == model and item["coin"] == coin), None)
+        print(f"Monitoring {model_name}, found status entry: {status}")
+        
+        if status == "SUCCESS":
+            return f"post_train_{model_name}"
+        elif status == "FAILED":
+            return "skip_model"
+        else:
+            print(f"Model {model_name} status: {status}. Checking again in 10 seconds...")
+            time.sleep(10)  # Wait for 10 seconds before checking again
+            continue
 
 
 def create_dag1():
