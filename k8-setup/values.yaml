@@ -31,15 +31,10 @@ extraEnvFrom: |
       name: platform-secrets
 
 
-extraVolumeMounts:
-  - name: shared-storage
-    mountPath: /opt/airflow/shared  # path inside container
 extraVolumes:
   - name: shared-storage
     persistentVolumeClaim:
       claimName: shared-pvc
-
-
 
 
 webserverSecretKeySecretName: my-webserver-secret
@@ -55,6 +50,23 @@ airflow:
     - name: PYTHONPATH
       value: /opt/airflow/dags/repo
 
+
+scheduler:
+  extraVolumeMounts:
+    - name: shared-storage
+      mountPath: /opt/airflow/shared
+
+web:
+  extraVolumeMounts:
+    - name: shared-storage
+      mountPath: /opt/airflow/shared
+
+workers:
+  extraVolumeMounts:
+    - name: shared-storage
+      mountPath: /opt/airflow/shared
+
+
 # Ensure DAG processor, scheduler, triggerer all use your image
 # DAGs
 dags:
@@ -66,6 +78,10 @@ dags:
   persistence:
     enabled: true
     existingClaim: shared-pvc
+
+  extraVolumeMounts:
+    - name: shared-storage
+      mountPath: /opt/airflow/shared
 
 flower:
   enabled: false
