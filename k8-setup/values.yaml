@@ -52,6 +52,34 @@ airflow:
       mountPath: /opt/airflow/shared
 
 
+scheduler:
+  extraVolumes:
+    - name: shared-storage
+      persistentVolumeClaim:
+        claimName: shared-pvc-airflow
+  extraVolumeMounts:
+    - name: shared-storage
+      mountPath: /opt/airflow/shared
+
+dagProcessor:
+  extraVolumes:
+    - name: shared-storage
+      persistentVolumeClaim:
+        claimName: shared-pvc-airflow
+  extraVolumeMounts:
+    - name: shared-storage
+      mountPath: /opt/airflow/shared
+
+triggerer:
+  extraVolumes:
+    - name: shared-storage
+      persistentVolumeClaim:
+        claimName: shared-pvc-airflow
+  extraVolumeMounts:
+    - name: shared-storage
+      mountPath: /opt/airflow/shared
+
+
 # scheduler:
 #   extraVolumeMounts:
 #     - name: shared-storage
