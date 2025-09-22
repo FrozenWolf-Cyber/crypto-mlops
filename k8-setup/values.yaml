@@ -8,13 +8,13 @@ env:
   - name: TEST_ENV
     value: "GOKULADETHYA"
 
-# volumeMounts:
-#   - name: airflow-dags
-#     mountPath: /opt/airflow/custom_persistent_shared
-# volumes:
-#   - name: airflow-dags
-#     persistentVolumeClaim:
-#       claimName: shared-pvc-airflow
+volumeMounts:
+  - name: airflow-dags
+    mountPath: /opt/airflow/custom_persistent_shared
+volumes:
+  - name: airflow-dags
+    persistentVolumeClaim:
+      claimName: shared-pvc
 
 extraEnv: |
   - name: KAFKA_HOST
