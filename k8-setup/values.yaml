@@ -65,6 +65,7 @@ dags:
   persistence:
     enabled: true
     existingClaim: shared-pvc-airflow
+    accessMode: ReadWriteMany
 
 flower:
   enabled: false
