@@ -47,23 +47,32 @@ airflow:
     enabled: true
     existingClaim: shared-pvc-airflow
 
+dagProcessor:
+  extraVolumes:
+    - name: shared-storage
+      persistentVolumeClaim:
+        claimName: shared-pvc-airflow
+  extraVolumeMounts:
+    - name: shared-storage
+      mountPath: /opt/airflow/custom_persistent_shared
 
 
-scheduler:
-  persistence:
-    enabled: true
-    existingClaim: shared-pvc-airflow
+
+# scheduler:
+#   persistence:
+#     enabled: true
+#     existingClaim: shared-pvc-airflow
 
 
-triggerer:
-  persistence:
-    enabled: true
-    existingClaim: shared-pvc-airflow
+# triggerer:
+#   persistence:
+#     enabled: true
+#     existingClaim: shared-pvc-airflow
 
-workers:
-  persistence:
-    enabled: true
-    existingClaim: shared-pvc-airflow
+# workers:
+#   persistence:
+#     enabled: true
+#     existingClaim: shared-pvc-airflow
 
 
 
