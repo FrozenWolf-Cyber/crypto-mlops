@@ -6,7 +6,7 @@ __pycache__/
 *.onnx
 trl_onnx_models/
 consumer_states/
-./data/
+/opt/airflow/custom_persistent_shared/data/
 mlruns/
 saved_models/
 state/

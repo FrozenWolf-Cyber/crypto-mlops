@@ -5,7 +5,7 @@ import pandas as pd
 import os
 
 def scrape_post(links, page):
-    df_path = f"./data/articles/articles.csv"
+    df_path = f"/opt/airflow/custom_persistent_shared/data/articles/articles.csv"
     if os.path.exists(df_path):
         df = pd.read_csv(df_path)
     else:

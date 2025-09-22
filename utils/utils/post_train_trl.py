@@ -26,8 +26,8 @@ else:
     print("Reassigning s3 preds")
     manager.reassign_pred_s3("preds", "trl")
     crypto_db.shift_predictions("trl", "trl", from_version=3, to_version=2)
-    os.remove("./data/predictions/preds/trl/v2.csv")
-    os.rename("./data/predictions/preds/trl/v3.csv", "./data/predictions/preds/trl/v2.csv")
+    os.remove("/opt/airflow/custom_persistent_shared/data/predictions/preds/trl/v2.csv")
+    os.rename("/opt/airflow/custom_persistent_shared/data/predictions/preds/trl/v3.csv", "/opt/airflow/custom_persistent_shared/data/predictions/preds/trl/v2.csv")
 
 
 
@@ -37,7 +37,7 @@ print("New existing versions in S3:", existing_versions)
 version = len(existing_versions)
 crypto_db.reset_trl_version(f"{version}")
 
-pred = pd.read_csv(f"./data/predictions/preds/trl/v{version}.csv")
+pred = pd.read_csv(f"/opt/airflow/custom_persistent_shared/data/predictions/preds/trl/v{version}.csv")
 pred['date'] = pd.to_datetime(pred['date']) 
 pred = pred.drop_duplicates(subset=['link'])
 

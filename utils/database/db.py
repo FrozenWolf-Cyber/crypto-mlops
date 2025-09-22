@@ -26,7 +26,7 @@ def normalize_pred(x):
 required_cols = ["open_time", "open", "high", "low", "close", "volume"]
 
 class CryptoDB:
-    def __init__(self, engine, coins, data_path="./data/prices", wanted_columns=None):
+    def __init__(self, engine, coins, data_path="/opt/airflow/custom_persistent_shared/data/prices", wanted_columns=None):
         self.engine = engine
         self.coins = coins
         self.data_path = data_path

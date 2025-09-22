@@ -44,7 +44,7 @@ def build_pipeline(app, crypto, model, version):
     ### do this if the model was already available.
     ### fixed problem when producer already has written into .csv and db but consumer failed to listen
     ### find the all the dates where no predictions are present in the db
-    pred_path = f"./data/predictions/{crypto}/{model}/{version}.csv"
+    pred_path = f"/opt/airflow/custom_persistent_shared/data/predictions/{crypto}/{model}/{version}.csv"
     print(f"[{key}] Assumed prediction path:", pred_path)
     params = {"model_name": f"{crypto.lower()}_{model.lower()}", "version": int(version[1:])-1}
     is_available = requests.post(f"http://fastapi-ml:8000/is_model_available", params=params).json()['available']
@@ -62,7 +62,7 @@ def build_pipeline(app, crypto, model, version):
         
         ### check missing data in csv older than oldest_missing
         df_pred = pd.read_csv(pred_path)
-        df = pd.read_csv(f"./data/prices/{crypto}.csv")
+        df = pd.read_csv(f"/opt/airflow/custom_persistent_shared/data/prices/{crypto}.csv")
         df['open_time'] = pd.to_datetime(df['open_time'], format='%Y-%m-%d %H:%M:%S')
         df = df.sort_values("open_time").reset_index(drop=True)
         df_pred["open_time"] = pd.to_datetime(df_pred["open_time"])
@@ -180,7 +180,7 @@ def build_pipeline(app, crypto, model, version):
             print(f"[{key}] Resuming processing.")
             ### get the minimum of last_csv_open_time and psql_last_time and start from there (ideally psql_last_time which should be equal to last_csv_open_time)
             psql_last_time = pd.to_datetime(crypto_db.get_first_missing_date(crypto.lower(), model.lower(), int(version[1:])))
-            df_full = pd.read_csv(f"./data/prices/{crypto}.csv")
+            df_full = pd.read_csv(f"/opt/airflow/custom_persistent_shared/data/prices/{crypto}.csv")
             df_full["open_time"] = pd.to_datetime(df_full["open_time"])
             
             print(f"[{key}] First missing prediction date from DB:", psql_last_time)

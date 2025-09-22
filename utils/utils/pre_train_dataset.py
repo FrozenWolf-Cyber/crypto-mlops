@@ -26,7 +26,7 @@ if if_state_exists("ALL", "producer", "main"):
 else:
     print("No existing producer state file found.")
     
-data_path = "./data/prices"
+data_path = "/opt/airflow/custom_persistent_shared/data/prices"
 
 cryptos = ["BTCUSDT"]
 
@@ -71,7 +71,7 @@ for coin in cryptos:
     manager.upload_df(f"{data_path}/{coin}_test.csv", bucket='mlops', key=f'prices/{coin}_test.parquet')
     
 
-articles=f"./data/articles/articles.csv"
+articles=f"/opt/airflow/custom_persistent_shared/data/articles/articles.csv"
 manager.upload_df(articles, bucket='mlops', key='articles/articles.parquet')
 
 

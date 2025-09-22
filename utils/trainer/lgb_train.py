@@ -68,9 +68,9 @@ def main(args):
 
     download_s3_dataset(coin, trl_model=False)
 
-    df = pd.read_csv(f"./data/prices/{coin}.csv")
+    df = pd.read_csv(f"/opt/airflow/custom_persistent_shared/data/prices/{coin}.csv")
     df = df[-args.trainset_size:]
-    X_test, y_test = preprocess_crypto(pd.read_csv(f"./data/prices/{coin}_test.csv"), horizon=1, threshold=thresh)
+    X_test, y_test = preprocess_crypto(pd.read_csv(f"/opt/airflow/custom_persistent_shared/data/prices/{coin}_test.csv"), horizon=1, threshold=thresh)
     X, y = preprocess_crypto(df, horizon=1, threshold=thresh, balanced=True)
 
     X_train, X_val, y_train, y_val = train_test_split(
@@ -163,7 +163,7 @@ def main(args):
         mm.set_production(f"{coin.lower()}_lightgbm", keep_latest_n=2)
 
         print("MLflow run completed:", run.info.run_id)
-        df = pd.read_csv(f"./data/prices/{coin}.csv")
+        df = pd.read_csv(f"/opt/airflow/custom_persistent_shared/data/prices/{coin}.csv")
         ### generate predictions for the entire dataset
         X_all, y_all = preprocess_crypto(df, horizon=1, threshold=thresh)
         y_pred_probs = model.predict(X_all, num_iteration=model.best_iteration)
