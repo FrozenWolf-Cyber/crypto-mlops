@@ -8,6 +8,14 @@ env:
   - name: TEST_ENV
     value: "GOKULADETHYA"
 
+volumeMounts:
+  - name: airflow-dags
+    mountPath: /opt/airflow/custom_persistent_shared  # the folder inside the container
+volumes:
+  - name: airflow-dags
+    persistentVolumeClaim:
+      claimName: shared-pvc-airflow
+
 extraEnv: |
   - name: KAFKA_HOST
     valueFrom:
@@ -47,14 +55,14 @@ airflow:
   #   enabled: true
   #   existingClaim: shared-pvc-airflow
 
-dagProcessor:
-  extraVolumes:
-    - name: shared-storage
-      persistentVolumeClaim:
-        claimName: shared-pvc-airflow
-  extraVolumeMounts:
-    - name: shared-storage
-      mountPath: /opt/airflow/custom_persistent_shared
+# dagProcessor:
+#   extraVolumes:
+#     - name: shared-storage
+#       persistentVolumeClaim:
+#         claimName: shared-pvc-airflow
+#   extraVolumeMounts:
+#     - name: shared-storage
+#       mountPath: /opt/airflow/custom_persistent_shared
 
 
 
