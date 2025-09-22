@@ -43,9 +43,9 @@ airflow:
   env:
     - name: PYTHONPATH
       value: /opt/airflow/dags/repo
-  persistence:
-    enabled: true
-    existingClaim: shared-pvc-airflow
+  # persistence:
+  #   enabled: true
+  #   existingClaim: shared-pvc-airflow
 
 dagProcessor:
   extraVolumes:
