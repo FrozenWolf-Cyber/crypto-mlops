@@ -30,10 +30,10 @@ extraEnvFrom: |
   - secretRef:
       name: platform-secrets
 
-extraVolumes:
-  - name: shared-storage
-    persistentVolumeClaim:
-      claimName: shared-pvc
+# extraVolumes:
+#   - name: shared-storage
+#     persistentVolumeClaim:
+#       claimName: shared-pvc
 
 webserverSecretKeySecretName: my-webserver-secret
 # Use your custom image everywhere
@@ -48,20 +48,20 @@ airflow:
     - name: PYTHONPATH
       value: /opt/airflow/dags/repo
 
-scheduler:
-  extraVolumeMounts:
-    - name: shared-storage
-      mountPath: /opt/airflow/shared
+# scheduler:
+#   extraVolumeMounts:
+#     - name: shared-storage
+#       mountPath: /opt/airflow/shared
 
 # web:
 #   extraVolumeMounts:
 #     - name: shared-storage
 #       mountPath: /opt/airflow/shared
 
-workers:
-  extraVolumeMounts:
-    - name: shared-storage
-      mountPath: /opt/airflow/shared
+# workers:
+#   extraVolumeMounts:
+#     - name: shared-storage
+#       mountPath: /opt/airflow/shared
 
 
 
