@@ -31,6 +31,17 @@ extraEnvFrom: |
       name: platform-secrets
 
 
+extraVolumeMounts:
+  - name: shared-storage
+    mountPath: /opt/airflow/shared  # path inside container
+extraVolumes:
+  - name: shared-storage
+    persistentVolumeClaim:
+      claimName: shared-pvc
+
+
+
+
 webserverSecretKeySecretName: my-webserver-secret
 # Use your custom image everywhere
 airflow:
@@ -43,16 +54,6 @@ airflow:
   env:
     - name: PYTHONPATH
       value: /opt/airflow/dags/repo
-
-  extraVolumeMounts:
-    - name: shared-storage
-      mountPath: /opt/airflow/shared  # path inside container
-
-  extraVolumes:
-    - name: shared-storage
-      persistentVolumeClaim:
-        claimName: shared-pvc
-
 
 # Ensure DAG processor, scheduler, triggerer all use your image
 # DAGs
