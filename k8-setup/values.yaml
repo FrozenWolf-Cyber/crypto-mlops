@@ -43,29 +43,16 @@ airflow:
   env:
     - name: PYTHONPATH
       value: /opt/airflow/dags/repo
-  # extraEnvFrom:
-  #   - secretRef:
-  #       name: platform-secrets
-  extraEnv:
-      - name: TEST_ENV
-        value: "GOKULADETHYA"
-  # extraEnv:  
-  #   - name: KAFKA_HOST
-  #     valueFrom:
-  #       fieldRef:
-  #         fieldPath: status.hostIP
-  #   - name: MLFLOW_TRACKING_URI
-  #     valueFrom:
-  #       secretKeyRef:
-  #         name: platform-secrets
-  #         key: MLFLOW_URI
-  #   - name: MLFLOW_TRACKING_USERNAME
-  #     value: "admin"
-  #   - name: MLFLOW_TRACKING_PASSWORD
-  #     valueFrom:
-  #       secretKeyRef:
-  #         name: platform-secrets
-  #         key: MLFLOW_ADMIN_PASSWORD
+
+  extraVolumeMounts:
+    - name: shared-storage
+      mountPath: /opt/airflow/shared  # path inside container
+
+  extraVolumes:
+    - name: shared-storage
+      persistentVolumeClaim:
+        claimName: shared-pvc
+
 
 # Ensure DAG processor, scheduler, triggerer all use your image
 # DAGs
@@ -93,15 +80,3 @@ metrics:
     host: airflow-statsd
     port: 9125
     prefix: airflow
-
-
-
-# ingress:
-#   enabled: true
-#   ingressClassName: nginx
-#   hosts:
-#     - airflow.gokuladethya.uk
-#   tls:
-#     - hosts:
-#         - airflow.gokuladethya.uk
-#       secretName: airflow-tls
