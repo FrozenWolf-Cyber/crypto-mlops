@@ -61,10 +61,10 @@ airflow:
 #     - name: shared-storage
 #       mountPath: /opt/airflow/shared
 
-workers:
-  extraVolumeMounts:
-    - name: shared-storage
-      mountPath: /opt/airflow/shared
+# workers:
+#   extraVolumeMounts:
+#     - name: shared-storage
+#       mountPath: /opt/airflow/shared
 
 
 # Ensure DAG processor, scheduler, triggerer all use your image
