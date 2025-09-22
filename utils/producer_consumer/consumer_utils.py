@@ -48,6 +48,12 @@ def state_checker(crypto: str, model: str, version: str) -> str:
             log.error("Error reading state file %s: %s. Retrying...", state_file, e)
             time.sleep(1)  # backoff before retrying
 
+def if_state_exists(crypto: str, model: str, version: str) -> bool:
+    if os.path.exists(os.path.join(STATE_DIR, f"{crypto}_{model}_{version}.json")):
+        return True
+    return False
+
+
 def delete_state(crypto: str, model: str, version: str):
     """
     Delete the state file for a specific consumer.

@@ -2,7 +2,7 @@ import os
 from ..artifact_control.s3_manager import S3Manager
 manager = S3Manager()
 import subprocess
-from ..producer_consumer.consumer_utils import state_checker, state_write, delete_state, STATE_DIR
+from ..producer_consumer.consumer_utils import state_checker, if_state_exists, state_write, delete_state, STATE_DIR
 from ..trainer.train_utils import download_s3_dataset
 
 
@@ -13,16 +13,18 @@ manager = S3Manager()
 RETENTION_MIN = 60*24*365  # 1 year
 TEST_RETENTION_MIN = 60*24*30  # 90 days
 
+if if_state_exists("ALL", "producer", "main"):
+    print("Existing producer state file found with state:", state_checker("ALL", "producer", "main"))
+    if state_checker("ALL", "producer", "main") == "running":
+        print("Existing producer found, deleting it first...")
+        state_write("ALL", "producer", "main", "delete")
+        while state_checker("ALL", "producer", "main") != "deleted":
+            print("Waiting for existing producer to delete...")
+            time.sleep(1)
 
-if state_checker("ALL", "producer", "main") == "running":
-    print("Existing producer found, deleting it first...")
-    state_write("ALL", "producer", "main", "delete")
-    while state_checker("ALL", "producer", "main") != "deleted":
-        print("Waiting for existing producer to delete...")
-        time.sleep(1)
-        
-    print("Existing producer deleted.")
-    
+        print("Existing producer deleted.")
+else:
+    print("No existing producer state file found.")
     
 data_path = "./data/prices"
 
