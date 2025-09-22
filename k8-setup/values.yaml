@@ -46,7 +46,7 @@ airflow:
   extraVolumes:
     - name: shared-storage
       persistentVolumeClaim:
-        claimName: shared-pvc
+        claimName: shared-pvc-airflow
   extraVolumeMounts:
     - name: shared-storage
       mountPath: /opt/airflow/shared
@@ -59,7 +59,7 @@ scheduler:
   extraVolumes:
     - name: shared-storage
       persistentVolumeClaim:
-          claimName: shared-pvc
+          claimName: shared-pvc-airflow
 
 workers:
   extraVolumeMounts:
@@ -68,7 +68,7 @@ workers:
   extraVolumes:
     - name: shared-storage
       persistentVolumeClaim:
-          claimName: shared-pvc
+          claimName: shared-pvc-airflow
 
 
 
@@ -82,7 +82,7 @@ dags:
     wait: 60
   persistence:
     enabled: true
-    existingClaim: shared-pvc
+    existingClaim: shared-pvc-airflow
 
 flower:
   enabled: false

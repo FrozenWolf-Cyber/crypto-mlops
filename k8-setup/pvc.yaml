@@ -2,6 +2,37 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
+  name: shared-pv-airflow
+spec:
+  capacity:
+    storage: 30Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /mnt/shared-airflow-custom   # make sure this folder exists on VM
+    type: DirectoryOrCreate
+  persistentVolumeReclaimPolicy: Retain
+---
+# PersistentVolumeClaim for shared storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: shared-pvc-airflow
+  namespace: platform
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 30Gi
+  volumeName: shared-pv-airflow
+  storageClassName: ""   # ← this is required
+
+
+# PersistentVolume for shared storage
+apiVersion: v1
+kind: PersistentVolume
+metadata:
   name: shared-pv
 spec:
   capacity:
