@@ -52,23 +52,23 @@ airflow:
       mountPath: /opt/airflow/shared
 
 
-scheduler:
-  extraVolumeMounts:
-    - name: shared-storage
-      mountPath: /opt/airflow/shared
-  extraVolumes:
-    - name: shared-storage
-      persistentVolumeClaim:
-          claimName: shared-pvc-airflow
+# scheduler:
+#   extraVolumeMounts:
+#     - name: shared-storage
+#       mountPath: /opt/airflow/shared
+#   extraVolumes:
+#     - name: shared-storage
+#       persistentVolumeClaim:
+#           claimName: shared-pvc-airflow
 
-workers:
-  extraVolumeMounts:
-    - name: shared-storage
-      mountPath: /opt/airflow/shared
-  extraVolumes:
-    - name: shared-storage
-      persistentVolumeClaim:
-          claimName: shared-pvc-airflow
+# workers:
+#   extraVolumeMounts:
+#     - name: shared-storage
+#       mountPath: /opt/airflow/shared
+#   extraVolumes:
+#     - name: shared-storage
+#       persistentVolumeClaim:
+#           claimName: shared-pvc-airflow
 
 
 
