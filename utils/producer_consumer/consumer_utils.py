@@ -5,7 +5,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-STATE_DIR = "./consumer_states"
+STATE_DIR = "/opt/airflow/custom_persistent_shared/consumer_states"
 
 # Ensure the state directory exists
 os.makedirs(STATE_DIR, exist_ok=True)

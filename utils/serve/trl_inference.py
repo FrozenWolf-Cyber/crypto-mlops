@@ -159,7 +159,7 @@ def main(args):
 
 # if __name__ == "__main__":
 parser = argparse.ArgumentParser(description="Run FinBERT TRL inference pipeline")
-parser.add_argument("--config_path", type=str, default="./trl_onnx_models/trl_onnx_config.json", help="Path to model config JSON")
+parser.add_argument("--config_path", type=str, default="/opt/airflow/custom_persistent_shared/trl_onnx_models/trl_onnx_config.json", help="Path to model config JSON")
 parser.add_argument("--articles_path", type=str, default="/opt/airflow/custom_persistent_shared/data/articles/articles.csv", help="Path to articles CSV")
 parser.add_argument("--pred_dir", type=str, default="/opt/airflow/custom_persistent_shared/data/predictions/preds/trl", help="Directory for saving predictions")
 parser.add_argument("--prices_dir", type=str, default="/opt/airflow/custom_persistent_shared/data/prices", help="Directory with price CSVs")

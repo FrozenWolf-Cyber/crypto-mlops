@@ -15,7 +15,7 @@ print("Vast.ai API key set successfully: ", key[:4] + "****")
 
 from .kill_vast_ai_instances import kill_all_vastai_instances
 kill_all_vastai_instances()
-BLACKLIST_FILE = Path("blacklisted_machines.pkl")
+BLACKLIST_FILE = Path("/opt/airflow/custom_persistent_shared/blacklisted_machines.pkl")
 
 
 def load_blacklist():
