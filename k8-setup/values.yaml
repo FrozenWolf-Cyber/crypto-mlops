@@ -43,13 +43,13 @@ airflow:
   env:
     - name: PYTHONPATH
       value: /opt/airflow/dags/repo
-  extraVolumes:
-    - name: shared-storage
-      persistentVolumeClaim:
-        claimName: shared-pvc-airflow
-  extraVolumeMounts:
-    - name: shared-storage
-      mountPath: /opt/airflow/shared
+  # extraVolumes:
+  #   - name: shared-storage
+  #     persistentVolumeClaim:
+  #       claimName: shared-pvc-airflow
+  # extraVolumeMounts:
+  #   - name: shared-storage
+  #     mountPath: /opt/airflow/shared
 
 
 scheduler:
@@ -61,42 +61,25 @@ scheduler:
     - name: shared-storage
       mountPath: /opt/airflow/shared
 
-dagProcessor:
-  extraVolumes:
-    - name: shared-storage
-      persistentVolumeClaim:
-        claimName: shared-pvc-airflow
-  extraVolumeMounts:
-    - name: shared-storage
-      mountPath: /opt/airflow/shared
-
-triggerer:
-  extraVolumes:
-    - name: shared-storage
-      persistentVolumeClaim:
-        claimName: shared-pvc-airflow
-  extraVolumeMounts:
-    - name: shared-storage
-      mountPath: /opt/airflow/shared
-
-
-# scheduler:
-#   extraVolumeMounts:
-#     - name: shared-storage
-#       mountPath: /opt/airflow/shared
+# dagProcessor:
 #   extraVolumes:
 #     - name: shared-storage
 #       persistentVolumeClaim:
-#           claimName: shared-pvc-airflow
-
-# workers:
+#         claimName: shared-pvc-airflow
 #   extraVolumeMounts:
 #     - name: shared-storage
 #       mountPath: /opt/airflow/shared
+
+# triggerer:
 #   extraVolumes:
 #     - name: shared-storage
 #       persistentVolumeClaim:
-#           claimName: shared-pvc-airflow
+#         claimName: shared-pvc-airflow
+#   extraVolumeMounts:
+#     - name: shared-storage
+#       mountPath: /opt/airflow/shared
+
+
 
 
 
