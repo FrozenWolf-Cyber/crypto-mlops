@@ -51,15 +51,15 @@ airflow:
       value: /opt/airflow/dags/repo
 
 
-scheduler:
-  extraVolumeMounts:
-    - name: shared-storage
-      mountPath: /opt/airflow/shared
+# scheduler:
+#   extraVolumeMounts:
+#     - name: shared-storage
+#       mountPath: /opt/airflow/shared
 
-web:
-  extraVolumeMounts:
-    - name: shared-storage
-      mountPath: /opt/airflow/shared
+# web:
+#   extraVolumeMounts:
+#     - name: shared-storage
+#       mountPath: /opt/airflow/shared
 
 workers:
   extraVolumeMounts:
