@@ -12,7 +12,18 @@ download_s3_dataset("BTCUSDT", trl_model=True)
 manager = S3Manager()
 RETENTION_MIN = 60*24*365  # 1 year
 TEST_RETENTION_MIN = 60*24*30  # 90 days
-state_write("ALL", "producer", "main", "delete")
+
+
+if state_checker("ALL", "producer", "main") == "running":
+    print("Existing producer found, deleting it first...")
+    state_write("ALL", "producer", "main", "delete")
+    while state_checker("ALL", "producer", "main") != "deleted":
+        print("Waiting for existing producer to delete...")
+        time.sleep(1)
+        
+    print("Existing producer deleted.")
+    
+    
 data_path = "./data/prices"
 
 cryptos = ["BTCUSDT"]
@@ -63,3 +74,10 @@ manager.upload_df(articles, bucket='mlops', key='articles/articles.parquet')
 
 
 create_producer("ALL", "producer", "main")
+import time
+while state_checker("ALL", "producer", "main") != "running":
+    time.sleep(1)
+    print("Waiting for producer to start...")
+    
+print("Producer started!!!!.")
+    
