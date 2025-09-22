@@ -2,19 +2,11 @@ executor: LocalExecutor
 
 env:
   - name: AIRFLOW__CORE__DAGS_FOLDER
-    value: /opt/airflow/dags/repo/dags/
+    value: /opt/airflow/dags/repo
   - name: PYTHONPATH
     value: /opt/airflow/dags/repo
   - name: TEST_ENV
     value: "GOKULADETHYA"
-
-volumeMounts:
-  - name: airflow-dags
-    mountPath: /opt/airflow/custom_persistent_shared
-volumes:
-  - name: airflow-dags
-    persistentVolumeClaim:
-      claimName: shared-pvc-airflow
 
 extraEnv: |
   - name: KAFKA_HOST
@@ -38,55 +30,18 @@ extraEnvFrom: |
   - secretRef:
       name: platform-secrets
 
-
 webserverSecretKeySecretName: my-webserver-secret
-# Use your custom image everywhere
+
 airflow:
   image:
     repository: frozenwolf2003/mlops-airflow
     tag: latest
-
   config:
-    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags/repo/dags/
+    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags/repo
   env:
     - name: PYTHONPATH
       value: /opt/airflow/dags/repo
-  # persistence:
-  #   enabled: true
-  #   existingClaim: shared-pvc-airflow
 
-# dagProcessor:
-#   extraVolumes:
-#     - name: shared-storage
-#       persistentVolumeClaim:
-#         claimName: shared-pvc-airflow
-#   extraVolumeMounts:
-#     - name: shared-storage
-#       mountPath: /opt/airflow/custom_persistent_shared
-
-
-
-# scheduler:
-#   persistence:
-#     enabled: true
-#     existingClaim: shared-pvc-airflow
-
-
-# triggerer:
-#   persistence:
-#     enabled: true
-#     existingClaim: shared-pvc-airflow
-
-# workers:
-#   persistence:
-#     enabled: true
-#     existingClaim: shared-pvc-airflow
-
-
-
-
-
-# Ensure DAG processor, scheduler, triggerer all use your image
 # DAGs
 dags:
   gitSync:
@@ -98,9 +53,19 @@ dags:
     enabled: true
     existingClaim: shared-pvc-airflow
 
+# Optional: mount custom path safely using subPath
+extraVolumes: |
+  - name: airflow-dags
+    persistentVolumeClaim:
+      claimName: shared-pvc-airflow
+
+extraVolumeMounts: |
+  - name: airflow-dags
+    mountPath: /opt/airflow/custom_persistent_shared
+    subPath: repo
+
 flower:
   enabled: false
-
 
 redis: 
   enabled: false
