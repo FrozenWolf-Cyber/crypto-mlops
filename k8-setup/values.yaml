@@ -43,6 +43,14 @@ airflow:
   env:
     - name: PYTHONPATH
       value: /opt/airflow/dags/repo
+  extraVolumes:
+    - name: shared-storage
+      persistentVolumeClaim:
+        claimName: shared-pvc
+  extraVolumeMounts:
+    - name: shared-storage
+      mountPath: /opt/airflow/shared
+
 
 scheduler:
   extraVolumeMounts:
