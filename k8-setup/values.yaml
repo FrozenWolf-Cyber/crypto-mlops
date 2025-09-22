@@ -10,7 +10,8 @@ env:
 
 volumeMounts:
   - name: airflow-dags
-    mountPath: /opt/airflow/custom_persistent_shared  # the folder inside the container
+    mountPath: /opt/airflow/custom_persistent_shared
+    subPath: repo
 volumes:
   - name: airflow-dags
     persistentVolumeClaim:
