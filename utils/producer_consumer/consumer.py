@@ -8,6 +8,7 @@ from ..trainer.train_utils import preprocess_common, preprocess_common_batch
 import requests
 import gc
 import os
+import numpy as np
 from .consumer_utils import state_checker, state_write
 from tqdm import tqdm
 KAFKA_BROKER = f"{os.environ['KAFKA_HOST']}:9092"
@@ -25,6 +26,10 @@ df_pred = None
 last_time = None
 
 def get_predictions(inp, crypto, model, version):
+    if isinstance(inp, np.ndarray):
+        print(f"Input is ndarray with shape {inp.shape}, converting to list.")
+        inp = inp.tolist()
+        
     if len(inp) != 0:
         params = {"model_name": f"{crypto.lower()}_{model.lower()}", "version": int(version[1:])-1}
         pred = requests.post(url, params=params, json=inp)
