@@ -26,16 +26,23 @@ df_pred = None
 last_time = None
 
 def get_predictions(inp, crypto, model, version):
+
     for idx in range(len(inp)):
         if isinstance(inp[idx], np.ndarray):
             inp[idx] = inp[idx].tolist()
-        
-    if len(inp) != 0:
+
+    ### batcify predictions, max 5000 per request
+    all_pred = []
+    for i in tqdm(range(0, len(inp), 5000)):
+        batch_inp = inp[i:i+5000]
         params = {"model_name": f"{crypto.lower()}_{model.lower()}", "version": int(version[1:])-1}
-        pred = requests.post(url, params=params, json=inp)
+        pred = requests.post(url, params=params, json=batch_inp)
         pred = pred.json()['predictions']
-        return pred
-    return []
+        if i == 0:
+            all_pred = pred
+        else:
+            all_pred.extend(pred)
+    return all_pred
 
 def build_pipeline(app, crypto, model, version):
     global df_partial, df_pred, last_time
