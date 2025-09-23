@@ -36,6 +36,7 @@ EOF
 # Step 5: switch back to airflow
 USER airflow
 ENV PLAYWRIGHT_BROWSERS_PATH=/usr/lib/playwright
+RUN playwright install
 RUN python - <<EOF
 from playwright.sync_api import sync_playwright
 with sync_playwright() as p:
