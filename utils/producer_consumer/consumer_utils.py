@@ -34,9 +34,13 @@ def state_checker(crypto: str, model: str, version: str) -> str:
     """
     state_file = os.path.join(STATE_DIR, f"{crypto}_{model}_{version}.json")
     print(f"[STATE CHECK] Checking state for {crypto} {model} {version}...")
+    start = time.time()
     while True:
         try:
             if not os.path.exists(state_file):
+                if time.time() - start > 120:
+                    print(f"[STATE CHECK] State file {state_file} not found after 120 seconds, returning 'unknown'.")
+                    return "unknown"
                 log.warning("State file %s not found, retrying...", state_file)
                 time.sleep(1)  # avoid busy looping
                 continue
