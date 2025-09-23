@@ -26,18 +26,12 @@ df_pred = None
 last_time = None
 
 def get_predictions(inp, crypto, model, version):
-    print(type(inp))
-    print(type(inp[0]), inp[0])
-    print(type(inp[0][0]), inp[0][0])
-    if isinstance(inp, np.ndarray):
-        print(f"Input is ndarray with shape {inp.shape}, converting to list.")
-        inp = inp.tolist()
+    for idx in range(len(inp)):
+        if isinstance(inp[idx], np.ndarray):
+            inp[idx] = inp[idx].tolist()
         
     if len(inp) != 0:
         params = {"model_name": f"{crypto.lower()}_{model.lower()}", "version": int(version[1:])-1}
-        print(inp[:10])
-        print(params)
-        inp = inp.tolist()
         pred = requests.post(url, params=params, json=inp)
         pred = pred.json()['predictions']
         return pred
