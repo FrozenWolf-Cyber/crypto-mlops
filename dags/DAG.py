@@ -171,8 +171,12 @@ def monitor_model_state(model_name, **context):
     time_limit = 3700 # 1 hour and 10 minutes
     start_time = time.time()
     print(f"Monitoring model: {model_name}")
-    model, coin = tuple(model_name.split("_"))
-    
+    if "_" in model_name:
+        model, coin = tuple(model_name.split("_"))
+    else:
+        model = model_name
+        coin = "ALL"
+        
     while True:
         if time.time() - start_time > time_limit:
             ### If time limit exceeded, return skip_model
