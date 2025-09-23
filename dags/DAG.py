@@ -273,7 +273,7 @@ def create_dag1():
                 retry_delay=timedelta(minutes=1),  # wait between retries
             )
 
-            if model != "trl_model":
+            if model != "trl":
                 crypto, model_type = model.split("_", 1)
                 post_tasks[model] = BashOperator(
                     task_id=f"post_train_{model}",
