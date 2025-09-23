@@ -4,7 +4,7 @@ manager = S3Manager()
 import subprocess
 from ..producer_consumer.consumer_utils import state_checker, if_state_exists, state_write, delete_state, STATE_DIR
 from ..trainer.train_utils import download_s3_dataset
-
+import time
 
 download_s3_dataset("BTCUSDT", trl_model=True)
 

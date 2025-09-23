@@ -254,8 +254,8 @@ def create_dag1():
         #     "trl_model"
         # ]
         cryptos = ["BTCUSDT"]
-        models_ = ["lightgbm", "trl"]
-        models = ["trl_model"]
+        models_ = ["lightgbm", "tst"]
+        models = ["trl"]
         for crypto in cryptos:
             for model in models_:
                 models.append(f"{crypto}_{model}")
