@@ -2,16 +2,8 @@ FROM apache/airflow:3.0.2
 
 WORKDIR /app
 
-# Install system dependencies (jq, curl, etc.)
-# USER root
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#     jq curl \
-#  && rm -rf /var/lib/apt/lists/*
-
-# Back to airflow user
-
+# Step 1: root installs system dependencies
 USER root
-# Install system dependencies required by Playwright
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget curl gnupg ca-certificates \
     libglib2.0-0 libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libatspi2.0-0 \
@@ -21,30 +13,32 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxrender1 libxinerama1 libharfbuzz0b libfribidi0 \
     && rm -rf /var/lib/apt/lists/*
 
-
+# Step 2: airflow user installs Python packages
 USER airflow
-
-# Copy Python requirements
 COPY requirements.txt .
+RUN pip install --upgrade pip \
+ && pip install --no-cache-dir -r requirements.txt \
+ && pip install --no-cache-dir playwright
 
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip
-RUN pip install --no-cache-dir  -r requirements.txt
-
-# Install Playwright and its Python package
-# Install Playwright and its browsers
-RUN pip install --no-cache-dir playwright
+# Step 3: root installs browsers & dependencies for Playwright
 USER root
-RUN playwright install
-RUN sudo playwright install-deps
+RUN sudo playwright install-deps && sudo playwright install
 
+# Step 4: verify Playwright works at build time
+RUN python - <<EOF
+from playwright.sync_api import sync_playwright
+with sync_playwright() as p:
+    browser = p.chromium.launch(headless=True)
+    print("✅ Chromium launched successfully")
+    browser.close()
+EOF
 
-
+# Step 5: switch back to airflow
 USER airflow
-# Install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
-
-
-RUN pip install --no-cache-dir "apache-airflow==${AIRFLOW_VERSION}"
+RUN python - <<EOF
+from playwright.sync_api import sync_playwright
+with sync_playwright() as p:
+    browser = p.chromium.launch(headless=True)
+    print("✅ Chromium launched successfully")
+    browser.close()
+EOF
