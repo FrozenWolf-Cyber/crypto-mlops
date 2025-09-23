@@ -35,8 +35,9 @@ def get_predictions(inp, crypto, model, version):
         
     if len(inp) != 0:
         params = {"model_name": f"{crypto.lower()}_{model.lower()}", "version": int(version[1:])-1}
-        print(inp)
+        print(inp[:10])
         print(params)
+        inp = inp.tolist()
         pred = requests.post(url, params=params, json=inp)
         pred = pred.json()['predictions']
         return pred
