@@ -66,10 +66,12 @@ def wait_for_pod(instance_id: str, timeout: int = 600) -> bool:
     or timeout (default 600s) is reached.
     """
     start = time.time()
+    time.sleep(5) # initial wait before first poll
     while time.time() - start < timeout:
         cmd = ["vastai", "show", "instances", "--raw"]
         result = subprocess.run(cmd, capture_output=True, text=True)
-
+        print("STDOUT:", result.stdout)
+        print("STDERR:", result.stderr)
         if result.returncode != 0:
             print("Error checking instance:", result.stderr)
             kill_all_vastai_instances()
@@ -90,7 +92,8 @@ def wait_for_pod(instance_id: str, timeout: int = 600) -> bool:
                 instance = i
                 print("Found instance:", instance)
                 break
-
+        
+        print("Full instance data:", data)
         if not instance:
             print(f"Instance {instance_id} not found")
             time.sleep(30)

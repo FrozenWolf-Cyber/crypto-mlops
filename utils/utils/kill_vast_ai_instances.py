@@ -30,7 +30,7 @@ def kill_all_vastai_instances():
 
         # Destroy each instance
         for inst_id in ids:
-            print(f"Destroying Vast.ai instance {inst_id}...")
+            print(f"!!!Destroying Vast.ai instance {inst_id}...")
             subprocess.run(["vastai", "destroy", "instance", inst_id], check=True)
 
         print("✅ All Vast.ai instances destroyed.")
