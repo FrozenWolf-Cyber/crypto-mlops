@@ -38,7 +38,7 @@ version = len(existing_versions)
 crypto_db.reset_trl_version(f"{version}")
 
 pred = pd.read_csv(f"/opt/airflow/custom_persistent_shared/data/predictions/preds/trl/v{version}.csv")
-pred['date'] = pd.to_datetime(pred['date']) 
+pred['date'] = pd.to_datetime(pred['date'], utc=True)
 pred = pred.drop_duplicates(subset=['link'])
 
 print("Total new preds", len(pred))
