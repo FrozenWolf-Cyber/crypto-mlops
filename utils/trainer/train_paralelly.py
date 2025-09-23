@@ -12,7 +12,7 @@ os.makedirs(logs_path, exist_ok=True)
 
 print(full_path)
 processes = []
-max_time = 55 * 60
+max_time = 30 ### DEBUGGG 30 sec TIME BUT SHOULD BE 55 MINUTES
 
 # trl_train
 trl_cmd = [
@@ -28,6 +28,7 @@ with open(os.path.join(logs_path, "trl.log"), "w") as trl_log:
 
 # per-coin trainings
 for coin in COINS:
+    print("Environment variable", os.getenv("AIRFLOW_DB"))
     # tst_train
     tst_cmd = [
         "python", "-m",  "utils.trainer.tst_train",

@@ -1,4 +1,11 @@
 import os
+print("Starting TRL training script...", flush=True)
+print("Environment variable", os.getenv("AIRFLOW_DB"))
+## write a log that we started
+with open("debug.log", "a") as f:
+    f.write(f"TRL training started at {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+
+
 import argparse
 import copy
 import numpy as np
@@ -18,7 +25,7 @@ from .train_utils import load_start_time, download_s3_dataset, log_classificatio
 from ..artifact_control.s3_manager import S3Manager
 import time
 import wandb
-print("Starting TRL training script...", flush=True)
+
 # ----------------------------
 # Dataset wrapper
 # ----------------------------
