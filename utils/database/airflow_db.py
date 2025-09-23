@@ -94,6 +94,7 @@ import os
 AIRFLOW_DB = os.getenv("AIRFLOW_DB")
 
 db = BatchStatusDB(AIRFLOW_DB)
+db.flush()
 # -------------------------------------------------------------------
 # Usage Examples
 # -------------------------------------------------------------------

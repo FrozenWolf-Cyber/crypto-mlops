@@ -172,7 +172,7 @@ def monitor_model_state(model_name, **context):
     start_time = time.time()
     print(f"Monitoring model: {model_name}")
     if "_" in model_name:
-        model, coin = tuple(model_name.split("_"))
+        coin, model = tuple(model_name.split("_"))
     else:
         model = model_name
         coin = "ALL"
