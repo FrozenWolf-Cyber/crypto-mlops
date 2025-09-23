@@ -322,9 +322,16 @@ def create_dag1():
         # DAG dependencies
         start_pretrain >> flush_and_init >> train_models
         for model in models:
-            train_models >> monitor_tasks[model] >> [post_tasks[model], skip_task]
+            train_models >> monitor_tasks[model] 
+
         monitor_task_list = list(monitor_tasks.values())
-        monitor_task_list >> kill_instances
+        monitor_task_list >> kill_instances 
+        
+        for model in models:
+            monitor_tasks[model] >> [post_tasks[model], skip_task]
+        
+        post_tasks_list = list(post_tasks.values())
+        post_tasks_list >> kill_instances
 
     return dag
 
