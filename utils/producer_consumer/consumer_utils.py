@@ -33,7 +33,7 @@ def state_checker(crypto: str, model: str, version: str) -> str:
     Any error (file missing, invalid JSON, etc.) falls back to "unknown".
     """
     state_file = os.path.join(STATE_DIR, f"{crypto}_{model}_{version}.json")
-
+    print(f"[STATE CHECK] Checking state for {crypto} {model} {version}...")
     while True:
         try:
             if not os.path.exists(state_file):
@@ -43,6 +43,7 @@ def state_checker(crypto: str, model: str, version: str) -> str:
 
             with open(state_file, "r") as f:
                 data = json.load(f)
+                print(data.get("state", "unknown"))
                 return data.get("state", "unknown")
         except Exception as e:
             log.error("Error reading state file %s: %s. Retrying...", state_file, e)
