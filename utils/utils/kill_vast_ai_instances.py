@@ -1,6 +1,7 @@
 import subprocess
 import json
 import os
+import time 
 ## vastai set api-key
 
 key = os.getenv("VASTAI_API_KEY")
@@ -10,8 +11,12 @@ if not key:
 subprocess.run(["vastai", "set", "api-key", key], check=True)
 print("Vast.ai API key set successfully: ", key[:4] + "****")
 
+kill_logs = "/opt/airflow/custom_persistent_shared/kill_vastai_instances.log"
 
 def kill_all_vastai_instances():
+    ## note it in a log file
+    with open(kill_logs, "a") as log_file:
+        log_file.write(f"=== Killing Vast.ai instances at date {time.strftime('%Y-%m-%d %H:%M:%S')} ===\n")
     try:
         # Get list of instances (JSON output)
         result = subprocess.run(
@@ -40,4 +45,4 @@ def kill_all_vastai_instances():
     except json.JSONDecodeError as e:
         print("Failed to parse JSON from Vast.ai:", e)
 
-kill_all_vastai_instances()
+
