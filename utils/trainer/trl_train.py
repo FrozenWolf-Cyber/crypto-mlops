@@ -18,6 +18,7 @@ from .train_utils import load_start_time, download_s3_dataset, log_classificatio
 from ..artifact_control.s3_manager import S3Manager
 import time
 import wandb
+print("Starting TRL training script...", flush=True)
 # ----------------------------
 # Dataset wrapper
 # ----------------------------

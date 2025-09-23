@@ -13,7 +13,7 @@ from ..database.airflow_db import db
 import wandb
 
 import time
-
+print("STarting LGB training script...", flush=True)
 start_time = load_start_time()
 def early_stopping_time(max_time: int, verbose: bool = True):
     """

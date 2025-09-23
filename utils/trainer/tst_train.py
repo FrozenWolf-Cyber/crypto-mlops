@@ -14,6 +14,7 @@ from ..artifact_control.s3_manager import S3Manager
 from ..database.airflow_db import db
 import wandb
 import time
+print("Starting TST training script...", flush=True)
 # -------------------------
 # TST Model
 # -------------------------
