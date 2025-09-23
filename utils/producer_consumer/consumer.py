@@ -309,6 +309,7 @@ app = Application(
     broker_address=KAFKA_BROKER,
     consumer_group=f"{args.model}-{args.version}-consumer",
     auto_offset_reset="earliest",
+    state_dir="/opt/airflow/custom_persistent_shared/quix_state"
 )
 build_pipeline(app, args.crypto, args.model, args.version)
 print("Consumer running, waiting for control commands...")
