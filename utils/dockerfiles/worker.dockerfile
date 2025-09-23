@@ -2,7 +2,7 @@ FROM apache/airflow:3.0.2
 
 WORKDIR /app
 
-# Step 1: root installs system dependencies
+# 1️⃣ Install system dependencies for Playwright as root
 USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget curl gnupg ca-certificates \
@@ -13,30 +13,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxrender1 libxinerama1 libharfbuzz0b libfribidi0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Step 2: airflow user installs Python packages
+# 2️⃣ Install Python dependencies as airflow user
 USER airflow
 COPY requirements.txt .
-RUN pip install --upgrade pip \
- && pip install --no-cache-dir -r requirements.txt \
- && pip install --no-cache-dir playwright
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir playwright
 
-# Step 3: root installs browsers & dependencies for Playwright
+# 3️⃣ Install Playwright browsers as root to a shared folder
 USER root
-RUN sudo playwright install-deps && sudo playwright install
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/playwright
+RUN mkdir -p /opt/playwright
+RUN chown -R airflow: /opt/playwright
+RUN playwright install --with-deps
 
-# Step 4: verify Playwright works at build time
-RUN python - <<EOF
-from playwright.sync_api import sync_playwright
-with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True)
-    print("✅ Chromium launched successfully")
-    browser.close()
-EOF
-
-# Step 5: switch back to airflow
+# 4️⃣ Switch to airflow user and point to the shared browsers
 USER airflow
-ENV PLAYWRIGHT_BROWSERS_PATH=/usr/lib/playwright
-RUN playwright install
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/playwright
+
+# 5️⃣ Test Playwright works
 RUN python - <<EOF
 from playwright.sync_api import sync_playwright
 with sync_playwright() as p:
