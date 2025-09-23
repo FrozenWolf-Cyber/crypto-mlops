@@ -53,5 +53,10 @@ for coin in COINS:
         processes.append(
             subprocess.Popen(lgb_cmd, stdout=lgb_log, stderr=subprocess.STDOUT)
         )
+        
+        
 
 print("All training scripts started in parallel and detached.")
+
+for p in processes:
+    p.wait()
