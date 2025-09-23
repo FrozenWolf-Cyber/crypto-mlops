@@ -56,7 +56,7 @@ def main():
         
         print(f"[INFO] Reading predictions from CSV and pushing to DB...")
         df = pd.read_csv(f"/opt/airflow/custom_persistent_shared/data/predictions/{crypto}/{model}/v{version}.csv")
-        # crypto_db.bulk_update_predictions(crypto.lower(), model, version, df)
+        crypto_db.bulk_update_predictions(crypto.lower(), model, version, df)
         
         print(f"[INFO] Triggering FastAPI to refresh models...")
         resp = requests.post("http://fastapi-ml:8000/refresh")
