@@ -17,10 +17,15 @@ if if_state_exists("ALL", "producer", "main"):
     print("Existing producer state file found with state:", state_checker("ALL", "producer", "main"))
     if state_checker("ALL", "producer", "main") == "running":
         print("Existing producer found, deleting it first...")
+        start = time.time()
         state_write("ALL", "producer", "main", "delete")
         while state_checker("ALL", "producer", "main") != "deleted":
             print("Waiting for existing producer to delete...")
             time.sleep(1)
+            
+            if time.time() - start > 30:
+                print("Timeout waiting for producer to delete, forcing deletion...")
+                break
 
         print("Existing producer deleted.")
 else:

@@ -192,7 +192,7 @@ def monitor_model_state(model_name, **context):
         print(f"Current status from DB: {status}")
         status = next((item for item in status if item["model"] == model and item["coin"] == coin), None)
         print(f"Monitoring {model_name}, found status entry: {status}")
-        
+        status = status["state"]
         if status == "SUCCESS":
             return f"post_train_{model_name}"
         elif status == "FAILED":
