@@ -5,3 +5,4 @@ mlflow
 numpy
 onnxruntime
 boto3
+onnx

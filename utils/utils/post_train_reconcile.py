@@ -72,6 +72,7 @@ def main():
         print(f"[INFO] State file for {crypto} {model} v{version} exists, consumer launched.")
         return
     
+    print(f"[INFO] Reassigning S3 predictions to ensure v2 and v3 exist...")
     manager.reassign_pred_s3(crypto, model)
     print(f"[START] Restarting {crypto} {model} to reconcile versions...")
     
