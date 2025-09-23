@@ -26,6 +26,8 @@ df_pred = None
 last_time = None
 
 def get_predictions(inp, crypto, model, version):
+    print(type(inp))
+    print(type(inp[0]))
     if isinstance(inp, np.ndarray):
         print(f"Input is ndarray with shape {inp.shape}, converting to list.")
         inp = inp.tolist()
