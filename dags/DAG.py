@@ -330,27 +330,32 @@ def create_dag1():
                 on_failure_callback=log_failure,
         )
 
-        # DAG dependencies
         start_pretrain >> flush_and_init >> train_models
-        for model in models:
-            train_models >> monitor_tasks[model] 
 
+        for model in models:
+            train_models >> monitor_tasks[model]
+
+        # connect each monitor task to kill_instances
         monitor_task_list = list(monitor_tasks.values())
-        monitor_task_list >> kill_instances 
-        
+        for m in monitor_task_list:
+            m >> kill_instances
+
         for model in models:
             monitor_tasks[model] >> [post_tasks[model], skip_task]
-        
+
         final_kill = BashOperator(
             task_id="final_kill_kill_vast_ai_instances",
             bash_command="PYTHONPATH=..:$PYTHONPATH python -m utils.utils.kill_vast_ai_instances",
             trigger_rule=TriggerRule.ALL_DONE,
-                on_execute_callback=log_start,
-                on_success_callback=log_success,
-                on_failure_callback=log_failure,
+            on_execute_callback=log_start,
+            on_success_callback=log_success,
+            on_failure_callback=log_failure,
         )
+
         post_tasks_list = list(post_tasks.values())
-        [post_tasks_list, skip_task] >> final_kill
+        for t in post_tasks_list + [skip_task]:
+            t >> final_kill
+
 
     return dag
 
