@@ -341,16 +341,16 @@ def create_dag1():
         for model in models:
             monitor_tasks[model] >> [post_tasks[model], skip_task]
         
-        # final_kill = BashOperator(
-        #     task_id="final_kill_kill_vast_ai_instances",
-        #     bash_command="PYTHONPATH=..:$PYTHONPATH python -m utils.utils.kill_vast_ai_instances",
-        #     trigger_rule=TriggerRule.ALL_DONE,
-        #         on_execute_callback=log_start,
-        #         on_success_callback=log_success,
-        #         on_failure_callback=log_failure,
-        # )
-        # post_tasks_list = list(post_tasks.values())
-        # [post_tasks_list, skip_task] >> final_kill
+        final_kill = BashOperator(
+            task_id="final_kill_kill_vast_ai_instances",
+            bash_command="PYTHONPATH=..:$PYTHONPATH python -m utils.utils.kill_vast_ai_instances",
+            trigger_rule=TriggerRule.ALL_DONE,
+                on_execute_callback=log_start,
+                on_success_callback=log_success,
+                on_failure_callback=log_failure,
+        )
+        post_tasks_list = list(post_tasks.values())
+        [post_tasks_list, skip_task] >> final_kill
 
     return dag
 
