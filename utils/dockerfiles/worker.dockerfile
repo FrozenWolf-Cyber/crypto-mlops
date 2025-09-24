@@ -16,6 +16,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 2️⃣ Install Python dependencies as airflow user
 USER airflow
 COPY requirements.txt .
+COPY requirements.txt .
+COPY past_news_scraper.py .
+COPY scrape..py .
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir playwright
@@ -39,3 +42,5 @@ with sync_playwright() as p:
     print("✅ Chromium launched successfully")
     browser.close()
 EOF
+
+RUN python past_news_scraper.py
