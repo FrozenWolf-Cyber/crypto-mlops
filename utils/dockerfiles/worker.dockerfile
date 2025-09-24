@@ -43,4 +43,4 @@ EOF
 
 COPY past_news_scrape.py .
 COPY scrape.py .
-RUN python past_news_scraper.py
+RUN python past_news_scrape.py
