@@ -3,7 +3,7 @@ import time
 from .scrape import scrape_post
 from bs4 import BeautifulSoup
 from tqdm import tqdm
-def scroll_until_end(page, back_off=1, max_wait=8, max_scrolls=50):
+def scroll_until_end(page, back_off=1, max_wait=66, max_scrolls=50):
     prev_height = -1
     pause = back_off
     while (pause < max_wait) and max_scrolls:

@@ -77,7 +77,7 @@ def main(args):
         session = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
 
         pred = pd.read_csv(f"{args.pred_dir}/v{version}.csv")
-        pred['date'] = pd.to_datetime(pred['date']) 
+        pred['date'] = pd.to_datetime(pred['date'], utc=True, format='mixed')
         pred = pred.drop_duplicates(subset=['link'])
         
         new_rows = df_combined[~df_combined['link'].isin(pred['link'])]
