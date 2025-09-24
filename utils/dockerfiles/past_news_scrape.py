@@ -5,7 +5,7 @@ import time
 import random
 from scrape import scrape_post
 
-def scroll_until_end(page, max_scrolls=50, back_off=1, max_wait=66):
+def scroll_until_end(page, max_scrolls=50, back_off=1, max_wait=30):
     prev_count = 0
     scrolls = 0
     pause = back_off
