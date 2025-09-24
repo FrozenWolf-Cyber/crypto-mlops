@@ -31,6 +31,15 @@ def scroll_until_end(page, max_scrolls=50, back_off=1, max_wait=66):
             print("New articles loaded, resetting pause time.")
             pause = back_off
             prev_count = current_count
+            
+        
+    html = page.content()
+    
+    # Print first 2000 characters to terminal (avoid huge dump)
+    print("=== PAGE HTML START ===")
+    print(html[:2000])
+    print("=== PAGE HTML END ===")
+
 
     return page
 
