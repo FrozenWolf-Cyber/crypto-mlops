@@ -16,9 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 2️⃣ Install Python dependencies as airflow user
 USER airflow
 COPY requirements.txt .
-COPY requirements.txt .
-COPY past_news_scrape.py .
-COPY scrape.py .
+
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir playwright
@@ -43,4 +41,6 @@ with sync_playwright() as p:
     browser.close()
 EOF
 
+COPY past_news_scrape.py .
+COPY scrape.py .
 RUN python past_news_scraper.py
