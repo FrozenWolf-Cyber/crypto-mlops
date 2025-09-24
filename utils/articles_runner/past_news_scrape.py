@@ -41,7 +41,10 @@ with sync_playwright() as p:
         viewport={"width": 1280, "height": 800},
         user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                   "Chrome/117.0.0.0 Safari/537.36"
+                   "Chrome/117.0.0.0 Safari/537.36",
+                       extra_http_headers={
+        "Accept-Language": "en-US,en;q=0.9"
+    }
     )
     page = context.new_page()
     page.set_default_timeout(60000)
@@ -56,6 +59,15 @@ with sync_playwright() as p:
         page.goto(url, wait_until="domcontentloaded")
         time.sleep(2)  # Allow initial content to load
 
+        from playwright.sync_api import TimeoutError
+        
+        try:
+            page.wait_for_selector("button.accept-all", timeout=5000)
+            page.click("button.accept-all")
+            print("✅ Cookie consent accepted")
+            page.wait_for_timeout(3000)  # wait for articles to load
+        except TimeoutError:
+            print("No cookie banner detected")
         # Scroll and load all articles
         page = scroll_until_end(page)
 
