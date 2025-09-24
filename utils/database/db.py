@@ -127,9 +127,15 @@ class CryptoDB:
         # Step 2: Use temp table for bulk operations if >100 rows
         if len(df_to_upsert) > 100:
             print("Using temp table for bulk upsert...")
+            print("Dropping existing temp table if any...")
+            with self.engine.begin() as conn:
+                conn.execute(text("DROP TABLE IF EXISTS trl_temp"))
+            
+            print("Creating new temp table...")
             temp_table = "trl_temp"
             df_temp = df_to_upsert.copy()
             df_temp[trl_column] = df_temp['pred_list']
+            df_temp['label'] = df_temp['label'].astype('Int64')
             df_temp.to_sql(temp_table, self.engine, if_exists='replace', index=False)
     
             # Update existing rows (join on link)
