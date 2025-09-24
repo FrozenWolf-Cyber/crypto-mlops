@@ -36,7 +36,7 @@ def scroll_until_end(page, max_scrolls=50, back_off=1, max_wait=66):
 
 with sync_playwright() as p:
     # Launch browser in headless mode
-    browser = p.chromium.launch(headless=True)
+    browser = p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-setuid-sandbox"])
     context = browser.new_context(
         viewport={"width": 1280, "height": 800},
         user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
