@@ -47,8 +47,8 @@ with sync_playwright() as p:
     }
     )
     page = context.new_page()
-    page.set_default_timeout(60000)
-    page.set_default_navigation_timeout(60000)
+    page.set_default_timeout(300000)
+    page.set_default_navigation_timeout(300000)
 
     coins = ["BTC-USD"]
     all_articles = {}
@@ -78,6 +78,9 @@ with sync_playwright() as p:
         links = [a.a['href'] for a in articles if a.a]
         print(f"Total articles found for {coin}: {len(links)}")
 
-        all_articles[coin] = scrape_post(links, page)
-
+        try:
+            all_articles[coin] = scrape_post(links, page)
+        except Exception as e:
+            print(f"!!!!Error scraping articles for {coin}: {e}")
+            
     browser.close()
