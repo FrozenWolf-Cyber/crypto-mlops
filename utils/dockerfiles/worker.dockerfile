@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 USER airflow
 COPY requirements.txt .
 COPY requirements.txt .
-COPY past_news_scraper.py .
+COPY past_news_scrape.py .
 COPY scrape..py .
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
