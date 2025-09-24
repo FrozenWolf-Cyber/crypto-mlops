@@ -68,6 +68,15 @@ with sync_playwright() as p:
         page.goto(url, wait_until="domcontentloaded")
         time.sleep(2)  # Allow initial content to load
 
+        from playwright.sync_api import TimeoutError
+        
+        try:
+            page.wait_for_selector("button.accept-all", timeout=5000)
+            page.click("button.accept-all")
+            print("✅ Cookie consent accepted")
+            page.wait_for_timeout(3000)  # wait for articles to load
+        except TimeoutError:
+            print("No cookie banner detected")
         # Scroll and load all articles
         page = scroll_until_end(page)
 
