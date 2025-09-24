@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 import pandas as pd
 import os
+import time
 
 def scrape_post(links, page):
     df_path = f"/opt/airflow/custom_persistent_shared/data/articles/articles.csv"
@@ -19,6 +20,7 @@ def scrape_post(links, page):
             print("Already scrapped:", link)
             continue
         
+        time.sleep(1)
         print("--"*20)
         print("\nProcessing link:", link)
         prefix_allowed = ["https://finance.yahoo.com/"+i for i in ['news', 'personal-finance', 'video', 'm']]
