@@ -37,7 +37,7 @@ def scroll_until_end(page, max_scrolls=50, back_off=1, max_wait=30):
     
     # Print first 2000 characters to terminal (avoid huge dump)
     print("=== PAGE HTML START ===")
-    print(html[:2000])
+    print(html)
     print("=== PAGE HTML END ===")
 
 
@@ -50,7 +50,10 @@ with sync_playwright() as p:
         viewport={"width": 1280, "height": 800},
         user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                   "Chrome/117.0.0.0 Safari/537.36"
+                   "Chrome/117.0.0.0 Safari/537.36",
+                       extra_http_headers={
+        "Accept-Language": "en-US,en;q=0.9"
+    }
     )
     page = context.new_page()
     page.set_default_timeout(60000)

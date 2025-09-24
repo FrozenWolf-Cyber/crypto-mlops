@@ -13,6 +13,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxrender1 libxinerama1 libharfbuzz0b libfribidi0 \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get install -y locales
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
 # 2️⃣ Install Python dependencies as airflow user
 USER airflow
 COPY requirements.txt .
