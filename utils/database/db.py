@@ -136,6 +136,7 @@ class CryptoDB:
             df_temp = df_to_upsert.copy()
             df_temp[trl_column] = df_temp['pred_list']
             df_temp['label'] = df_temp['label'].astype('Int64')
+            df_temp['price_change'] = df_temp['price_change'].astype(float)
             df_temp.to_sql(temp_table, self.engine, if_exists='replace', index=False)
     
             # Update existing rows (join on link)
