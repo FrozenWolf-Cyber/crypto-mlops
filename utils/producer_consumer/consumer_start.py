@@ -38,8 +38,8 @@ def create_consumer(crypto: str, model: str, version: str):
     print("[CREATE] Launching:", " ".join(cmd))
     subprocess.Popen(
     cmd,
-    stdout=None,
-    stderr=None,
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
     stdin=subprocess.DEVNULL,
     close_fds=True,
     start_new_session=True
@@ -57,8 +57,8 @@ def create_producer(crypto: str, model: str, version: str):
     print("[CREATE] Launching:", " ".join(cmd))
     subprocess.Popen(
     cmd,
-    stdout=None,
-    stderr=None,
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
     stdin=subprocess.DEVNULL,
     close_fds=True,
     start_new_session=True
@@ -72,7 +72,7 @@ while state_checker("ALL", "producer", "main") != "running":
     
 print("Producer started!!!!.")
     
-    
+available_comb = []
 procs = []
 for crypto in cryptos:
     for model in models:
@@ -89,7 +89,11 @@ for crypto in cryptos:
             print(f"!!!State file for {crypto} {model} {version} exists, consumer waiting.")
             print(f"[INFO] Setting state to 'start' for {crypto} {model} {version}...")
             state_write(crypto, model, version, "start")
+            available_comb.append((crypto, model, version))
             
-            while state_checker(crypto, model, version) != "running":
-                time.sleep(0.5)
-            print(f"!!!Consumer for {crypto} {model} {version} is now running.")
+            
+for crypto, model, version in available_comb:
+    while state_checker(crypto, model, version) != "running":
+        print(f"Waiting for consumer {crypto} {model} {version} to start...")
+        time.sleep(0.5)
+    print(f"!!!✅✅✅✅✅✅Consumer for {crypto} {model} {version} is now running.")

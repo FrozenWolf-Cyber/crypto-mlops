@@ -261,6 +261,8 @@ def build_pipeline(app, crypto, model, version):
         if df.empty:
             return message
         l = len(df)
+        if df_partial is None:
+            df_partial = pd.DataFrame()
         df_partial = df_partial[-(seq_len-1):] if not df_partial.empty else df_partial
         df_partial = pd.concat([df_partial, df], ignore_index=True)
         df_partial = df_partial.drop_duplicates(subset=["open_time"])
