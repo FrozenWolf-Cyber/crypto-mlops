@@ -59,4 +59,10 @@ for crypto in cryptos:
 
             while state_checker(crypto, model, version) == "unknown":
                 time.sleep(0.5)
-            log.info(f"State file for {crypto} {model} {version} exists, consumer launched.")
+            log.info(f"!!!State file for {crypto} {model} {version} exists, consumer waiting.")
+            log.info(f"[INFO] Setting state to 'start' for {crypto} {model} {version}...")
+            state_write(crypto, model, version, "start")
+            
+            while state_checker(crypto, model, version) != "running":
+                time.sleep(0.5)
+            log.info(f"!!!Consumer for {crypto} {model} {version} is now running.")
