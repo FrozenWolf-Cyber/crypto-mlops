@@ -47,7 +47,7 @@ def get_predictions(inp, crypto, model, version):
     return all_pred
 
 def build_pipeline(app, crypto, model, version):
-    logger = get_logger(f"{crypto}_{model}_{version}")
+    logger = get_logger.info(f"{crypto}_{model}_{version}")
     global df_partial, df_pred, last_time
     key = (crypto, model, version)
 
@@ -60,11 +60,11 @@ def build_pipeline(app, crypto, model, version):
     ### fixed problem when producer already has written into .csv and db but consumer failed to listen
     ### find the all the dates where no predictions are present in the db
     pred_path = f"/opt/airflow/custom_persistent_shared/data/predictions/{crypto}/{model}/{version}.csv"
-    logger(f"[{key}] Assumed prediction path:", pred_path)
+    logger.info(f"[{key}] Assumed prediction path:", pred_path)
     params = {"model_name": f"{crypto.lower()}_{model.lower()}", "version": int(version[1:])-1}
     is_available = requests.post(f"http://fastapi-ml:8000/is_model_available", params=params).json()['available']
     if not is_available:
-        logger(f"[{key}] Model not available yet, skipping historical inference.")
+        logger.info(f"[{key}] Model not available yet, skipping historical inference.")
         df_pred = pd.DataFrame(columns=["open_time", "prediction"])
     else:
         # get missing prediction dates from db
@@ -72,7 +72,7 @@ def build_pipeline(app, crypto, model, version):
             crypto_db.get_missing_prediction_times(crypto.lower(), model.lower(), int(version[1:]))
         )
         missing_pred_dates_db = missing_pred_dates.copy() ## select them for upsertion
-        logger(f"[{key}] Found {len(missing_pred_dates)} missing prediction dates in DB.")
+        logger.info(f"[{key}] Found {len(missing_pred_dates)} missing prediction dates in DB.")
         oldest_missing = missing_pred_dates.min() if len(missing_pred_dates)>0 else pd.to_datetime( pd.to_datetime(crypto_db.get_last_date(crypto.lower())))
         
         ### check missing data in csv older than oldest_missing
@@ -84,20 +84,20 @@ def build_pipeline(app, crypto, model, version):
 
         csv_missing_dates = df[df["open_time"] < oldest_missing ]["open_time"]
         csv_missing_dates = csv_missing_dates[csv_missing_dates>df_pred["open_time"].max()] if not df_pred.empty else missing_pred_dates_db
-        logger(f"[{key}] Found {len(csv_missing_dates)} missing prediction dates in CSV older than oldest missing in DB.")
+        logger.info(f"[{key}] Found {len(csv_missing_dates)} missing prediction dates in CSV older than oldest missing in DB.")
         missing_pred_dates = pd.to_datetime(
             pd.concat([pd.Series(missing_pred_dates), csv_missing_dates]).drop_duplicates()
         )
             
-        logger(f"[{key}] Found {len(missing_pred_dates)} missing prediction dates.")
+        logger.info(f"[{key}] Found {len(missing_pred_dates)} missing prediction dates.")
         if len(missing_pred_dates) > 0:
             df = df[df['open_time']<=missing_pred_dates.max()]
             ### slice 30 rows before min
             ith_idx = df.index[df['open_time'] == missing_pred_dates.min()]
             df = df.iloc[max(0, ith_idx[0]-seq_len+1):].reset_index(drop=True)
-            logger(f"[{key}] Sliced DataFrame to {len(df)} rows for historical inference.")
+            logger.info(f"[{key}] Sliced DataFrame to {len(df)} rows for historical inference.")
             X_seq = preprocess_common_batch(model, df=df, seq_len=seq_len, return_first=True)
-            logger(f"[{key}] Preprocessed {len(X_seq)} sequences for historical inference.")
+            logger.info(f"[{key}] Preprocessed {len(X_seq)} sequences for historical inference.")
 
             # map datetime → row index for fast lookup
             pos_map = {t: i for i, t in enumerate(df['open_time'])}
@@ -121,14 +121,14 @@ def build_pipeline(app, crypto, model, version):
             # build df_temp_upsert once at the end
             df_temp_upsert = pd.DataFrame(rows_for_upsert) ### this will be used to upsert into db (redundancy for insert)
 
-            logger(f"[{key}] Missing prediction dates: , prepared {len(inp)} sequences for inference.")
+            logger.info(f"[{key}] Missing prediction dates: , prepared {len(inp)} sequences for inference.")
             pred = get_predictions(inp, crypto, model, version)
             pred_db = [pred[i] for i in db_missing_pred_dates_pred_idx]
             
             if len(pred)>0:
-                logger(f"[{key}] Obtained {len(pred_db)} predictions for upserting into DB.")
+                logger.info(f"[{key}] Obtained {len(pred_db)} predictions for upserting into DB.")
                 crypto_db.upsert_predictions(crypto.lower(), model.lower(), int(version[1:]), missing_pred_dates_db, pred_db, df_temp_upsert)
-                logger(f"[{key}] Upserted missing predictions into DB.")
+                logger.info(f"[{key}] Upserted missing predictions into DB.")
 
                 ### upsert into csv
                 df_upsert = pd.DataFrame()
@@ -136,25 +136,25 @@ def build_pipeline(app, crypto, model, version):
                 df_upsert["open_time"] = pd.to_datetime(df_upsert["open_time"])
                 df_upsert["pred"] = pred
                 df_upsert = df_upsert[~df_upsert["open_time"].isin(df_pred["open_time"])]
-                logger(f"[{key}] Prepared {len(df_upsert)} new rows to upsert into CSV.")
+                logger.info(f"[{key}] Prepared {len(df_upsert)} new rows to upsert into CSV.")
                 df_pred = pd.concat([df_pred, df_upsert], ignore_index=True)
                 df_pred = df_pred.sort_values(by="open_time").reset_index(drop=True)
                 df_pred = df_pred.drop_duplicates(subset=["open_time"])
                 df_pred.to_csv(pred_path, index=False)
-                logger(f"[{key}] Upserted missing predictions into CSV at {pred_path}.")
+                logger.info(f"[{key}] Upserted missing predictions into CSV at {pred_path}.")
 
             del inp, pred, rows_for_upsert, df_upsert
             ### delete the dataframe to free memory
         del df
         gc.collect()
-        logger(f"[{key}] Historical inference completed.")
+        logger.info(f"[{key}] Historical inference completed.")
     
     df_pred = pd.read_csv(pred_path)
-    logger(f"[{key}] Loaded existing predictions from CSV, {len(df_pred)} rows.")
-    logger(f"[{key}] DB predictions count:", crypto_db.get_total_pred_count(crypto.lower(), model.lower(), int(version[1:])))
+    logger.info(f"[{key}] Loaded existing predictions from CSV, {len(df_pred)} rows.")
+    logger.info(f"[{key}] DB predictions count:", crypto_db.get_total_pred_count(crypto.lower(), model.lower(), int(version[1:])))
             
     if args.start:
-        logger(f"[{key}] Starting immediately as per --start flag.")
+        logger.info(f"[{key}] Starting immediately as per --start flag.")
         state_write(crypto, model, version, "start")
     else:
         state_write(crypto, model, version, "wait")
@@ -167,12 +167,12 @@ def build_pipeline(app, crypto, model, version):
             while True:
                 state = state_checker(crypto, model, version)
                 if state == "delete":
-                    logger(f"[{key}] Deletion requested, exiting consumer.")
+                    logger.info(f"[{key}] Deletion requested, exiting consumer.")
                     state_write(crypto, model, version, "stopped")
                     app.stop()
                     return None
                 elif state == "start":
-                    logger(f"[{key}] Starting processing.")
+                    logger.info(f"[{key}] Starting processing.")
                     state_write(crypto, model, version, "running")
                     break  
                 time.sleep(1)
@@ -182,23 +182,23 @@ def build_pipeline(app, crypto, model, version):
             ### after resuming we need to start from last known state
             ### if the version was deleted or new v3 or new v2 we need to find where to start listening from
             df_pred = pd.read_csv(pred_path)
-            logger(f"[{key}] Loaded existing predictions from CSV, {len(df_pred)} rows.")
-            logger(f"[{key}] DB predictions count:", crypto_db.get_total_pred_count(crypto.lower(), model.lower(), int(version[1:])))
+            logger.info(f"[{key}] Loaded existing predictions from CSV, {len(df_pred)} rows.")
+            logger.info(f"[{key}] DB predictions count:", crypto_db.get_total_pred_count(crypto.lower(), model.lower(), int(version[1:])))
             last_csv_open_time = None
             if not df_pred.empty:
                 df_pred["open_time"] = pd.to_datetime(df_pred["open_time"])
                 last_csv_open_time = df_pred["open_time"].max()
-                logger(f"[{key}] Last prediction time from CSV:", last_csv_open_time)
+                logger.info(f"[{key}] Last prediction time from CSV:", last_csv_open_time)
             else:
-                logger(f"[{key}] No existing predictions found.")
+                logger.info(f"[{key}] No existing predictions found.")
         
-            logger(f"[{key}] Resuming processing.")
+            logger.info(f"[{key}] Resuming processing.")
             ### get the minimum of last_csv_open_time and psql_last_time and start from there (ideally psql_last_time which should be equal to last_csv_open_time)
             psql_last_time = pd.to_datetime(crypto_db.get_first_missing_date(crypto.lower(), model.lower(), int(version[1:])))
             df_full = pd.read_csv(f"/opt/airflow/custom_persistent_shared/data/prices/{crypto}.csv")
             df_full["open_time"] = pd.to_datetime(df_full["open_time"])
             
-            logger(f"[{key}] First missing prediction date from DB:", psql_last_time)
+            logger.info(f"[{key}] First missing prediction date from DB:", psql_last_time)
             if psql_last_time:
                 last_time = min(last_csv_open_time, psql_last_time) if last_csv_open_time else psql_last_time
             else:
@@ -211,13 +211,13 @@ def build_pipeline(app, crypto, model, version):
                 start = max(0, pos - (seq_len - 1))  # include last_time itself
                 df_partial = df_full.iloc[start:pos+1].copy()
             else:
-                logger(f"[{key}] Last time {last_time} not found in full data, starting fresh.")
+                logger.info(f"[{key}] Last time {last_time} not found in full data, starting fresh.")
                 df_partial = pd.DataFrame()  # nothing found
                 
             del df_full, idx
             gc.collect()
-            logger(f"[{key}] Reconstructed partial DataFrame with {len(df_partial)} rows for continuity, min time: {df_partial['open_time'].min() if not df_partial.empty else 'N/A'}, max time: {df_partial['open_time'].max() if not df_partial.empty else 'N/A'}.")
-            logger(f"[{key}] Continuing from time: {last_time}")
+            logger.info(f"[{key}] Reconstructed partial DataFrame with {len(df_partial)} rows for continuity, min time: {df_partial['open_time'].min() if not df_partial.empty else 'N/A'}, max time: {df_partial['open_time'].max() if not df_partial.empty else 'N/A'}.")
+            logger.info(f"[{key}] Continuing from time: {last_time}")
             
         records = message  
 
@@ -226,9 +226,9 @@ def build_pipeline(app, crypto, model, version):
         
         df = pd.DataFrame(records)
         df["open_time"] = pd.to_datetime(df["open_time"], format='%Y-%m-%d %H:%M:%S')
-        logger(f"[{key}] New data received, {len(df)} rows before filtering.")
+        logger.info(f"[{key}] New data received, {len(df)} rows before filtering.")
         df = df[df["open_time"]>last_time] if last_time else df
-        logger(f"[{key}] {len(df)} rows after filtering with last_time {last_time}.")
+        logger.info(f"[{key}] {len(df)} rows after filtering with last_time {last_time}.")
         if df.empty:
             return message
         l = len(df)
@@ -236,7 +236,7 @@ def build_pipeline(app, crypto, model, version):
         df_partial = pd.concat([df_partial, df], ignore_index=True)
         df_partial = df_partial.drop_duplicates(subset=["open_time"])
         # df_partial = df_partial[:seq_len]
-        logger(f"[{key}] Runninng length: {len(df_partial)}")
+        logger.info(f"[{key}] Runninng length: {len(df_partial)}")
         df = df_partial.copy()
         
         
@@ -246,24 +246,24 @@ def build_pipeline(app, crypto, model, version):
         #### filer df to only those greater than last_csv_open_time
         
         if not df.empty:
-            logger(f"[{key}] New data received, {len(df)} rows after filtering. time range: {df['open_time'].min()} to {df['open_time'].max()}")
+            logger.info(f"[{key}] New data received, {len(df)} rows after filtering. time range: {df['open_time'].min()} to {df['open_time'].max()}")
             X_seq = preprocess_common_batch(model, df=df, seq_len=seq_len, return_first=True)
             X_seq = X_seq[-l:]
             pred = get_predictions(X_seq, crypto, model, version)
-            logger(f"[{key}] Obtained {len(pred)} new predictions.")
-            logger(len(pred), len(df))
+            logger.info(f"[{key}] Obtained {len(pred)} new predictions.")
+            logger.info(len(pred), len(df))
             crypto_db.upsert_predictions(crypto.lower(), model.lower(), int(version[1:]), df['open_time'][-l:], pred, df[-l:])
-            logger(f"[{key}] Upserted new predictions into DB.")
+            logger.info(f"[{key}] Upserted new predictions into DB.")
             df = df[["open_time"]][-l:]
             df["pred"] = pred
             
-            logger(f"[{key}] Before appending, CSV has {len(df_pred)} rows.")
+            logger.info(f"[{key}] Before appending, CSV has {len(df_pred)} rows.")
             df_pred = pd.concat([df_pred, df], ignore_index=True)
             df_pred = df_pred.sort_values(by="open_time").reset_index(drop=True)
             df_pred = df_pred.drop_duplicates(subset=["open_time"])
-            logger(f"[{key}] After appending, CSV has {len(df_pred)} rows.")
+            logger.info(f"[{key}] After appending, CSV has {len(df_pred)} rows.")
             df_pred.to_csv(pred_path, index=False)
-            logger(f"[{key}] Appended new predictions to CSV at {pred_path}.")
+            logger.info(f"[{key}] Appended new predictions to CSV at {pred_path}.")
         
             return message
 
@@ -283,19 +283,19 @@ def build_pipeline(app, crypto, model, version):
     #     c = c.upper()
     #     m = m.lower()
     #     v = v.lower()
-    #     logger(f"[{key}] Command parts: (c, m, v)=({c}, {m}, {v}), action={action}, MATCH={ (c, m, v) == key }")
+    #     logger.info(f"[{key}] Command parts: (c, m, v)=({c}, {m}, {v}), action={action}, MATCH={ (c, m, v) == key }")
         
     #     if (c, m, v) != key:
     #         return
     #     if action == "RESUME":
     #         pause_flags[key] = False
-    #         logger(f"[{key}] Resumed.")
+    #         logger.info(f"[{key}] Resumed.")
     #     elif action == "PAUSE":
     #         pause_flags[key] = True
-    #         logger(f"[{key}] Paused.")
+    #         logger.info(f"[{key}] Paused.")
     #     elif action == "DELETE":
     #         delete_flags[key] = True
-    #         logger(f"[{key}] Deletion flag set. Consumer will exit if paused or after current processing.")
+    #         logger.info(f"[{key}] Deletion flag set. Consumer will exit if paused or after current processing.")
 
     # control_df = control_df.update(handle_control)
 
@@ -315,5 +315,5 @@ app = Application(
     state_dir="/opt/airflow/custom_persistent_shared/quix_state"
 )
 build_pipeline(app, args.crypto, args.model, args.version)
-logger("Consumer running, waiting for control commands...")
+logger.info("Consumer running, waiting for control commands...")
 app.run()
