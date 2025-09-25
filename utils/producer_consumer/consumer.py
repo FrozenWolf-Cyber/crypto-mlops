@@ -125,8 +125,19 @@ def build_pipeline(app, crypto, model, version):
 
             for d in tqdm(missing_pred_dates):
 
+                if d not in pos_map:
+                    ## get the closest date before d
+                    possible_dates = df['open_time'][df['open_time'] < d]
+                    if possible_dates.empty:
+                        ## use first index
+                        inp.append(X_seq[0])
+                    else:
+                        closest_date = possible_dates.max()
+                        idx = pos_map[closest_date]
+                        inp.append(X_seq[idx])
                     
-                idx = pos_map[d]
+                else:
+                    idx = pos_map[d]
                 inp.append(X_seq[idx])
 
                 # collect the ith row (the target prediction time)
