@@ -93,7 +93,11 @@ def build_pipeline(app, crypto, model, version):
         if len(missing_pred_dates) > 0:
             df = df[df['open_time']<=missing_pred_dates.max()]
             ### slice 30 rows before min
-            ith_idx = df.index[df['open_time'] == missing_pred_dates.min()]
+            target_date = missing_pred_dates.min()   # or any other reference date
+            diff = (df['open_time'] - target_date).abs()
+            ith_idx = diff.idxmin()
+
+
             df = df.iloc[max(0, ith_idx[0]-seq_len+1):].reset_index(drop=True)
             logger.info(f"[{key}] Sliced DataFrame to {len(df)} rows for historical inference.")
             X_seq = preprocess_common_batch(model, df=df, seq_len=seq_len, return_first=True)
