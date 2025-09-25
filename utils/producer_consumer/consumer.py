@@ -47,7 +47,7 @@ def get_predictions(inp, crypto, model, version):
     return all_pred
 
 def build_pipeline(app, crypto, model, version):
-    logger = get_logger.info(f"{crypto}_{model}_{version}")
+    logger = get_logger(f"{crypto}_{model}_{version}")
     global df_partial, df_pred, last_time
     key = (crypto, model, version)
 
