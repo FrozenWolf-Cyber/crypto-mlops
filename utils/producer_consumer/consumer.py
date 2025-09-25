@@ -89,6 +89,11 @@ def build_pipeline(app, crypto, model, version):
             pd.concat([pd.Series(missing_pred_dates), csv_missing_dates]).drop_duplicates()
         )
         
+        logger.info(f"[{key}] Oldest missing prediction date in DB: {oldest_missing if oldest_missing else 'N/A'}")
+        ## print sample min and max missing dates in df and db
+        logger.info(f"[{key}] sample missing prediction dates in DB: {missing_pred_dates_db[:5].tolist() if len(missing_pred_dates_db)>0 else 'N/A'}")
+        logger.info(f"[{key}] sample missing prediction dates in df: {csv_missing_dates[:5].tolist() if len(csv_missing_dates)>0 else 'N/A'}")
+        logger.info(f"[{key}] Total missing prediction dates in DB: {len(missing_pred_dates_db)}.")
         logger.info(f"[{key}] Total missing prediction dates after combining DB and CSV: {len(missing_pred_dates)}.")
         logger.info(f"[{key}] Date range of missing predictions: {missing_pred_dates.min() if len(missing_pred_dates)>0 else 'N/A'} to {missing_pred_dates.max() if len(missing_pred_dates)>0 else 'N/A'}.")
         logger.info(f"[{key}] Date range of available data: {df['open_time'].min()} to {df['open_time'].max()}.")
