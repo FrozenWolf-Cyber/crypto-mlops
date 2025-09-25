@@ -88,7 +88,13 @@ def build_pipeline(app, crypto, model, version):
         missing_pred_dates = pd.to_datetime(
             pd.concat([pd.Series(missing_pred_dates), csv_missing_dates]).drop_duplicates()
         )
-            
+        
+        logger.info(f"[{key}] Total missing prediction dates after combining DB and CSV: {len(missing_pred_dates)}.")
+        logger.info(f"[{key}] Date range of missing predictions: {missing_pred_dates.min() if len(missing_pred_dates)>0 else 'N/A'} to {missing_pred_dates.max() if len(missing_pred_dates)>0 else 'N/A'}.")
+        logger.info(f"[{key}] Date range of available data: {df['open_time'].min()} to {df['open_time'].max()}.")
+        logger.info(f"[{key}] Date range of existing predictions in CSV: {df_pred['open_time'].min() if not df_pred.empty else 'N/A'} to {df_pred['open_time'].max() if not df_pred.empty else 'N/A'}.")
+        logger.info(f"[{key}] Total rows in price data: {len(df)}.")
+         
         logger.info(f"[{key}] Found {len(missing_pred_dates)} missing prediction dates.")
         if len(missing_pred_dates) > 0:
             df = df[df['open_time']<=missing_pred_dates.max()]
