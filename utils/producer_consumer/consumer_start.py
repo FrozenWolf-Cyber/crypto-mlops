@@ -32,7 +32,7 @@ def create_consumer(crypto: str, model: str, version: str):
 
     cmd = [
     "bash", "-c",
-    f"PYTHONPATH=..:$PYTHONPATH python -m utils.producer_consumer.consumer.py"
+    f"PYTHONPATH=..:$PYTHONPATH python -m utils.producer_consumer.consumer "
     f"--crypto {crypto} --model {model} --version {version}"
     ]
     print("[CREATE] Launching:", " ".join(cmd))
