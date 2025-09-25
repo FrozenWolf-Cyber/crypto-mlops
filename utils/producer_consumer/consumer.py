@@ -165,6 +165,7 @@ def build_pipeline(app, crypto, model, version):
         state = state_checker(crypto, model, version)
         if state in ["wait", "pause", "delete", "start"]:
             while True:
+                logger.info(f"[{key}] Consumer LOGS: Current state: {state}, pausing processing.")
                 state = state_checker(crypto, model, version)
                 if state == "delete":
                     logger.info(f"[{key}] Deletion requested, exiting consumer.")
