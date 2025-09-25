@@ -61,7 +61,7 @@ dags:
     enabled: true
     repo: "https://github.com/FrozenWolf-Cyber/crypto-mlops"
     branch: "master"
-    wait: 60
+    wait: 10
   persistence:
     enabled: true
     existingClaim: shared-pvc-airflow

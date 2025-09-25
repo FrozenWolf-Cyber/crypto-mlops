@@ -60,7 +60,7 @@ def build_pipeline(app, crypto, model, version):
     ### fixed problem when producer already has written into .csv and db but consumer failed to listen
     ### find the all the dates where no predictions are present in the db
     pred_path = f"/opt/airflow/custom_persistent_shared/data/predictions/{crypto}/{model}/{version}.csv"
-    logger.info(f"[{key}] Assumed prediction path:", pred_path)
+    logger.info(f"[{key}] Assumed prediction path: {pred_path}")
     params = {"model_name": f"{crypto.lower()}_{model.lower()}", "version": int(version[1:])-1}
     is_available = requests.post(f"http://fastapi-ml:8000/is_model_available", params=params).json()['available']
     if not is_available:
@@ -151,7 +151,7 @@ def build_pipeline(app, crypto, model, version):
     
     df_pred = pd.read_csv(pred_path)
     logger.info(f"[{key}] Loaded existing predictions from CSV, {len(df_pred)} rows.")
-    logger.info(f"[{key}] DB predictions count:", crypto_db.get_total_pred_count(crypto.lower(), model.lower(), int(version[1:])))
+    logger.info(f"[{key}] DB predictions count: {crypto_db.get_total_pred_count(crypto.lower(), model.lower(), int(version[1:]))}")
             
     if args.start:
         logger.info(f"[{key}] Starting immediately as per --start flag.")
@@ -183,12 +183,12 @@ def build_pipeline(app, crypto, model, version):
             ### if the version was deleted or new v3 or new v2 we need to find where to start listening from
             df_pred = pd.read_csv(pred_path)
             logger.info(f"[{key}] Loaded existing predictions from CSV, {len(df_pred)} rows.")
-            logger.info(f"[{key}] DB predictions count:", crypto_db.get_total_pred_count(crypto.lower(), model.lower(), int(version[1:])))
+            logger.info(f"[{key}] DB predictions count: {crypto_db.get_total_pred_count(crypto.lower(), model.lower(), int(version[1:]))}")
             last_csv_open_time = None
             if not df_pred.empty:
                 df_pred["open_time"] = pd.to_datetime(df_pred["open_time"])
                 last_csv_open_time = df_pred["open_time"].max()
-                logger.info(f"[{key}] Last prediction time from CSV:", last_csv_open_time)
+                logger.info(f"[{key}] Last prediction time from CSV: {last_csv_open_time}")
             else:
                 logger.info(f"[{key}] No existing predictions found.")
         
@@ -198,7 +198,7 @@ def build_pipeline(app, crypto, model, version):
             df_full = pd.read_csv(f"/opt/airflow/custom_persistent_shared/data/prices/{crypto}.csv")
             df_full["open_time"] = pd.to_datetime(df_full["open_time"])
             
-            logger.info(f"[{key}] First missing prediction date from DB:", psql_last_time)
+            logger.info(f"[{key}] First missing prediction date from DB: {psql_last_time}")
             if psql_last_time:
                 last_time = min(last_csv_open_time, psql_last_time) if last_csv_open_time else psql_last_time
             else:
@@ -251,7 +251,7 @@ def build_pipeline(app, crypto, model, version):
             X_seq = X_seq[-l:]
             pred = get_predictions(X_seq, crypto, model, version)
             logger.info(f"[{key}] Obtained {len(pred)} new predictions.")
-            logger.info(len(pred), len(df))
+            logger.info(f"{len(pred)}, {len(df)}")
             crypto_db.upsert_predictions(crypto.lower(), model.lower(), int(version[1:]), df['open_time'][-l:], pred, df[-l:])
             logger.info(f"[{key}] Upserted new predictions into DB.")
             df = df[["open_time"]][-l:]
@@ -315,5 +315,5 @@ app = Application(
     state_dir="/opt/airflow/custom_persistent_shared/quix_state"
 )
 build_pipeline(app, args.crypto, args.model, args.version)
-logger.info("Consumer running, waiting for control commands...")
+print("Consumer running, waiting for control commands...")
 app.run()
