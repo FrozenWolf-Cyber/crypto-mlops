@@ -162,7 +162,7 @@ def build_pipeline(app, crypto, model, version):
                 df_upsert = pd.DataFrame()
                 df_upsert["open_time"] = missing_pred_dates
                 df_upsert["open_time"] = pd.to_datetime(df_upsert["open_time"])
-                df_upsert["pred"] = pred
+                df_upsert["pred"] = pred_db
                 df_upsert = df_upsert[~df_upsert["open_time"].isin(df_pred["open_time"])]
                 logger.info(f"[{key}] Prepared {len(df_upsert)} new rows to upsert into CSV.")
                 df_pred = pd.concat([df_pred, df_upsert], ignore_index=True)
