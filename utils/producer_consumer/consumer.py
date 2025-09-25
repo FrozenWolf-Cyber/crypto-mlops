@@ -103,7 +103,7 @@ def build_pipeline(app, crypto, model, version):
             diff = (df['open_time'] - target_date).abs()
             ith_idx = diff.idxmin()
 
-            if len(ith_idx) == 0:
+            if ith_idx is None or ith_idx < seq_len:
                 df = df # no slicing possible
             else:
                 df = df.iloc[max(0, ith_idx-seq_len+1):].reset_index(drop=True)
