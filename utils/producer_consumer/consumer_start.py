@@ -5,7 +5,9 @@ from ..trainer.train_utils import download_s3_dataset
 from .consumer_utils import state_write, state_checker, STATE_DIR, delete_all_states
 import time
 manager = S3Manager()
+print("Cleaning up old state files...")
 delete_all_states()
+print("Downloading initial datasets...")
 download_s3_dataset("BTCUSDT", trl_model=True)
 
 def create_dir(path):
@@ -43,7 +45,8 @@ def create_consumer(crypto: str, model: str, version: str):
 procs = []
 for crypto in cryptos:
     for model in models:
-        # manager.download_available_predictions(crypto, model)
+        print(f"[INFO] Downloading available predictions for {crypto} {model}...")
+        manager.download_available_predictions(crypto, model)
         versions_ = manager.get_existing_versions(crypto, model)
         print(f"[INFO] Existing versions for {crypto} {model}: {versions_}")
         for version in versions[:len(versions_)]:
