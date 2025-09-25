@@ -46,8 +46,8 @@ def create_producer(crypto: str, model: str, version: str):
     print("[CREATE] Launching:", " ".join(cmd))
     subprocess.Popen(
     cmd,
-    stdout=subprocess.DEVNULL,
-    stderr=subprocess.DEVNULL,
+    stdout=None,
+    stderr=None,
     stdin=subprocess.DEVNULL,
     close_fds=True,
     start_new_session=True

@@ -44,8 +44,35 @@ def create_consumer(crypto: str, model: str, version: str):
     close_fds=True,
     start_new_session=True
 )
+    
 
+def create_producer(crypto: str, model: str, version: str):
+    if os.path.exists(os.path.join(STATE_DIR, f"{crypto}_{model}_{version}.json")):
+        print(f"[WARNING] State file for {crypto} {model} {version} already exists, removing it first.")
+        os.remove(os.path.join(STATE_DIR, f"{crypto}_{model}_{version}.json"))
+    """Download datasets and launch consumer."""
+    print(f"[CREATE] Preparing producer for {crypto} {model} {version}")
 
+    cmd = ["bash", "-c", "PYTHONPATH=..:$PYTHONPATH python -m utils.producer_consumer.producer"]
+    print("[CREATE] Launching:", " ".join(cmd))
+    subprocess.Popen(
+    cmd,
+    stdout=None,
+    stderr=None,
+    stdin=subprocess.DEVNULL,
+    close_fds=True,
+    start_new_session=True
+)
+
+create_producer("ALL", "producer", "main")
+import time
+while state_checker("ALL", "producer", "main") != "running":
+    time.sleep(1)
+    print("Waiting for producer to start...")
+    
+print("Producer started!!!!.")
+    
+    
 procs = []
 for crypto in cryptos:
     for model in models:
