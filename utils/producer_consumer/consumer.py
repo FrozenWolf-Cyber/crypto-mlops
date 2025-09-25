@@ -103,8 +103,10 @@ def build_pipeline(app, crypto, model, version):
             diff = (df['open_time'] - target_date).abs()
             ith_idx = diff.idxmin()
 
-
-            df = df.iloc[max(0, ith_idx[0]-seq_len+1):].reset_index(drop=True)
+            if len(ith_idx) == 0:
+                df = df # no slicing possible
+            else:
+                df = df.iloc[max(0, ith_idx[0]-seq_len+1):].reset_index(drop=True)
             logger.info(f"[{key}] Sliced DataFrame to {len(df)} rows for historical inference.")
             X_seq = preprocess_common_batch(model, df=df, seq_len=seq_len, return_first=True)
             logger.info(f"[{key}] Preprocessed {len(X_seq)} sequences for historical inference.")
