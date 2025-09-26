@@ -355,7 +355,7 @@ def create_dag1():
 
         for model in models:
             train_models >> monitor_tasks[model]
-
+            train_models >> monitor_tasks_vastkill[model]
         # for each monitor, insert a neutral node
 
         for model in models:
