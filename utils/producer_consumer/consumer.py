@@ -135,8 +135,7 @@ def build_pipeline(app, crypto, model, version):
             db_missing_pred_dates_pred_idx = []
             logger.info(missing_pred_dates_db[:5])
             logger.info(missing_pred_dates[:5])
-            logger.info(missing_pred_dates.keys())
-            logger.info(missing_pred_dates_db.keys())
+            missing_pred_dates_db_dates = set(missing_pred_dates_db.values)
             for d in tqdm(missing_pred_dates):
 
                 if d not in pos_map:
@@ -156,7 +155,8 @@ def build_pipeline(app, crypto, model, version):
 
                 # collect the ith row (the target prediction time)
 
-                if d in missing_pred_dates_db:
+                ## check if d in missing_pred_dates_db
+                if d in missing_pred_dates_db_dates:
                     rows_for_upsert.append(df.iloc[idx])
                     db_missing_pred_dates_pred_idx.append(len(inp)-1)  # index in inp list
 
