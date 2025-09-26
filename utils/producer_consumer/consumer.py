@@ -131,7 +131,8 @@ def build_pipeline(app, crypto, model, version):
             inp = []
             rows_for_upsert = []
             db_missing_pred_dates_pred_idx = []
-
+            logger.info(missing_pred_dates_db[:5])
+            logger.info(missing_pred_dates[:5])
             for d in tqdm(missing_pred_dates):
 
                 if d not in pos_map:
@@ -157,7 +158,7 @@ def build_pipeline(app, crypto, model, version):
 
             # build df_temp_upsert once at the end
             df_temp_upsert = pd.DataFrame(rows_for_upsert) ### this will be used to upsert into db (redundancy for insert)
-
+            logger.info(f"[{key}] Prepared {len(df_temp_upsert)} rows for DB upsertion.")
             logger.info(f"[{key}] Missing prediction dates: , prepared {len(inp)} sequences for inference.")
             pred = get_predictions(inp, crypto, model, version)
             pred_db = [pred[i] for i in db_missing_pred_dates_pred_idx]
