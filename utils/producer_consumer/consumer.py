@@ -63,20 +63,24 @@ def build_pipeline(app, crypto, model, version):
     logger.info(f"[{key}] Assumed prediction path: {pred_path}")
     params = {"model_name": f"{crypto.lower()}_{model.lower()}", "version": int(version[1:])-1}
     is_available = requests.post(f"http://fastapi-ml:8000/is_model_available", params=params).json()['available']
+    logger.info(f"Model availability for {params}: {is_available}")
     if not is_available:
         logger.info(f"[{key}] Model not available yet, skipping historical inference.")
         df_pred = pd.DataFrame(columns=["open_time", "prediction"])
     else:
+        logger.info(f"[{key}] Model available, proceeding with historical inference.")
         # get missing prediction dates from db
         missing_pred_dates = pd.to_datetime(
             crypto_db.get_missing_prediction_times(crypto.lower(), model.lower(), int(version[1:]))
         )
+        logger.info(f"[{key}] Missing prediction dates from DB: {missing_pred_dates[:5].tolist() if len(missing_pred_dates)>0 else 'N/A'}")
         missing_pred_dates_db = missing_pred_dates.copy() ## select them for upsertion
         logger.info(f"[{key}] Found {len(missing_pred_dates)} missing prediction dates in DB.")
         oldest_missing = missing_pred_dates.min() if len(missing_pred_dates)>0 else pd.to_datetime( pd.to_datetime(crypto_db.get_last_date(crypto.lower())))
         
         ### check missing data in csv older than oldest_missing
         df_pred = pd.read_csv(pred_path)
+        logger.info(f"[{key}] Loaded existing predictions from CSV, {len(df_pred)} rows.")
         df = pd.read_csv(f"/opt/airflow/custom_persistent_shared/data/prices/{crypto}.csv")
         df['open_time'] = pd.to_datetime(df['open_time'], format='%Y-%m-%d %H:%M:%S')
         df = df.sort_values("open_time").reset_index(drop=True)
