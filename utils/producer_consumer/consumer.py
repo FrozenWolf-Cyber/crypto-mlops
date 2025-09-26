@@ -135,7 +135,7 @@ def build_pipeline(app, crypto, model, version):
             db_missing_pred_dates_pred_idx = []
             logger.info(missing_pred_dates_db[:5])
             logger.info(missing_pred_dates[:5])
-            missing_pred_dates_db_dates = set(missing_pred_dates_db.values)
+            missing_pred_dates_db_dates = list(missing_pred_dates_db.values)
             logger.info(missing_pred_dates_db_dates[:5])
             logger.info(missing_pred_dates_db_dates[0]==missing_pred_dates.values[0])
             logger.info(missing_pred_dates_db_dates[0], missing_pred_dates.values[0])
