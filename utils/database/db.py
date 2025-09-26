@@ -490,6 +490,21 @@ class CryptoDB:
         with self.engine.begin() as conn:
             result = conn.execute(query).fetchall()
         return [row[0] for row in result]
+    
+    def get_missing_prediction_date_range(self, table_name, model, version):
+        table_name = table_name.lower()
+        model = model.lower()
+        col_name = model if version is None else f"{model}_{version}"
+        query = text(f"""
+            SELECT MIN(open_time) AS first_missing, MAX(open_time) AS last_missing
+            FROM {table_name}
+            WHERE {col_name} IS NULL
+        """)
+        with self.engine.begin() as conn:
+            result = conn.execute(query).fetchone()
+        if result and result.first_missing and result.last_missing:
+            return result.first_missing, result.last_missing
+        return None, None
 
     def upsert_predictions(self, table_name, model, version, open_times, predictions, original_df, threshold=100):
         """

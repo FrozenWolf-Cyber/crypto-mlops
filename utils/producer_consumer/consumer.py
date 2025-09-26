@@ -68,16 +68,7 @@ def build_pipeline(app, crypto, model, version):
         logger.info(f"[{key}] Model not available yet, skipping historical inference.")
         df_pred = pd.DataFrame(columns=["open_time", "prediction"])
     else:
-        logger.info(f"[{key}] Model available, proceeding with historical inference.")
-        # get missing prediction dates from db
-        missing_pred_dates = pd.to_datetime(
-            crypto_db.get_missing_prediction_times(crypto.lower(), model.lower(), int(version[1:]))
-        )
-        logger.info(f"[{key}] Missing prediction dates from DB: {missing_pred_dates[:5].tolist() if len(missing_pred_dates)>0 else 'N/A'}")
-        missing_pred_dates_db = missing_pred_dates.copy() ## select them for upsertion
-        logger.info(f"[{key}] Found {len(missing_pred_dates)} missing prediction dates in DB.")
-        oldest_missing = missing_pred_dates.min() if len(missing_pred_dates)>0 else pd.to_datetime( pd.to_datetime(crypto_db.get_last_date(crypto.lower())))
-        
+
         ### check missing data in csv older than oldest_missing
         df_pred = pd.read_csv(pred_path)
         logger.info(f"[{key}] Loaded existing predictions from CSV, {len(df_pred)} rows.")
@@ -85,6 +76,20 @@ def build_pipeline(app, crypto, model, version):
         df['open_time'] = pd.to_datetime(df['open_time'], format='%Y-%m-%d %H:%M:%S')
         df = df.sort_values("open_time").reset_index(drop=True)
         df_pred["open_time"] = pd.to_datetime(df_pred["open_time"])
+
+        logger.info(f"[{key}] Model available, proceeding with historical inference.")
+        # get missing prediction dates from db
+        # missing_pred_dates = pd.to_datetime(
+        #     crypto_db.get_missing_prediction_times(crypto.lower(), model.lower(), int(version[1:]))
+        # )
+        ## get start and end date of missing dates from db instead of all missing dates to reduce memory usage
+        start_date, end_date = crypto_db.get_missing_prediction_date_range(crypto.lower(), model.lower(), int(version[1:]))
+        missing_pred_dates = df["open_time"][(df["open_time"] >= start_date) & (df["open_time"] <= end_date)]
+        logger.info(f"[{key}] Missing prediction dates from DB: {missing_pred_dates[:5].tolist() if len(missing_pred_dates)>0 else 'N/A'}")
+        missing_pred_dates_db = missing_pred_dates.copy() ## select them for upsertion
+        logger.info(f"[{key}] Found {len(missing_pred_dates)} missing prediction dates in DB.")
+        oldest_missing = missing_pred_dates.min() if len(missing_pred_dates)>0 else pd.to_datetime( pd.to_datetime(crypto_db.get_last_date(crypto.lower())))
+        
 
         csv_missing_dates = df[df["open_time"] < oldest_missing ]["open_time"]
         csv_missing_dates = csv_missing_dates[csv_missing_dates>df_pred["open_time"].max()] if not df_pred.empty else missing_pred_dates_db
