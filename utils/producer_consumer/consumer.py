@@ -135,7 +135,8 @@ def build_pipeline(app, crypto, model, version):
             db_missing_pred_dates_pred_idx = []
             logger.info(missing_pred_dates_db[:5])
             logger.info(missing_pred_dates[:5])
-            logger.info(missing_pred_dates[0]==missing_pred_dates_db[0])
+            logger.info(missing_pred_dates.keys())
+            logger.info(missing_pred_dates_db.keys())
             for d in tqdm(missing_pred_dates):
 
                 if d not in pos_map:
