@@ -87,6 +87,7 @@ airflow_execution_info()
 from airflow import DAG
 from airflow.providers.standard.operators.python import PythonOperator, BranchPythonOperator
 from airflow.providers.standard.operators.bash import BashOperator
+from airflow.providers.standard.operators.empty import EmptyOperator
 from airflow.utils.trigger_rule import TriggerRule
 import sys
 import os
@@ -219,8 +220,9 @@ def create_dag1():
         start_date=start_date,
         catchup=False,
         max_active_runs=1,
-        # dagrun_timeout=timedelta(hours=3),
-        # on_failure_callback=cleanup_on_timeout
+        dagrun_timeout=timedelta(hours=3),
+        on_failure_callback=cleanup_on_timeout,
+        on_success_callback=cleanup_on_timeout,
     ) as dag:
 
         start_pretrain = BashOperator(
@@ -329,20 +331,7 @@ def create_dag1():
                 on_success_callback=log_success,
                 on_failure_callback=log_failure,
         )
-
-        start_pretrain >> flush_and_init >> train_models
-
-        for model in models:
-            train_models >> monitor_tasks[model]
-
-        # connect each monitor task to kill_instances
-        monitor_task_list = list(monitor_tasks.values())
-        for m in monitor_task_list:
-            m >> kill_instances
-
-        for model in models:
-            monitor_tasks[model] >> [post_tasks[model], skip_task]
-
+        
         final_kill = BashOperator(
             task_id="final_kill_kill_vast_ai_instances",
             bash_command="PYTHONPATH=..:$PYTHONPATH python -m utils.utils.kill_vast_ai_instances",
@@ -351,6 +340,28 @@ def create_dag1():
             on_success_callback=log_success,
             on_failure_callback=log_failure,
         )
+        
+
+        start_pretrain >> flush_and_init >> train_models
+
+        for model in models:
+            train_models >> monitor_tasks[model]
+
+        # for each monitor, insert a neutral node
+        join_monitors = []
+
+        for model in models:
+            monitor_tasks[model] >> [post_tasks[model], skip_task]
+            j = EmptyOperator(
+                task_id=f"join_{monitor_tasks[model].task_id}",
+                trigger_rule=TriggerRule.ALWAYS,  # ALWAYS ensures this runs even if skipped/fail upstream
+            )
+            monitor_tasks[model] >> j
+            join_monitors.append(j)
+            
+        # connect each monitor task to kill_instances
+        join_monitors >> kill_instances
+
 
         post_tasks_list = list(post_tasks.values())
         for t in post_tasks_list + [skip_task]:
