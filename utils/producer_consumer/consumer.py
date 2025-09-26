@@ -176,7 +176,7 @@ def build_pipeline(app, crypto, model, version):
             
             if len(pred)>0:
                 logger.info(f"[{key}] Obtained {len(pred_db)} predictions for upserting into DB.")
-                crypto_db.upsert_predictions(crypto.lower(), model.lower(), int(version[1:]), missing_pred_dates_db, pred_db, df_temp_upsert)
+                crypto_db.upsert_predictions(crypto.lower(), model.lower(), int(version[1:]), missing_pred_dates, pred_db, df_temp_upsert)
                 logger.info(f"[{key}] Upserted missing predictions into DB.")
 
                 ### upsert into csv
