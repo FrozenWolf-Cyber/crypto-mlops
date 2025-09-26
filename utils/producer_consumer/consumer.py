@@ -151,7 +151,7 @@ def build_pipeline(app, crypto, model, version):
                 inp.append(X_seq[idx])
 
                 # collect the ith row (the target prediction time)
-                
+                print(d, d in missing_pred_dates_db)
                 if d in missing_pred_dates_db:
                     rows_for_upsert.append(df.iloc[idx])
                     db_missing_pred_dates_pred_idx.append(len(inp)-1)  # index in inp list
