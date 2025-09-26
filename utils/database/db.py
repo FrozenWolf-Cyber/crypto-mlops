@@ -256,7 +256,7 @@ class CryptoDB:
         with self.engine.begin() as conn:
             result = conn.execute(query_last_date).scalar()
         last_date = result if result else None
-    
+        last_date = pd.to_datetime(last_date, utc=True)
         print(f"Last date in DB for {coin}: {last_date}")
         print(f"Last date in CSV for {coin}: {df['open_time'].max()}")
     
