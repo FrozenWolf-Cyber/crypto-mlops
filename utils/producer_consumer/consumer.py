@@ -138,10 +138,11 @@ def build_pipeline(app, crypto, model, version):
             missing_pred_dates_db_dates = list(missing_pred_dates_db.values)
             missing_pred_dates_db_dates = set(missing_pred_dates_db_dates)
             print(missing_pred_dates_db.values[0] in missing_pred_dates_db_dates)
+            print(missing_pred_dates.values[0] in missing_pred_dates_db_dates)
             # print(missing_pred_dates_db_dates[:5])
             # print(missing_pred_dates_db_dates[0]==missing_pred_dates.values[0])
             # print(missing_pred_dates_db_dates[0], missing_pred_dates.values[0])
-            for d in tqdm(missing_pred_dates):
+            for d in tqdm(missing_pred_dates.values):
 
                 if d not in pos_map:
                     ## get the closest date before d
