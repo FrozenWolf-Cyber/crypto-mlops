@@ -381,3 +381,25 @@ def create_dag_initial():
     return dag
 
 dag_initial = create_dag_initial()
+
+
+
+def delete_all_process():
+    with DAG(
+        'consumer_delete', ## never run this dag, only for manual cleanup
+        schedule=None,  # Runs never
+        start_date=start_date_earlier,
+        catchup=False,
+        max_active_runs=1
+    ) as dag:
+
+        kill = BashOperator(
+            task_id='consumer_delete',
+            bash_command='PYTHONPATH=..:$PYTHONPATH python -m utils.producer_consumer.kill_all',
+                on_execute_callback=log_start,
+                on_success_callback=log_success,
+                on_failure_callback=log_failure,
+        )
+    return dag
+
+dag_delete_all_process = delete_all_process()
