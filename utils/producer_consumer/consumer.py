@@ -98,6 +98,8 @@ def build_pipeline(app, crypto, model, version):
             pd.concat([pd.Series(missing_pred_dates), csv_missing_dates]).drop_duplicates()
         )
         
+        missing_pred_dates_db = pd.to_datetime(missing_pred_dates_db)
+        
         logger.info(f"[{key}] Oldest missing prediction date in DB: {oldest_missing if oldest_missing else 'N/A'}")
         ## print sample min and max missing dates in df and db
         logger.info(f"[{key}] sample missing prediction dates in DB: {missing_pred_dates_db[:5].tolist() if len(missing_pred_dates_db)>0 else 'N/A'}")
@@ -133,6 +135,7 @@ def build_pipeline(app, crypto, model, version):
             db_missing_pred_dates_pred_idx = []
             logger.info(missing_pred_dates_db[:5])
             logger.info(missing_pred_dates[:5])
+            logger.info(missing_pred_dates[0]==missing_pred_dates_db[0])
             for d in tqdm(missing_pred_dates):
 
                 if d not in pos_map:
@@ -151,7 +154,7 @@ def build_pipeline(app, crypto, model, version):
                 inp.append(X_seq[idx])
 
                 # collect the ith row (the target prediction time)
-                print(d, d in missing_pred_dates_db)
+
                 if d in missing_pred_dates_db:
                     rows_for_upsert.append(df.iloc[idx])
                     db_missing_pred_dates_pred_idx.append(len(inp)-1)  # index in inp list
