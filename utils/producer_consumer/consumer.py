@@ -133,12 +133,12 @@ def build_pipeline(app, crypto, model, version):
             inp = []
             rows_for_upsert = []
             db_missing_pred_dates_pred_idx = []
-            logger.info(missing_pred_dates_db[:5])
-            logger.info(missing_pred_dates[:5])
+            print(missing_pred_dates_db[:5])
+            print(missing_pred_dates[:5])
             missing_pred_dates_db_dates = list(missing_pred_dates_db.values)
-            logger.info(missing_pred_dates_db_dates[:5])
-            logger.info(missing_pred_dates_db_dates[0]==missing_pred_dates.values[0])
-            logger.info(missing_pred_dates_db_dates[0], missing_pred_dates.values[0])
+            print(missing_pred_dates_db_dates[:5])
+            print(missing_pred_dates_db_dates[0]==missing_pred_dates.values[0])
+            print(missing_pred_dates_db_dates[0], missing_pred_dates.values[0])
             for d in tqdm(missing_pred_dates):
 
                 if d not in pos_map:
