@@ -279,11 +279,20 @@ def create_dag1():
             
 
         monitor_tasks = {}
+        monitor_tasks_vastkill = {}
         post_tasks = {}
 
         for model in models:
             monitor_tasks[model] = BranchPythonOperator(
                 task_id=f"monitor_{model}",
+                python_callable=monitor_model_state,
+                op_kwargs={"model_name": model},
+                retries=0,          # how many times to retry
+                retry_delay=timedelta(minutes=1),  # wait between retries
+            )
+            
+            monitor_tasks_vastkill[model] = PythonOperator(
+                task_id=f"monitor_vastkill_line_{model}",
                 python_callable=monitor_model_state,
                 op_kwargs={"model_name": model},
                 retries=0,          # how many times to retry
@@ -348,20 +357,11 @@ def create_dag1():
             train_models >> monitor_tasks[model]
 
         # for each monitor, insert a neutral node
-        join_monitors = []
 
         for model in models:
             monitor_tasks[model] >> [post_tasks[model], skip_task]
-            j = EmptyOperator(
-                task_id=f"join_{monitor_tasks[model].task_id}",
-                trigger_rule=TriggerRule.ALL_DONE,  # ALWAYS ensures this runs even if skipped/fail upstream
-            )
-            monitor_tasks[model] >> j
-            join_monitors.append(j)
             
-        # connect each monitor task to kill_instances
-        join_monitors >> kill_instances
-
+        list(monitor_tasks_vastkill.values()) >> kill_instances
 
         post_tasks_list = list(post_tasks.values())
         for t in post_tasks_list + [skip_task]:
