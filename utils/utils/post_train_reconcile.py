@@ -122,7 +122,7 @@ def main():
     print(f"[STAGE 4] Pushing new v3 predictions to DB and creating consumer")
     ### push new v3 pred to v3 column in psql
     df = pd.read_csv(f"/opt/airflow/custom_persistent_shared/data/predictions/{crypto}/{model}/v3.csv")
-    df['open_time'] = pd.to_datetime(df['open_time'])
+    df['open_time'] = pd.to_datetime(df['open_time'], utc=True, format='mixed')
 
     crypto_db.bulk_update_predictions(crypto.lower(), model, 3, df)
     

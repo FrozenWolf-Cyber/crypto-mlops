@@ -250,7 +250,7 @@ class CryptoDB:
     
         print(f"Reading CSV from {self.data_path}/{coin}.csv")
         df = pd.read_csv(f'{self.data_path}/{coin}.csv')[self.wanted_columns]
-        df['open_time'] = pd.to_datetime(df['open_time'])
+        df['open_time'] = pd.to_datetime(df['open_time'], utc=True, format='mixed')
     
         query_last_date = text(f"SELECT MAX(open_time) as last_date FROM {coin.lower()};")
         with self.engine.begin() as conn:
