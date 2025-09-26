@@ -135,7 +135,7 @@ def build_pipeline(app, crypto, model, version):
             db_missing_pred_dates_pred_idx = []
             # print(missing_pred_dates_db[:5])
             # print(missing_pred_dates[:5])
-            missing_pred_dates_db_dates = list(missing_pred_dates_db.values)
+            missing_pred_dates_db_dates = list(missing_pred_dates.values)
             missing_pred_dates_db_dates = set(missing_pred_dates_db_dates)
             # print(missing_pred_dates_db.values[0] in missing_pred_dates_db_dates)
             # print(missing_pred_dates.values[0] in missing_pred_dates_db_dates)
