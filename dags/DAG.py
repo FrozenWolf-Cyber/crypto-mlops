@@ -354,7 +354,7 @@ def create_dag1():
             monitor_tasks[model] >> [post_tasks[model], skip_task]
             j = EmptyOperator(
                 task_id=f"join_{monitor_tasks[model].task_id}",
-                trigger_rule=TriggerRule.ALWAYS,  # ALWAYS ensures this runs even if skipped/fail upstream
+                trigger_rule=TriggerRule.ALL_DONE,  # ALWAYS ensures this runs even if skipped/fail upstream
             )
             monitor_tasks[model] >> j
             join_monitors.append(j)
