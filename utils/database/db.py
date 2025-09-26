@@ -279,6 +279,7 @@ class CryptoDB:
             chunksize=10000,
         )
         print(f"Bulk inserted {len(df)} rows into {table_name}.")
+        self._keep_last_365_days(table_name)
 
 
     def insert_row(self, table_name, **kwargs):
@@ -328,6 +329,7 @@ class CryptoDB:
                 conn.execute(text(f"DROP TABLE IF EXISTS {temp_table}"))
 
             print(f"Bulk inserted {len(df)} rows into {table_name}.")
+            self._keep_last_365_days(table_name)
         else:
 
             # filter only required columns
@@ -495,6 +497,7 @@ class CryptoDB:
         - If rows <= threshold → row-by-row update, fallback insert.
         - If rows > threshold → bulk update first, then insert missing rows.
         """
+        self._keep_last_365_days(table_name)
         if len(predictions)==0:
             print("No predictions to upsert.")
             return

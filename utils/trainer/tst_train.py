@@ -202,7 +202,7 @@ def main(args):
         model = model.to("cpu")
         onnx_model = convert_to_onnx(model, type="pytorch", sample_input=X_seq[:1])
         mm.save_model(type="tst", model=model, name=f"{coin.lower()}_tst", onnx_model=onnx_model)
-        mm.enforce_retention(f"{coin.lower()}_tst", max_versions=10, delete_s3=True)
+        mm.enforce_retention(f"{coin.lower()}_tst", max_versions=5, delete_s3=True)
         mm.set_production(f"{coin.lower()}_tst", keep_latest_n=2)
 
         print("MLflow run completed:", run.info.run_id, flush=True)
