@@ -590,7 +590,7 @@ class CryptoDB:
             latest_ts = conn.execute(text(latest_query)).scalar()
         if latest_ts is None:
             return
-        cutoff_date = latest_ts - timedelta(days=365)
+        cutoff_date = latest_ts - timedelta(days=180)
         delete_query = f"DELETE FROM {table_name} WHERE {time} < :cutoff"
         with self.engine.begin() as conn:
             conn.execute(text(delete_query), {"cutoff": cutoff_date})
