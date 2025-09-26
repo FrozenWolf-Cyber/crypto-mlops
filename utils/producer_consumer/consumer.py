@@ -135,7 +135,9 @@ def build_pipeline(app, crypto, model, version):
             db_missing_pred_dates_pred_idx = []
             # print(missing_pred_dates_db[:5])
             # print(missing_pred_dates[:5])
-            missing_pred_dates_db_dates = set(missing_pred_dates_db.values.tolist())
+            missing_pred_dates_db_dates = list(missing_pred_dates_db.values)
+            missing_pred_dates_db_dates = set(missing_pred_dates_db_dates)
+            print(missing_pred_dates_db.values[0] in missing_pred_dates_db_dates)
             # print(missing_pred_dates_db_dates[:5])
             # print(missing_pred_dates_db_dates[0]==missing_pred_dates.values[0])
             # print(missing_pred_dates_db_dates[0], missing_pred_dates.values[0])
@@ -160,7 +162,7 @@ def build_pipeline(app, crypto, model, version):
 
                 ## check if d in missing_pred_dates_db
                 if d in missing_pred_dates_db_dates:
-                    print("yessss")
+                    print("hiiii")
                     rows_for_upsert.append(df.iloc[idx])
                     db_missing_pred_dates_pred_idx.append(len(inp)-1)  # index in inp list
 
