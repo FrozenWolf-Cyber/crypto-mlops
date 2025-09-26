@@ -28,7 +28,10 @@ df_pred = None
 last_time = None
 
 def get_predictions(inp, crypto, model, version):
-
+    ## is_model_available at fastapi
+    params = {"model_name": f"{crypto.lower()}_{model.lower()}", "version": int(version[1:])-1}
+    is_available = requests.post(f"http://fastapi-ml:8000/is_model_available", params=params).json()['available']
+    print(f"Model availability for {crypto.lower()}_{model.lower()} version {int(version[1:])-1}: {is_available}")
     for idx in range(len(inp)):
         if isinstance(inp[idx], np.ndarray):
             inp[idx] = inp[idx].tolist()
@@ -39,6 +42,8 @@ def get_predictions(inp, crypto, model, version):
         batch_inp = inp[i:i+5000]
         params = {"model_name": f"{crypto.lower()}_{model.lower()}", "version": int(version[1:])-1}
         pred = requests.post(url, params=params, json=batch_inp)
+        if pred.status_code != 200:
+            raise ValueError(f"Prediction request failed with status {pred.status_code}: {pred.text}")
         pred = pred.json()['predictions']
         if i == 0:
             all_pred = pred
@@ -71,7 +76,7 @@ def build_pipeline(app, crypto, model, version):
 
         ### check missing data in csv older than oldest_missing
         df_pred = pd.read_csv(pred_path)
-        logger.info(f"[{key}] Loaded existing predictions from CSV, {len(df_pred)} rows.")
+        logger.info(f"[{key}] Loaded existing predictions from CSV, {len(df_pred)} rows, start date: {df_pred['open_time'].min() if not df_pred.empty else 'N/A'}, end date: {df_pred['open_time'].max() if not df_pred.empty else 'N/A'}.")
         df = pd.read_csv(f"/opt/airflow/custom_persistent_shared/data/prices/{crypto}.csv")
         df['open_time'] = pd.to_datetime(df['open_time'], format='%Y-%m-%d %H:%M:%S')
         df = df.sort_values("open_time").reset_index(drop=True)
