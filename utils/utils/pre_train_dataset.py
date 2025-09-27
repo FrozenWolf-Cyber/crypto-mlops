@@ -64,9 +64,9 @@ for coin in cryptos:
     full_df = pd.concat([train_df, test_df])
     full_df = full_df.drop_duplicates(subset=["open_time"])
     full_df = full_df.sort_values(by=["open_time"])
-    train_df, test_df = full_df[:-len(test_df)], full_df[-len(test_df):]
+    train_df, test_df = full_df[len(test_df):], full_df[:len(test_df)]
     if len(train_df) > RETENTION_MIN:
-         test_df = test_df[-RETENTION_MIN:]
+        test_df = test_df[-RETENTION_MIN:]
     print(f"Train size: {len(train_df)}, Test size: {len(test_df)}")
     print(f"Start date: {train_df.iloc[0]['open_time']}, End date: {test_df.iloc[-1]['open_time']}")
     
