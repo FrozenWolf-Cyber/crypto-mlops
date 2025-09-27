@@ -76,6 +76,15 @@ def build_pipeline(app, crypto, model, version):
 
         ### check missing data in csv older than oldest_missing
         df_pred = pd.read_csv(pred_path)
+        logger.info(f"[{key}] df_pred dtypes:\n{df_pred.dtypes}")
+        
+        # Check dtype distribution inside the 'open_time' column
+        dtype_counts = df_pred['open_time'].map(type).value_counts()
+        logger.info(f"[{key}] open_time dtype counts:\n{dtype_counts}")
+        
+        # Sample values for inspection
+        logger.info(f"[{key}] Sample values from open_time:\n{df_pred['open_time'].head(10).tolist()}")
+
         logger.info(f"[{key}] Loaded existing predictions from CSV, {len(df_pred)} rows, start date: {df_pred['open_time'].min() if not df_pred.empty else 'N/A'}, end date: {df_pred['open_time'].max() if not df_pred.empty else 'N/A'}.")
         df = pd.read_csv(f"/opt/airflow/custom_persistent_shared/data/prices/{crypto}.csv")
         df['open_time'] = pd.to_datetime(df['open_time'], format='%Y-%m-%d %H:%M:%S')
