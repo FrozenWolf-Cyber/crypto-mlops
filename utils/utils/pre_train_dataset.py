@@ -68,6 +68,7 @@ for coin in cryptos:
     if len(train_df) > RETENTION_MIN:
         test_df = test_df[-RETENTION_MIN:]
     print(f"Train size: {len(train_df)}, Test size: {len(test_df)}")
+    print(f"Train start date: {train_df.iloc[0]['open_time']}, Train end date: {train_df.iloc[-1]['open_time']}")
     print(f"Start date: {train_df.iloc[0]['open_time']}, End date: {test_df.iloc[-1]['open_time']}")
     
     train_df.to_csv(f"{data_path}/{coin}.csv", index=False)
