@@ -300,9 +300,9 @@ def build_pipeline(app, crypto, model, version):
         l = len(df)
         if df_partial is None:
             df_partial = pd.DataFrame()
-        df_partial = df_partial[-(seq_len-1):] if not df_partial.empty else df_partial
         df_partial = pd.concat([df_partial, df], ignore_index=True)
         df_partial = df_partial.drop_duplicates(subset=["open_time"])
+        df_partial = df_partial[-(seq_len-1):] if not df_partial.empty else df_partial
         # df_partial = df_partial[:seq_len]
         logger.info(f"[{key}] Runninng length: {len(df_partial)}")
         df = df_partial.copy()
@@ -322,6 +322,7 @@ def build_pipeline(app, crypto, model, version):
             logger.info(f"{len(pred)}, {len(df)}")
             crypto_db.upsert_predictions(crypto.lower(), model.lower(), int(version[1:]), df['open_time'][-l:], pred, df[-l:])
             logger.info(f"[{key}] Upserted new predictions into DB.")
+            logger.info(f"length of running df: {len(df)}")
             df = df[["open_time"]][-l:]
             df["pred"] = pred
             
