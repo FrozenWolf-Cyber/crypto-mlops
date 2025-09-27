@@ -162,7 +162,7 @@ def build_pipeline(app, crypto, model, version):
                     
                 else:
                     idx = pos_map[d]
-                inp.append(X_seq[idx])
+                    inp.append(X_seq[idx])
 
                 # collect the ith row (the target prediction time)
 
