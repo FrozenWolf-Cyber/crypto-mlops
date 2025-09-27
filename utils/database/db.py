@@ -431,6 +431,15 @@ class CryptoDB:
         # Step 4: bulk insert
         self.bulk_insert_df(temp_table, pred_df)
 
+        ## print number rows that would be updated
+        with self.engine.begin() as conn:
+            count_result = conn.execute(text(f"""
+                SELECT COUNT(*) FROM {table_name} t
+                JOIN {temp_table} tmp ON t.open_time = tmp.open_time
+            """))
+            rows_to_update = count_result.scalar()
+        print(f"Rows to be updated in {table_name}: {rows_to_update}")
+        
         # Step 5: update real table
         with self.engine.begin() as conn:
             update_sql = text(f"""
