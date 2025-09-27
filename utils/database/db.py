@@ -549,16 +549,25 @@ class CryptoDB:
                 self.bulk_update_predictions(table_name, model, version, pred_df)
 
             # 🔹 Now handle inserts for open_times that are missing in DB
-            check_query = text(f"SELECT open_time FROM {table_name} WHERE open_time = ANY(:times)")
+            print("Checking for missing open_times to insert...")
+
+            check_query = text(f"""
+            WITH input_times AS (
+                SELECT UNNEST(:times) AS open_time
+            )
+            SELECT i.open_time
+            FROM input_times i
+            LEFT JOIN {table_name} t ON i.open_time = t.open_time
+            WHERE t.open_time IS NULL
+            """)
 
             # normalize datetime values
             times_param = open_times.tolist()
 
-
             with self.engine.begin() as conn:
-                existing_times = {r[0] for r in conn.execute(check_query, {"times": times_param})}
+                missing_times = [r[0] for r in conn.execute(check_query, {"times": times_param})]
 
-            missing_times = list(set(open_times) - existing_times)
+            print(f"Missing times in DB: {len(missing_times)} out of {len(open_times)}")
 
             if missing_times:
                 print(f"Inserting {len(missing_times)} missing rows...")

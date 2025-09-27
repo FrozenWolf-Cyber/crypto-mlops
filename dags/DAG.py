@@ -204,6 +204,31 @@ def monitor_model_state(model_name, **context):
             time.sleep(10)  # Wait for 10 seconds before checking again
             continue
 
+def monitor_all_state_to_kill(**context):
+    time_limit = 120*60 # 2 hours
+    start_time = time.time()
+    print(f"Monitoring all models to kill instances")
+        
+    while True:
+        if time.time() - start_time > time_limit:
+            ### If time limit exceeded, return skip_model
+            print(f"Time limit exceeded for monitoring all models. Proceeding to kill instances.")
+            return "kill_vast_ai_instances"
+        
+            #         status -> [
+            #     {"model": r[0], "coin": r[1], "state": r[2], "error_message": r[3]}
+            #     for r in rows
+            # ]
+        status = db.get_status()
+        print(f"Current status from DB: {status}")
+        all_done = all(item["state"] in ["SUCCESS", "FAILED"] for item in status)
+        if all_done:
+            print("All models have reached SUCCESS or FAILED state. Proceeding to kill instances.")
+            return "kill_vast_ai_instances"
+        else:
+            print(f"Not all models are done yet. Checking again in 10 seconds...")
+            time.sleep(10)  # Wait for 10 seconds before checking again
+            continue
 
 def cleanup_on_timeout(context):
     kill_all_vastai_instances()
@@ -276,7 +301,7 @@ def create_dag1():
             
 
         monitor_tasks = {}
-        monitor_tasks_vastkill = {}
+        # monitor_tasks_vastkill = {}
         post_tasks = {}
 
         for model in models:
@@ -288,13 +313,13 @@ def create_dag1():
                 retry_delay=timedelta(minutes=1),  # wait between retries
             )
             
-            monitor_tasks_vastkill[model] = PythonOperator(
-                task_id=f"monitor_vastkill_line_{model}",
-                python_callable=monitor_model_state,
-                op_kwargs={"model_name": model},
-                retries=0,          # how many times to retry
-                retry_delay=timedelta(minutes=1),  # wait between retries
-            )
+            # monitor_tasks_vastkill[model] = PythonOperator(
+            #     task_id=f"monitor_vastkill_line_{model}",
+            #     python_callable=monitor_model_state,
+            #     op_kwargs={"model_name": model},
+            #     retries=0,          # how many times to retry
+            #     retry_delay=timedelta(minutes=1),  # wait between retries
+            # )
 
             if model != "trl":
                 crypto, model_type = model.split("_", 1)
@@ -352,14 +377,20 @@ def create_dag1():
 
         for model in models:
             train_models >> monitor_tasks[model]
-            train_models >> monitor_tasks_vastkill[model]
+
+        monitor_all_state_to_kill_task = BranchPythonOperator(
+            task_id="monitor_all_to_kill",
+            python_callable=monitor_all_state_to_kill,
+            retries=0,
+            retry_delay=timedelta(minutes=1),
+        )
+        
         # for each monitor, insert a neutral node
+        train_models >> monitor_all_state_to_kill_task
 
         for model in models:
             monitor_tasks[model] >> [post_tasks[model], skip_task]
-            
-        list(monitor_tasks_vastkill.values()) >> kill_instances
-
+       
         post_tasks_list = list(post_tasks.values())
         for t in post_tasks_list + [skip_task]:
             t >> final_kill
