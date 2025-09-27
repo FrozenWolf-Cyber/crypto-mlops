@@ -76,6 +76,8 @@ def build_pipeline(app, crypto, model, version):
 
         ### check missing data in csv older than oldest_missing
         df_pred = pd.read_csv(pred_path)
+        df_pred["open_time"] = pd.to_datetime(df_pred["open_time"])
+        
         logger.info(f"[{key}] df_pred dtypes:\n{df_pred.dtypes}")
         
         # Check dtype distribution inside the 'open_time' column
@@ -89,7 +91,6 @@ def build_pipeline(app, crypto, model, version):
         df = pd.read_csv(f"/opt/airflow/custom_persistent_shared/data/prices/{crypto}.csv")
         df['open_time'] = pd.to_datetime(df['open_time'], format='%Y-%m-%d %H:%M:%S')
         df = df.sort_values("open_time").reset_index(drop=True)
-        df_pred["open_time"] = pd.to_datetime(df_pred["open_time"])
 
         logger.info(f"[{key}] Model available, proceeding with historical inference.")
         # get missing prediction dates from db
