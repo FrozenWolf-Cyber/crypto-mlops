@@ -92,6 +92,7 @@ from airflow.utils.trigger_rule import TriggerRule
 import sys
 import os
 from utils.utils.vast_ai_train import create_instance
+from utils.utils.kill_vast_ai_instances import kill_all_vastai_instances
 from utils.database.status_db import status_db
 from utils.database.airflow_db import db
 from datetime import timedelta
@@ -205,11 +206,7 @@ def monitor_model_state(model_name, **context):
 
 
 def cleanup_on_timeout(context):
-    import subprocess
-    subprocess.run(
-        ["bash", "-c", "PYTHONPATH=..:$PYTHONPATH python -m utils.utils.kill_vast_ai_instances"],
-        check=False
-    )
+    kill_all_vastai_instances()
 
 
 
@@ -332,22 +329,22 @@ def create_dag1():
                 on_failure_callback=log_failure,
         )
 
-        kill_instances = BashOperator(
-            task_id="kill_vast_ai_instances",
-            bash_command="PYTHONPATH=..:$PYTHONPATH python -m utils.utils.kill_vast_ai_instances",
-            trigger_rule=TriggerRule.ALL_DONE,
+        kill_instances = PythonOperator(
+            task_id='kill_vast_ai_instances',
+            python_callable=kill_all_vastai_instances,
                 on_execute_callback=log_start,
                 on_success_callback=log_success,
                 on_failure_callback=log_failure,
+            
         )
         
-        final_kill = BashOperator(
+        final_kill =   PythonOperator(
             task_id="final_kill_kill_vast_ai_instances",
-            bash_command="PYTHONPATH=..:$PYTHONPATH python -m utils.utils.kill_vast_ai_instances",
-            trigger_rule=TriggerRule.ALL_DONE,
-            on_execute_callback=log_start,
-            on_success_callback=log_success,
-            on_failure_callback=log_failure,
+         python_callable=kill_all_vastai_instances,
+                on_execute_callback=log_start,
+                on_success_callback=log_success,
+                on_failure_callback=log_failure,
+            
         )
         
 
