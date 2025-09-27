@@ -68,6 +68,7 @@ def wait_for_pod(instance_id: str, timeout: int = 600) -> bool:
     start = time.time()
     time.sleep(5) # initial wait before first poll
     while time.time() - start < timeout:
+        print("Time elapsed:", int(time.time() - start), "seconds")
         cmd = ["vastai", "show", "instances", "--raw"]
         result = subprocess.run(cmd, capture_output=True, text=True)
         print("STDOUT:", result.stdout)
