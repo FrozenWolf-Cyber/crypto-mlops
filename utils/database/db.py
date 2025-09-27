@@ -402,8 +402,8 @@ class CryptoDB:
             result = conn.execute(text(f"SELECT MIN(open_time) FROM {table_name}"))
             first_time_in_db = result.scalar()
 
-        print(f"Earliest timestamp in {table_name}: {first_time_in_db}")
-        print(f"Earliest timestamp in input DF: {pred_df['open_time'].min()}")
+        print(f"Earliest timestamp in {table_name}: {first_time_in_db},last in DB: {self.get_last_date(table_name)}")
+        print(f"Earliest timestamp in input DF: {pred_df['open_time'].min()}, last in input DF: {pred_df['open_time'].max()}")
 
         if first_time_in_db is None:
             print(f"No rows exist in {table_name}, skipping update.")
