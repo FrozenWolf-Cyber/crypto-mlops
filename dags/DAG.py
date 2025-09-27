@@ -214,6 +214,7 @@ def monitor_all_state_to_kill(**context):
             ### If time limit exceeded, return skip_model
             print(f"Time limit exceeded for monitoring all models. Proceeding to kill instances.")
             kill_all_vastai_instances()
+            return "kill_vast_ai_instances"
         
             #         status -> [
             #     {"model": r[0], "coin": r[1], "state": r[2], "error_message": r[3]}
@@ -225,6 +226,7 @@ def monitor_all_state_to_kill(**context):
         if all_done:
             print("All models have reached SUCCESS or FAILED state. Proceeding to kill instances.")
             kill_all_vastai_instances()
+            return "kill_vast_ai_instances"
         else:
             print(f"Not all models are done yet. Checking again in 10 seconds...")
             time.sleep(10)  # Wait for 10 seconds before checking again
