@@ -154,6 +154,7 @@ def build_pipeline(app, crypto, model, version):
                     possible_dates = df['open_time'][df['open_time'] < d]
                     if possible_dates.empty:
                         ## use first index
+                        idx = 0
                         inp.append(X_seq[0])
                     else:
                         closest_date = possible_dates.max()
