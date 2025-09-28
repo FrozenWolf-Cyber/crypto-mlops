@@ -79,13 +79,13 @@ def main():
     print(f"[STAGE 1] Deleting existing v2 and v3 consumers...")
     # Step 1: delete v2 and v3 consumer
     for v in ["v2", "v3"]:
-        if state_checker(crypto, model, v) in ["unknown", "deleted"]:
+        if state_checker(crypto, model, v, timeout=2) in ["unknown", "deleted"]:
             print(f"[SKIP] No existing consumer for {crypto} {model} {v}, skipping deletion.")
             continue
         state_write(crypto, model, v, "delete" )
 
     for v in ["v2", "v3"]:
-        if state_checker(crypto, model, v) == "unknown":
+        if state_checker(crypto, model, v, timeout=2) == "unknown":
             print(f"[SKIP] No existing consumer for {crypto} {model} {v}, skipping deletion.")
             continue
         while state_checker(crypto, model, v) != "deleted":

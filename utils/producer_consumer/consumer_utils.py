@@ -26,7 +26,7 @@ def state_write(crypto: str, model: str, version: str, state: str):
         json.dump(data, f)
     print(f"[STATE] {crypto} {model} {version} -> {state}")
 
-def state_checker(crypto: str, model: str, version: str) -> str:
+def state_checker(crypto: str, model: str, version: str, timeout=120) -> str:
     """
     Check the current state of a consumer.
     Returns the state string if exists, otherwise "unknown".
@@ -38,7 +38,7 @@ def state_checker(crypto: str, model: str, version: str) -> str:
     while True:
         try:
             if not os.path.exists(state_file):
-                if time.time() - start > 120:
+                if time.time() - start > timeout:
                     print(f"[STATE CHECK] State file {state_file} not found after 120 seconds, returning 'unknown'.")
                     return "unknown"
                 log.warning("State file %s not found, retrying...", state_file)
