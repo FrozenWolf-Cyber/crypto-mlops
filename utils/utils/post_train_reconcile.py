@@ -87,7 +87,7 @@ def main():
     for v in ["v2", "v3"]:
         if state_checker(crypto, model, v) == "unknown":
             print(f"[SKIP] No existing consumer for {crypto} {model} {v}, skipping deletion.")
-        while state_checker(crypto, model, v) != "stopped":
+        while state_checker(crypto, model, v) != "deleted":
             print(f"[WAIT] Waiting for {crypto} {model} {v} to be deleted...")
             time.sleep(5)
        

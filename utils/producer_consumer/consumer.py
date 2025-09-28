@@ -234,7 +234,7 @@ def build_pipeline(app, crypto, model, version):
                 state = state_checker(crypto, model, version)
                 if state == "delete":
                     logger.info(f"[{key}] Deletion requested, exiting consumer.")
-                    state_write(crypto, model, version, "stopped")
+                    state_write(crypto, model, version, "deleted")
                     app.stop()
                     return None
                 elif state == "start":

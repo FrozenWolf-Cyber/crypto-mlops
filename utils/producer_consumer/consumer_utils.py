@@ -13,7 +13,7 @@ os.makedirs(STATE_DIR, exist_ok=True)
 def state_write(crypto: str, model: str, version: str, state: str):
     """
     Write the current state of a consumer to a JSON file.
-    state: e.g., "running", "paused", "stopped"
+    state: e.g., "running", "paused", "deleted"
     """
     state_file = os.path.join(STATE_DIR, f"{crypto}_{model}_{version}.json")
     data = {
