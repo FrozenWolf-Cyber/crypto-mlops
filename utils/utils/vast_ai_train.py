@@ -128,6 +128,7 @@ def create_instance(DEBUG=False):
     while True:
         if time.time() - start > MAX_TIME_RETRY:
             print("Exceeded maximum retry time. Exiting.")
+            raise RuntimeError("Exceeded maximum retry time.")
             return
         offers = get_offers()
         print(f"Fetched {len(offers)} offers")
