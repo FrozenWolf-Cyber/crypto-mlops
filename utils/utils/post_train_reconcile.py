@@ -66,8 +66,8 @@ def main():
         
         print(f"[INFO] Creating consumer for {crypto} {model} v{version}...")
         create_consumer(crypto, model, f"v{version}")
-        while state_checker(crypto, model, f"v{version}") == "unknown":
-            time.sleep(0.5)
+        while state_checker(crypto, model, f"v{version}") != "wait":
+            time.sleep(1)
         state_write(crypto, model, f"v{version}", "start")
         print(f"[INFO] State file for {crypto} {model} v{version} exists, consumer launched.")
         return
@@ -79,7 +79,7 @@ def main():
     print(f"[STAGE 1] Deleting existing v2 and v3 consumers...")
     # Step 1: delete v2 and v3 consumer
     for v in ["v2", "v3"]:
-        if state_checker(crypto, model, v) == "unknown":
+        if state_checker(crypto, model, v) in ["unknown", "deleted"]:
             print(f"[SKIP] No existing consumer for {crypto} {model} {v}, skipping deletion.")
             continue
         state_write(crypto, model, v, "delete" )
@@ -87,6 +87,7 @@ def main():
     for v in ["v2", "v3"]:
         if state_checker(crypto, model, v) == "unknown":
             print(f"[SKIP] No existing consumer for {crypto} {model} {v}, skipping deletion.")
+            continue
         while state_checker(crypto, model, v) != "deleted":
             print(f"[WAIT] Waiting for {crypto} {model} {v} to be deleted...")
             time.sleep(5)
@@ -110,8 +111,8 @@ def main():
     print(f" Creating new v2 consumers")
     ### start v2 consumer
     create_consumer(crypto, model, "v2")
-    while state_checker(crypto, model, "v2") == "unknown":
-        time.sleep(0.5)
+    while state_checker(crypto, model, "v2") != "wait":
+        time.sleep(1)
     state_write( crypto, model, f"v2", "start")
     
     print(f"[STAGE 3] Download new v3 predictions")
@@ -131,8 +132,8 @@ def main():
     # Step 3: Create again
     create_consumer(crypto, model, "v3")
 
-    while state_checker(crypto, model, "v3") == "unknown":
-        time.sleep(0.5)
+    while state_checker(crypto, model, "v3") != "wait":
+        time.sleep(1)
         
     state_write( crypto, model, "v3", "start")
     print(f"[INFO] State file for {crypto} {model} {v} exists, consumer launched.")
