@@ -116,7 +116,7 @@ def wait_for_pod(instance_id: str, timeout: int = 600) -> bool:
 def create_instance(DEBUG=False):
     kill_all_vastai_instances()  # ensure clean state
     time.sleep(5)  # wait a bit for cleanup
-    BUDGET = 0.2
+    BUDGET = 0.25
     FIND_POD_SLEEP = 30  # seconds
     MAX_POD_WAIT = 600  # seconds
     MAX_TIME_RETRY = 1200 # seconds
