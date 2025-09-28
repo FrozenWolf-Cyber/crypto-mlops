@@ -17,9 +17,9 @@ def create_dir(path):
 print(f"Current working directory: {os.getcwd()}")
 print(f"Script directory: {os.path.dirname(os.path.abspath(__file__))}")
 
-create_dir("/opt/airflow/custom_persistent_shared/data/predictions")
-create_dir("/opt/airflow/custom_persistent_shared/data/prices")
-create_dir("/opt/airflow/custom_persistent_shared/data/articles")
+# create_dir("/opt/airflow/custom_persistent_shared/data/predictions")
+# create_dir("/opt/airflow/custom_persistent_shared/data/prices")
+# create_dir("/opt/airflow/custom_persistent_shared/data/articles")
 
 
 class S3Manager:
@@ -49,33 +49,31 @@ class S3Manager:
 
 
     def _delete_s3_prefix(self, s3_uri: str):
-        """
-        Delete all objects under a given S3 (R2) URI prefix.
-        Works with Cloudflare R2 (no list_buckets).
-
-        Example:
-            s3://mlops/2   → deletes all objects under prefix "2/"
-        """
-        
         parsed = urlparse(s3_uri, allow_fragments=False)
         bucket = parsed.netloc
-        prefix = parsed.path.lstrip("/")  # remove leading "/"
-
+        prefix = parsed.path.lstrip("/")
+    
         print(f"Deleting from bucket={bucket}, prefix={prefix}")
-
+    
         paginator = self.s3.get_paginator("list_objects_v2")
-
+    
         try:
             for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
                 if "Contents" not in page:
                     continue
-                for obj in page["Contents"]:
-                    key = obj["Key"]
-                    print("Deleting:", key)
-                    self.s3.delete_object(Bucket=bucket, Key=key)
-
+                
+                objects_to_delete = [{"Key": obj["Key"]} for obj in page["Contents"]]
+                while objects_to_delete:
+                    batch = objects_to_delete[:1000]
+                    del objects_to_delete[:1000]
+    
+                    self.s3.delete_objects(
+                        Bucket=bucket,
+                        Delete={"Objects": batch, "Quiet": True},
+                    )
         except Exception as e:
             print(f"Error deleting prefix {prefix} from {bucket}: {e}")
+    
     # -------------------
     # DataFrame upload/download with hashing
     # -------------------
@@ -259,23 +257,41 @@ if __name__ == "__main__":
     s3_manager = S3Manager(
   )
 
+    # coins = ["BTCUSDT"]
+    # article_path = f"/opt/airflow/custom_persistent_shared/data/articles/articles.csv"   
+    # s3_manager.upload_df(article_path, bucket='mlops', key=f'articles/articles.parquet')
+    # s3_manager.download_df(article_path, bucket='mlops', key=f'articles/articles.parquet')
+        
+    # for coin in coins:
+            
+    #     prices_path = f"/opt/airflow/custom_persistent_shared/data/prices/{coin}.csv"
+    #     price_test_path = f"/opt/airflow/custom_persistent_shared/data/prices/{coin}_test.csv"
+        
+        
+    #     s3_manager.upload_df(prices_path, bucket='mlops', key=f'prices/{coin}.parquet')
+    #     s3_manager.upload_df(price_test_path, bucket='mlops', key=f'prices/{coin}_test.parquet')
+        
+
+    #     s3_manager.download_df(prices_path, bucket='mlops', key=f'prices/{coin}.parquet')
+    #     s3_manager.download_df(price_test_path, bucket='mlops', key=f'prices/{coin}_test.parquet')
+        
     coins = ["BTCUSDT"]
-    article_path = f"/opt/airflow/custom_persistent_shared/data/articles/articles.csv"   
-    s3_manager.upload_df(article_path, bucket='mlops', key=f'articles/articles.parquet')
-    s3_manager.download_df(article_path, bucket='mlops', key=f'articles/articles.parquet')
+    # article_path = f"/opt/airflow/custom_persistent_shared/data/articles/articles.csv"   
+    # s3_manager.upload_df(article_path, bucket='mlops', key=f'articles/articles.parquet')
+    # s3_manager.download_df(article_path, bucket='mlops', key=f'articles/articles.parquet')
         
     for coin in coins:
             
-        prices_path = f"/opt/airflow/custom_persistent_shared/data/prices/{coin}.csv"
-        price_test_path = f"/opt/airflow/custom_persistent_shared/data/prices/{coin}_test.csv"
+        prices_path = f"/home/frozenwolf/Desktop/{coin}.csv"
+        price_test_path = f"/home/frozenwolf/Desktop/{coin}_test.csv"
         
         
         s3_manager.upload_df(prices_path, bucket='mlops', key=f'prices/{coin}.parquet')
         s3_manager.upload_df(price_test_path, bucket='mlops', key=f'prices/{coin}_test.parquet')
         
 
-        s3_manager.download_df(prices_path, bucket='mlops', key=f'prices/{coin}.parquet')
-        s3_manager.download_df(price_test_path, bucket='mlops', key=f'prices/{coin}_test.parquet')
+        # s3_manager.download_df(prices_path, bucket='mlops', key=f'prices/{coin}.parquet')
+        # s3_manager.download_df(price_test_path, bucket='mlops', key=f'prices/{coin}_test.parquet')
         
 
 # Project directory structure:
