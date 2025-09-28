@@ -356,14 +356,14 @@ def create_dag1():
                 on_failure_callback=log_failure,
         )
 
-        kill_instances = PythonOperator(
-            task_id='kill_vast_ai_instances',
-            python_callable=kill_all_vastai_instances,
-                on_execute_callback=log_start,
-                on_success_callback=log_success,
-                on_failure_callback=log_failure,
+        # kill_instances = PythonOperator(
+        #     task_id='kill_vast_ai_instances',
+        #     python_callable=kill_all_vastai_instances,
+        #         on_execute_callback=log_start,
+        #         on_success_callback=log_success,
+        #         on_failure_callback=log_failure,
             
-        )
+        # )
         
         final_kill =   PythonOperator(
             task_id="final_kill_kill_vast_ai_instances",
@@ -380,13 +380,15 @@ def create_dag1():
         for model in models:
             train_models >> monitor_tasks[model]
 
-        monitor_all_state_to_kill_task = BranchPythonOperator(
-            task_id="monitor_all_to_kill",
+
+        monitor_all_state_to_kill_task =PythonOperator(
+            task_id='monitor_all_to_kill',
             python_callable=monitor_all_state_to_kill,
-            retries=0,
-            retry_delay=timedelta(minutes=1),
+                on_execute_callback=log_start,
+                on_success_callback=log_success,
+                on_failure_callback=log_failure,
+            
         )
-        
         # for each monitor, insert a neutral node
         train_models >> monitor_all_state_to_kill_task
 
