@@ -50,6 +50,8 @@ for crypto in cryptos:
                     
             state_write(crypto, model, version, "delete")
             
+log.info("Waiting for all existing consumers to die...")
+time.sleep(120)  # give some time for states to be written  
 for crypto, model, version in available_comb:
     while state_checker(crypto, model, version) != "deleted":
         log.info(f"Waiting for consumer {crypto} {model} {version} to die...")
