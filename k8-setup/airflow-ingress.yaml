@@ -10,7 +10,7 @@ spec:
     - host: airflow.gokuladethya.uk
       http:
         paths:
-          - path: /(.*)
+          - path: /
             pathType: Prefix
             backend:
               service:
