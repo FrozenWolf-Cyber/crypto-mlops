@@ -19,7 +19,7 @@ def create_dir(path):
         os.makedirs(path)
 
 cryptos = ["BTCUSDT"]
-models = ["lightgbm", "trl"]
+models = ["lightgbm", "tst"]
 versions = ["v1", "v2", "v3"]
 
 
