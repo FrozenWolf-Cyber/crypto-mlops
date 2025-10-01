@@ -302,7 +302,7 @@ def build_pipeline(app, crypto, model, version):
             df_partial = pd.DataFrame()
         df_partial = pd.concat([df_partial, df], ignore_index=True)
         df_partial = df_partial.drop_duplicates(subset=["open_time"])
-        df_partial = df_partial[-(seq_len-1):] if not df_partial.empty else df_partial
+        df_partial = df_partial[-(seq_len):] if not df_partial.empty else df_partial
         # df_partial = df_partial[:seq_len]
         logger.info(f"[{key}] Runninng length: {len(df_partial)}")
         df = df_partial.copy()
