@@ -112,7 +112,7 @@ def annotate_news(df_prices, df_news, window_hours=12, threshold=0.005):
     import numpy as np
     import pandas as pd
 
-    df_prices['open_time'] = pd.to_datetime(df_prices['open_time'], utc=True, utc=True, format='mixed')
+    df_prices['open_time'] = pd.to_datetime(df_prices['open_time'], utc=True, format='mixed')
     df_news['date'] = pd.to_datetime(df_news['date'], utc=True, format="mixed")
 
     # sort news by time
