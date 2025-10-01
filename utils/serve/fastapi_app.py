@@ -5,6 +5,8 @@ import mlflow.pyfunc
 import logging
 import os
 import numpy as np
+import traceback
+import time
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
@@ -15,33 +17,50 @@ Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 
 mm = ModelManager(tracking_uri=os.getenv("MLFLOW_URI"))
 models = {}  # {name: {version: model_object}}
-
+on_refresh = False
 
 @app.post("/refresh")
 def load_production_models():
     """Load current production models (v1 + last 2) into memory."""
-    global models
-    models = {}
-    log_model = {}
-    for coin in ["BTCUSDT"]:
-        for name in ["lightgbm", "tst"]:
-            name = f"{coin.lower()}_{name}"
-
-            try:
-                prod_versions = mm.set_production(name, keep_latest_n=2)
-            except Exception as e:
-                log.error("Error getting prod for %s: %s", name, e)
-                continue
+    if on_refresh:
+        while on_refresh:
+            print("Another refresh is in progress, waiting...")
+            time.sleep(1)
             
-            print(f"Production versions for {name}: {[v.version for v in prod_versions]}")
-            models[name] = {}
-            log_model[name] = []
-            for idx, v in enumerate(prod_versions):
-                print(f"Loading model {name} version {v.version}, run_id: {v.run_id}")
-                models[name][idx] = mm.load_onnx_model(name, v)
-                log.info("Loaded model %s version %s as %d", name, v.version, idx + 1)
-                log_model[name].append((v.version, idx + 1))
+    global on_refresh
+    on_refresh = True
+    
+    try:
+        models_temp = {}
+        models_temp = {}
+        log_model = {}
+        for coin in ["BTCUSDT"]:
+            for name in ["lightgbm", "tst"]:
+                name = f"{coin.lower()}_{name}"
+
+                try:
+                    prod_versions = mm.set_production(name, keep_latest_n=2)
+                except Exception as e:
+                    log.error("Error getting prod for %s: %s", name, e)
+                    continue
                 
+                print(f"Production versions for {name}: {[v.version for v in prod_versions]}")
+                models_temp[name] = {}
+                log_model[name] = []
+                for idx, v in enumerate(prod_versions):
+                    print(f"Loading model {name} version {v.version}, run_id: {v.run_id}")
+                    models_temp[name][idx] = mm.load_onnx_model(name, v)
+                    log.info("Loaded model %s version %s as %d", name, v.version, idx + 1)
+                    log_model[name].append((v.version, idx + 1))
+    except Exception as e:
+        log.info("Traceback: %s", traceback.format_exc())
+        log.error("Error loading models: %s", e)
+        on_refresh = False
+        return {"status": "error loading models"}
+    global models
+    models = models_temp
+    on_refresh = False
+    
     return {"status": "models loaded", "models": log_model}
 
 
@@ -52,6 +71,11 @@ def startup_event():
 
 @app.post("/is_model_available")
 def is_model_available(model_name: str, version: int):
+    global models
+    global on_refresh
+    while on_refresh:
+        print("Refresh in progress, waiting...")
+        time.sleep(1)
     """Check if a model and version is available."""
     if model_name in models :
         if version in models[model_name]:
@@ -64,6 +88,13 @@ def is_model_available(model_name: str, version: int):
 
 @app.post("/predict")
 def predict(model_name: str, version: int, features: list = Body(...)):
+    global models
+    global on_refresh
+    
+    while on_refresh:
+        print("Refresh in progress, waiting...")
+        time.sleep(1)
+        
     """
     features: a list of feature vectors, e.g.
     [[0.1, 0.2, 0.3], [0.5, 0.6, 0.7]]
