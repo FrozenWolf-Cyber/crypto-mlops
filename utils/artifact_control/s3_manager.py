@@ -17,9 +17,9 @@ def create_dir(path):
 print(f"Current working directory: {os.getcwd()}")
 print(f"Script directory: {os.path.dirname(os.path.abspath(__file__))}")
 
-# create_dir("/opt/airflow/custom_persistent_shared/data/predictions")
-# create_dir("/opt/airflow/custom_persistent_shared/data/prices")
-# create_dir("/opt/airflow/custom_persistent_shared/data/articles")
+create_dir("/opt/airflow/custom_persistent_shared/data/predictions")
+create_dir("/opt/airflow/custom_persistent_shared/data/prices")
+create_dir("/opt/airflow/custom_persistent_shared/data/articles")
 
 
 class S3Manager:
