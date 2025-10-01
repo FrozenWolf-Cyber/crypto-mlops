@@ -395,7 +395,7 @@ class CryptoDB:
         temp_table = f"{table_name}_tmp_preds"
 
         # Ensure open_time is datetime
-        pred_df["open_time"] = pd.to_datetime(pred_df["open_time"])
+        pred_df["open_time"] = pd.to_datetime(pred_df["open_time"], utc=True, format='mixed')
 
         # Step 0: find earliest timestamp in DB
         with self.engine.begin() as conn:
@@ -404,7 +404,7 @@ class CryptoDB:
 
         print(f"Earliest timestamp in {table_name}: {first_time_in_db},last in DB: {self.get_last_date(table_name)}")
         print(f"Earliest timestamp in input DF: {pred_df['open_time'].min()}, last in input DF: {pred_df['open_time'].max()}")
-        first_time_in_db = pd.to_datetime(first_time_in_db, utc=True) if first_time_in_db else None
+        first_time_in_db = pd.to_datetime(first_time_in_db, utc=True, format='mixed') if first_time_in_db else None
         if first_time_in_db is None:
             print(f"No rows exist in {table_name}, skipping update.")
             return
