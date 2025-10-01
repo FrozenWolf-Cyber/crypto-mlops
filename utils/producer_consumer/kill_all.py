@@ -21,12 +21,7 @@ def create_dir(path):
 cryptos = ["BTCUSDT"]
 models = ["lightgbm", "trl"]
 versions = ["v1", "v2", "v3"]
-check_producer = False
-if if_state_exists("ALL", "producer", "main"):
-    if state_checker("ALL", "producer", "main") != "deleted":
-        state_write("ALL", "producer", "main", "delete")
-        check_producer = True
-        
+
 
 available_comb = []
 procs = []
@@ -52,6 +47,14 @@ for crypto in cryptos:
             
 log.info("Waiting for all existing consumers to die...")
 time.sleep(120)  # give some time for states to be written  
+
+check_producer = False
+if if_state_exists("ALL", "producer", "main"):
+    if state_checker("ALL", "producer", "main") != "deleted":
+        state_write("ALL", "producer", "main", "delete")
+        check_producer = True
+        
+
 for crypto, model, version in available_comb:
     while state_checker(crypto, model, version) != "deleted":
         log.info(f"Waiting for consumer {crypto} {model} {version} to die...")
