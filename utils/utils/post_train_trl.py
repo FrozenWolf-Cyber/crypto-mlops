@@ -25,7 +25,7 @@ if len(existing_versions) <= 3:
 else:
     print("Reassigning s3 preds")
     manager.reassign_pred_s3("preds", "trl")
-    crypto_db.shift_predictions("trl", "trl", from_version=3, to_version=2)
+    crypto_db.shift_predictions_trl("trl", "trl", from_version=3, to_version=2)
     os.remove("/opt/airflow/custom_persistent_shared/data/predictions/preds/trl/v2.csv")
     os.rename("/opt/airflow/custom_persistent_shared/data/predictions/preds/trl/v3.csv", "/opt/airflow/custom_persistent_shared/data/predictions/preds/trl/v2.csv")
 

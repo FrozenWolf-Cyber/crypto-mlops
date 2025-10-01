@@ -165,6 +165,7 @@ def create_instance(DEBUG=False):
             "MLFLOW_SQLALCHEMY_MAX_OVERFLOW": os.getenv("MLFLOW_SQLALCHEMY_MAX_OVERFLOW"),
             "S3_URL": os.getenv("S3_URL"),
             "DATABASE_URL": os.getenv("DATABASE_URL"),
+            "TRL_DATABASE_URL": os.getenv("TRL_DATABASE_URL"),
             "AWS_DEFAULT_REGION": os.getenv("AWS_DEFAULT_REGION"),
             "MLFLOW_URI": os.getenv("MLFLOW_URI"),
             "MLFLOW_TRACKING_USERNAME": "admin",

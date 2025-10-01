@@ -26,8 +26,9 @@ def normalize_pred(x):
 required_cols = ["open_time", "open", "high", "low", "close", "volume"]
 
 class CryptoDB:
-    def __init__(self, engine, coins, data_path="/opt/airflow/custom_persistent_shared/data/prices", wanted_columns=None):
+    def __init__(self, engine, engine_trl, coins, data_path="/opt/airflow/custom_persistent_shared/data/prices", wanted_columns=None):
         self.engine = engine
+        self.engine_trl = engine_trl
         self.coins = coins
         self.data_path = data_path
         self.wanted_columns = wanted_columns or ["open_time", "open", "high", "low", "close", "volume"]
@@ -72,7 +73,7 @@ class CryptoDB:
             label INT DEFAULT NULL
         );
         """
-        with self.engine.begin() as conn:
+        with self.engine_trl.begin() as conn:
             conn.execute(text(create_table_query))
 
     def reset_trl_version(self, version: int):
@@ -84,7 +85,7 @@ class CryptoDB:
             UPDATE trl
             SET {trl_column} = NULL
         """
-        with self.engine.begin() as conn:
+        with self.engine_trl.begin() as conn:
             conn.execute(text(query))
 
         print(f"All values in column '{trl_column}' have been set to NULL.")
@@ -128,7 +129,7 @@ class CryptoDB:
         if len(df_to_upsert) > 100:
             print("Using temp table for bulk upsert...")
             print("Dropping existing temp table if any...")
-            with self.engine.begin() as conn:
+            with self.engine_trl.begin() as conn:
                 conn.execute(text("DROP TABLE IF EXISTS trl_temp"))
             
             print("Creating new temp table...")
@@ -137,7 +138,7 @@ class CryptoDB:
             df_temp[trl_column] = df_temp['pred_list']
             df_temp['label'] = df_temp['label'].astype('Int64')
             df_temp['price_change'] = df_temp['price_change'].astype(float)
-            df_temp.to_sql(temp_table, self.engine, if_exists='replace', index=False)
+            df_temp.to_sql(temp_table, self.engine_trl, if_exists='replace', index=False)
     
             # Update existing rows (join on link)
             update_query = f"""
@@ -159,9 +160,10 @@ class CryptoDB:
             FROM {temp_table} AS tmp
             WHERE NOT EXISTS (SELECT 1 FROM {table_name} t2 WHERE t2.link = tmp.link);
             """
-            with self.engine.begin() as conn:
+            with self.engine_trl.begin() as conn:
                 conn.execute(text(update_query))
                 conn.execute(text(insert_query))
+                conn.execute(text(f"DROP TABLE IF EXISTS {temp_table}"))
     
             print(f"Upserted {len(df_to_upsert)} rows using temp table.")
     
@@ -186,7 +188,7 @@ class CryptoDB:
                     price_change = EXCLUDED.price_change,
                     label = EXCLUDED.label;
                 """
-                with self.engine.begin() as conn:
+                with self.engine_trl.begin() as conn:
                     conn.execute(text(upsert_query), kwargs)
             print(f"Upserted {len(df_to_upsert)} rows individually.")
 
@@ -368,6 +370,16 @@ class CryptoDB:
     def shift_predictions(self, table_name, model, from_version, to_version):
         table_name = table_name.lower()
         with self.engine.begin() as conn:
+            shift_sql = text(f"""
+                UPDATE {table_name}
+                SET {model}_{to_version} = {model}_{from_version},
+                    {model}_{from_version} = NULL;
+            """)
+            conn.execute(shift_sql)
+
+    def shift_predictions_trl(self, table_name, model, from_version, to_version):
+        table_name = table_name.lower()
+        with self.engine_trl.begin() as conn:
             shift_sql = text(f"""
                 UPDATE {table_name}
                 SET {model}_{to_version} = {model}_{from_version},
@@ -634,13 +646,20 @@ class CryptoDB:
 
 # Usage example
 db_url = os.getenv("DATABASE_URL")
+trl_db_url = os.getenv("TRL_DATABASE_URL", db_url)
 coins = ["BTCUSDT"]
 print("Connecting to database at ", db_url[:20] + "****...")
-engine = create_engine(
+engine1 = create_engine(
     db_url,
-    pool_size=3,
+    pool_size=1,
+    max_overflow=0,
+    pool_pre_ping=True,
+)
+engine2 = create_engine(
+    trl_db_url,
+    pool_size=1,
     max_overflow=0,
     pool_pre_ping=True,
 )
 print("----------------Connected to database at ", db_url[:20] + "****...")
-crypto_db = CryptoDB(engine, coins)
+crypto_db = CryptoDB(engine1, engine_trl, coins)

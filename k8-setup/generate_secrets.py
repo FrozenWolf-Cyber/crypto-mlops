@@ -11,6 +11,7 @@ secret_env_vars = [
     "MLFLOW_SQLALCHEMY_MAX_OVERFLOW",
     "S3_URL",
     "DATABASE_URL",
+    "TRL_DATABASE_URL",
     "AWS_DEFAULT_REGION",
     "VASTAI_API_KEY",
     "MLFLOW_URI",
