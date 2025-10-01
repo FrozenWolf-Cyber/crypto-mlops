@@ -83,12 +83,17 @@ def main():
             print(f"[SKIP] No existing consumer for {crypto} {model} {v}, skipping deletion.")
             continue
         state_write(crypto, model, v, "delete" )
-
+    max_wait = 300  # seconds
+    start = time.time()
     for v in ["v2", "v3"]:
         if state_checker(crypto, model, v, timeout=2) == "unknown":
             print(f"[SKIP] No existing consumer for {crypto} {model} {v}, skipping deletion.")
             continue
         while state_checker(crypto, model, v) != "deleted":
+            if time.time() - start > max_wait:
+                print(f"[FORCE] Timeout waiting for {crypto} {model} {v} to delete, forcing deletion.")
+                delete_state(crypto, model, v)
+                break
             print(f"[WAIT] Waiting for {crypto} {model} {v} to be deleted...")
             time.sleep(5)
        

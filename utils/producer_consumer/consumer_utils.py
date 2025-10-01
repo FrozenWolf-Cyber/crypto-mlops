@@ -10,7 +10,7 @@ STATE_DIR = "/opt/airflow/custom_persistent_shared/consumer_states"
 # Ensure the state directory exists
 os.makedirs(STATE_DIR, exist_ok=True)
 
-def state_write(crypto: str, model: str, version: str, state: str):
+def state_write(crypto: str, model: str, version: str, state: str, error_msg: str = ""):
     """
     Write the current state of a consumer to a JSON file.
     state: e.g., "running", "paused", "deleted"
@@ -20,7 +20,8 @@ def state_write(crypto: str, model: str, version: str, state: str):
         "crypto": crypto,
         "model": model,
         "version": version,
-        "state": state
+        "state": state,
+        "error_msg": error_msg,
     }
     with open(state_file, "w") as f:
         json.dump(data, f)

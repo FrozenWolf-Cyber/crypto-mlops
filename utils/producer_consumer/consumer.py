@@ -385,4 +385,14 @@ app = Application(
 )
 build_pipeline(app, args.crypto, args.model, args.version)
 print("Consumer running, waiting for control commands...")
-app.run()
+import sys
+import traceback
+try:
+    app.run()
+except Exception as e:
+    ## still print the traceback:
+    traceback.print_exc(file=sys.stdout)
+    traceback_str = traceback.format_exc()
+    print(f"Application error: {e}")
+    print(traceback_str)
+    state_write(args.crypto, args.model, args.version, "deleted", error_msg=f"ERROR:{e}\nTRACEBACK:{traceback_str}")
