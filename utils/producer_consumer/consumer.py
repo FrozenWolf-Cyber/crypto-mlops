@@ -157,8 +157,7 @@ def build_pipeline(app, crypto, model, version):
             db_missing_pred_dates_pred_idx = []
             # print(missing_pred_dates_db[:5])
             # print(missing_pred_dates[:5])
-            missing_pred_dates_db_dates = list(missing_pred_dates_db.values)
-            missing_pred_dates_db_dates = set(missing_pred_dates_db_dates)
+            missing_pred_dates_db_dates = missing_pred_dates_db
             # print(missing_pred_dates_db.values[0] in missing_pred_dates_db_dates)
             # print(missing_pred_dates.values[0] in missing_pred_dates_db_dates)
             # print(missing_pred_dates_db_dates[:5])
@@ -180,15 +179,16 @@ def build_pipeline(app, crypto, model, version):
             # for d in tqdm(missing_pred_dates):
             #     # Convert to pandas Timestamp (preserves tz-awareness)
             #     d = pd.Timestamp(d)
-            print("3", type(missing_pred_dates), type(df['open_time']))
-            print(missing_pred_dates)
+            # print("3", type(missing_pred_dates), type(df['open_time']))
+            # print(missing_pred_dates)
             missing_pred_dates = pd.to_datetime(missing_pred_dates, utc=True)
-            print(missing_pred_dates)
-            print(type(missing_pred_dates.values[0]), type(df['open_time'].values[0]))
-            print(type(missing_pred_dates), type(df['open_time']))
-            print(missing_pred_dates)
-            print(df['open_time'].values)
-            for d in tqdm(missing_pred_dates):
+            # print(missing_pred_dates)
+            # print(type(missing_pred_dates.values[0]), type(df['open_time'].values[0]))
+            # print(type(missing_pred_dates), type(df['open_time']))
+            # print(missing_pred_dates)
+            # print(df['open_time'].values)
+            mask = missing_pred_dates_db.isin(missing_pred_dates)
+            for mask_idx, d in tqdm(enumerate(missing_pred_dates)):
                 print("sfsdfsfdsf")
                 if d not in pos_map:
                     ## get the closest date before d
@@ -210,7 +210,7 @@ def build_pipeline(app, crypto, model, version):
                 # collect the ith row (the target prediction time)
 
                 ## check if d in missing_pred_dates_db
-                if d.value in missing_pred_dates_db_dates:
+                if mask[mask_idx]:
                     print("hiiii")
                     rows_for_upsert.append(df.iloc[idx])
                     db_missing_pred_dates_pred_idx.append(len(inp)-1)  # index in inp list
