@@ -199,7 +199,7 @@ def main():
                 send_df_to_quix(symbol, records, producer)
                 
                 records["open_time"] = pd.to_datetime(records["open_time"], format='%Y-%m-%d %H:%M:%S')
-                
+                records["open_time"] = pd.to_datetime(records["open_time"], utc=True)
                 print(f"Updated last time for {symbol} to {last_times[symbol]}")
                 
                 #### insert into csv
