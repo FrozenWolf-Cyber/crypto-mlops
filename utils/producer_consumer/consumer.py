@@ -188,7 +188,7 @@ def build_pipeline(app, crypto, model, version):
             print(type(missing_pred_dates), type(df['open_time']))
             print(missing_pred_dates)
             print(df['open_time'].values)
-            for d in tqdm(missing_pred_dates.values):
+            for d in tqdm(missing_pred_dates):
                 print("sfsdfsfdsf")
                 if d not in pos_map:
                     ## get the closest date before d
@@ -210,8 +210,8 @@ def build_pipeline(app, crypto, model, version):
                 # collect the ith row (the target prediction time)
 
                 ## check if d in missing_pred_dates_db
-                if d in missing_pred_dates_db_dates:
-                    # print("hiiii")
+                if d.value in missing_pred_dates_db_dates:
+                    print("hiiii")
                     rows_for_upsert.append(df.iloc[idx])
                     db_missing_pred_dates_pred_idx.append(len(inp)-1)  # index in inp list
 
