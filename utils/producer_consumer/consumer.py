@@ -124,10 +124,15 @@ def build_pipeline(app, crypto, model, version):
         # )
         ## get start and end date of missing dates from db instead of all missing dates to reduce memory usage
         start_date, end_date = crypto_db.get_missing_prediction_date_range(crypto.lower(), model.lower(), int(version[1:]))
+        print("Start date:", start_date, "End date:", end_date)
         if start_date:
             start_date = pd.to_datetime(start_date).tz_localize("UTC") if start_date.tzinfo is None else start_date.tz_convert("UTC")
+        else:
+            start_date = df['open_time'].max()  # if no missing, set to max to avoid filtering anything
         if end_date:
             end_date = pd.to_datetime(end_date).tz_localize("UTC") if end_date.tzinfo is None else end_date.tz_convert("UTC")
+        else:
+            end_date = df['open_time'].max()
 
         missing_pred_dates = df["open_time"][(df["open_time"] >= start_date) & (df["open_time"] <= end_date)]
         missing_pred_dates = pd.to_datetime(missing_pred_dates, utc=True, errors='coerce')
