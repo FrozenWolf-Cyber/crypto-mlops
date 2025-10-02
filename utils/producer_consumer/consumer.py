@@ -76,7 +76,7 @@ def build_pipeline(app, crypto, model, version):
 
         ### check missing data in csv older than oldest_missing
         df_pred = pd.read_csv(pred_path)
-        df_pred["open_time"] = pd.to_datetime(df_pred["open_time"])
+        df_pred["open_time"] = pd.to_datetime(df_pred["open_time"], utc=True, format='mixed')
         
         logger.info(f"[{key}] df_pred dtypes:\n{df_pred.dtypes}")
         
@@ -103,7 +103,7 @@ def build_pipeline(app, crypto, model, version):
         logger.info(f"[{key}] Missing prediction dates from DB: {missing_pred_dates[:5].tolist() if len(missing_pred_dates)>0 else 'N/A'}")
         missing_pred_dates_db = missing_pred_dates.copy() ## select them for upsertion
         logger.info(f"[{key}] Found {len(missing_pred_dates)} missing prediction dates in DB.")
-        oldest_missing = missing_pred_dates.min() if len(missing_pred_dates)>0 else pd.to_datetime( pd.to_datetime(crypto_db.get_last_date(crypto.lower())))
+        oldest_missing = missing_pred_dates.min() if len(missing_pred_dates)>0 else pd.to_datetime( pd.to_datetime(crypto_db.get_last_date(crypto.lower()), utc=True, format='mixed'))
         
 
         csv_missing_dates = df[df["open_time"] < oldest_missing ]["open_time"]
@@ -111,9 +111,10 @@ def build_pipeline(app, crypto, model, version):
         logger.info(f"[{key}] Found {len(csv_missing_dates)} missing prediction dates in CSV older than oldest missing in DB.")
         missing_pred_dates = pd.to_datetime(
             pd.concat([pd.Series(missing_pred_dates), csv_missing_dates]).drop_duplicates()
+            , utc=True, format='mixed'
         )
         
-        missing_pred_dates_db = pd.to_datetime(missing_pred_dates_db)
+        missing_pred_dates_db = pd.to_datetime(missing_pred_dates_db, utc=True, format='mixed')
         
         logger.info(f"[{key}] Oldest missing prediction date in DB: {oldest_missing if oldest_missing else 'N/A'}")
         ## print sample min and max missing dates in df and db
@@ -198,7 +199,7 @@ def build_pipeline(app, crypto, model, version):
                 ### upsert into csv
                 df_upsert = pd.DataFrame()
                 df_upsert["open_time"] = missing_pred_dates
-                df_upsert["open_time"] = pd.to_datetime(df_upsert["open_time"])
+                df_upsert["open_time"] = pd.to_datetime(df_upsert["open_time"], utc=True, format='mixed')
                 df_upsert["pred"] = pred_db
                 df_upsert = df_upsert[~df_upsert["open_time"].isin(df_pred["open_time"])]
                 logger.info(f"[{key}] Prepared {len(df_upsert)} new rows to upsert into CSV.")
@@ -252,7 +253,7 @@ def build_pipeline(app, crypto, model, version):
             logger.info(f"[{key}] DB predictions count: {crypto_db.get_total_pred_count(crypto.lower(), model.lower(), int(version[1:]))}")
             last_csv_open_time = None
             if not df_pred.empty:
-                df_pred["open_time"] = pd.to_datetime(df_pred["open_time"])
+                df_pred["open_time"] = pd.to_datetime(df_pred["open_time"], utc=True, format='mixed')
                 last_csv_open_time = df_pred["open_time"].max()
                 logger.info(f"[{key}] Last prediction time from CSV: {last_csv_open_time}")
             else:
@@ -260,9 +261,9 @@ def build_pipeline(app, crypto, model, version):
         
             logger.info(f"[{key}] Resuming processing.")
             ### get the minimum of last_csv_open_time and psql_last_time and start from there (ideally psql_last_time which should be equal to last_csv_open_time)
-            psql_last_time = pd.to_datetime(crypto_db.get_first_missing_date(crypto.lower(), model.lower(), int(version[1:])))
+            psql_last_time = pd.to_datetime(crypto_db.get_first_missing_date(crypto.lower(), model.lower(), int(version[1:])), utc=True, format='mixed')
             df_full = pd.read_csv(f"/opt/airflow/custom_persistent_shared/data/prices/{crypto}.csv")
-            df_full["open_time"] = pd.to_datetime(df_full["open_time"])
+            df_full["open_time"] = pd.to_datetime(df_full["open_time"], utc=True, format='mixed')
             
             logger.info(f"[{key}] First missing prediction date from DB: {psql_last_time}")
             if psql_last_time:
