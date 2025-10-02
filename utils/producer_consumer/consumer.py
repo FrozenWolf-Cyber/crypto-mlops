@@ -165,6 +165,8 @@ def build_pipeline(app, crypto, model, version):
 
                 if d not in pos_map:
                     ## get the closest date before d
+                    print("Date not found exactly, finding closest before:", d)
+                    print("Available dates range:", df['open_time'].min(), "to", df['open_time'].max())
                     possible_dates = df['open_time'][df['open_time'] < d]
                     if possible_dates.empty:
                         ## use first index
