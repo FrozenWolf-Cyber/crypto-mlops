@@ -627,6 +627,7 @@ class CryptoDB:
             insert_df = original_df[original_df["open_time"].isin(missing_times)].copy()
             pred_map = dict(zip(open_times, predictions))
             insert_df[col_name] = insert_df["open_time"].map(pred_map)
+            print("Columns in insert_df:", insert_df.columns.tolist())
             self.bulk_insert_df(table_name, insert_df)
 
         print(f"Upserted {len(open_times)} predictions into {table_name}.{col_name} (row-wise).")
