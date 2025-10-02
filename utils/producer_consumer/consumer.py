@@ -170,6 +170,10 @@ def build_pipeline(app, crypto, model, version):
 
             
             for d in tqdm(missing_pred_dates.values):
+                if d.tzinfo is None:  
+                    d = pd.to_datetime(d).tz_localize("UTC")
+                else:
+                    d = d.tz_convert("UTC")
 
                 if d not in pos_map:
                     ## get the closest date before d
