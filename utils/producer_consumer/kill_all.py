@@ -19,7 +19,7 @@ def create_dir(path):
         os.makedirs(path)
 
 cryptos = ["BTCUSDT"]
-models = ["lightgbm", "trl"]
+models = ["lightgbm", "tst"]
 versions = ["v1", "v2", "v3"]
 
 
@@ -46,7 +46,7 @@ for crypto in cryptos:
             state_write(crypto, model, version, "delete")
             
 log.info("Waiting for all existing consumers to die...")
-time.sleep(120)  # give some time for states to be written  
+time.sleep(360)  # give some time for states to be written  
 
 check_producer = False
 if if_state_exists("ALL", "producer", "main"):
