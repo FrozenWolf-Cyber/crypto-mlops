@@ -187,9 +187,11 @@ def build_pipeline(app, crypto, model, version):
             # print(type(missing_pred_dates), type(df['open_time']))
             # print(missing_pred_dates)
             # print(df['open_time'].values)
-            mask = missing_pred_dates_db.isin(missing_pred_dates)
+            mask = missing_pred_dates.isin(missing_pred_dates_db_dates)
             ## print mask
             from collections import Counter
+            print(Counter(mask))
+            print(len(mask), len(missing_pred_dates))
             for mask_idx, d in tqdm(enumerate(missing_pred_dates)):
          
                 if d not in pos_map:
