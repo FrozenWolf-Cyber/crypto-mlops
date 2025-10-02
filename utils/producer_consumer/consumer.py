@@ -13,6 +13,20 @@ from .consumer_utils import state_checker, state_write
 from tqdm import tqdm
 from .logger import get_logger
 
+import threading
+
+def state_monitor(crypto, model, version, app, logger, check_interval=1):
+    key = (crypto, model, version)
+    while True:
+        state = state_checker(crypto, model, version)
+        if state == "delete":
+            logger.info(f"[{key}] Async Deletion requested, exiting consumer.")
+            state_write(crypto, model, version, "deleted", error_msg="Deleted by ASYNC request")
+            app.stop()  # stop Quix application
+            break
+        time.sleep(check_interval)
+
+
 KAFKA_BROKER = f"{os.environ['KAFKA_HOST']}:9092"
 CONTROL_TOPIC = "control_topic"
 url = "http://fastapi-ml:8000/predict"
@@ -53,6 +67,13 @@ def get_predictions(inp, crypto, model, version):
 
 def build_pipeline(app, crypto, model, version):
     logger = get_logger(f"{crypto}_{model}_{version}")
+    monitor_thread = threading.Thread(
+        target=state_monitor,
+        args=(crypto, model, version, app, logger),
+        daemon=True
+    )
+    monitor_thread.start()
+
     global df_partial, df_pred, last_time
     key = (crypto, model, version)
 
