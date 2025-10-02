@@ -85,10 +85,10 @@ def download_full_history(symbol, interval="1m", start_str="2017-08-01", skip_st
     
     df_partial["open_time"] = pd.to_datetime(df_partial["open_time"], unit="ms", utc=True)
     if skip_start:
-        print(f"Skipping data before {start_str}")
-        print(f"df_partial {df_partial['open_time'].min()} to {df_partial['open_time'].max()}")
-        print(f"start_str: {pd.to_datetime(start_str)}")
-        print(f"start_str: {pd.to_datetime(start_str, utc=True)}")
+        # print(f"Skipping data before {start_str}")
+        # print(f"df_partial {df_partial['open_time'].min()} to {df_partial['open_time'].max()}")
+        # print(f"start_str: {pd.to_datetime(start_str)}")
+        # print(f"start_str: {pd.to_datetime(start_str, utc=True)}")
         df_partial = df_partial[df_partial["open_time"] > pd.to_datetime(start_str, utc=True)]
     # df_partial["open_time"] = df_partial["open_time"].astype("int64") // 10**6
     # df_partial["close_time"] = df_partial["close_time"].astype("int64") // 10**6
@@ -203,6 +203,8 @@ def main():
                 print(f"Updated last time for {symbol} to {last_times[symbol]}")
                 
                 #### insert into csv
+                print(f"Current CSV last time for {symbol} is {csv_last_times[symbol]}")
+                print(f"record start time: {records.iloc[0]['open_time']}, record end time: {records.iloc[-1]['open_time']}")
                 records = records[records["open_time"] > csv_last_times[symbol]]
                 print(f"Appending {len(records)} new records to CSV for {symbol}...")
                 print(f"New rows starting from {records.iloc[0]['open_time']} to {records.iloc[-1]['open_time']}")
