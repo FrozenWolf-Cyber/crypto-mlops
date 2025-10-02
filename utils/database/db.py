@@ -533,6 +533,7 @@ class CryptoDB:
         - If rows <= threshold → row-by-row update, fallback insert.
         - If rows > threshold → bulk update first, then insert missing rows.
         """
+        original_df = original_df[[c for c in required_cols if c in original_df.columns]].copy()
         self._keep_last_365_days(table_name)
         if len(predictions)==0:
             print("No predictions to upsert.")
