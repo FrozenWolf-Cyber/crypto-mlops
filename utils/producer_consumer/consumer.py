@@ -189,6 +189,7 @@ def build_pipeline(app, crypto, model, version):
             print(missing_pred_dates)
             print(df['open_time'].values)
             for d in tqdm(missing_pred_dates.values):
+                print("sfsdfsfdsf")
                 if d not in pos_map:
                     ## get the closest date before d
                     # d = pd.Timestamp(d).tz_localize('UTC')  # if d is naive
