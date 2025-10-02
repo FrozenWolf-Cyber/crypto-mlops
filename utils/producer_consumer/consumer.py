@@ -180,7 +180,8 @@ def build_pipeline(app, crypto, model, version):
             #     # Convert to pandas Timestamp (preserves tz-awareness)
             #     d = pd.Timestamp(d)
             missing_pred_dates = pd.to_datetime(missing_pred_dates, utc=True)
-
+            print(type(missing_pred_dates.values[0]), type(df['open_time'].values[0]))
+            print(type(missing_pred_dates), type(df['open_time']))
             print(missing_pred_dates)
             print(df['open_time'].values)
             for d in tqdm(missing_pred_dates.values):
