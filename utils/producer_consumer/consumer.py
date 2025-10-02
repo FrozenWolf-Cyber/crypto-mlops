@@ -162,19 +162,20 @@ def build_pipeline(app, crypto, model, version):
             # print(missing_pred_dates_db_dates[0]==missing_pred_dates.values[0])
             # print(missing_pred_dates_db_dates[0], missing_pred_dates.values[0])
             
+            if df['open_time'].dt.tz is None:
+                df['open_time'] = df['open_time'].dt.tz_localize("UTC")
+            else:
+                df['open_time'] = df['open_time'].dt.tz_convert("UTC")
+
+            # Ensure missing_pred_dates is UTC
             if missing_pred_dates.dt.tz is None:
                 missing_pred_dates = missing_pred_dates.dt.tz_localize("UTC")
             else:
-                # If already tz-aware, convert to UTC
                 missing_pred_dates = missing_pred_dates.dt.tz_convert("UTC")
+
 
             
             for d in tqdm(missing_pred_dates.values):
-                if d.tzinfo is None:  
-                    d = pd.to_datetime(d).tz_localize("UTC")
-                else:
-                    d = d.tz_convert("UTC")
-
                 if d not in pos_map:
                     ## get the closest date before d
                     print("Date not found exactly, finding closest before:", d)
