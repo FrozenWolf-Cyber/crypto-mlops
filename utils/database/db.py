@@ -624,6 +624,8 @@ class CryptoDB:
         
         print(f"Existing times in DB: {len(existing_times)} out of {len(open_times)}")
         print(f"Existing times from DB: {list(existing_times)[:1]} to {list(existing_times)[-1]}")
+        print(open_times)
+        print(existing_times)
         missing_times = list(set(open_times) - existing_times)
 
         if missing_times:
