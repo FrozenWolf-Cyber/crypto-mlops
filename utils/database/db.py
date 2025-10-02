@@ -109,7 +109,7 @@ class CryptoDB:
         if df['pred'].dtype == object:
             if isinstance(df['pred'].iloc[0], str):
                 df['pred_list'] = df['pred'].apply(
-                    lambda x: [float(i) for i in x.strip('[]').split()]
+                    lambda x: [float(i.replace(',','').rstrip().lstrip()) for i in x.strip('[]').split()]
                 )
             else:
                 df['pred_list'] = df['pred']
