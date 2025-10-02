@@ -104,7 +104,7 @@ def build_pipeline(app, crypto, model, version):
 
         missing_pred_dates = df["open_time"][(df["open_time"] >= start_date) & (df["open_time"] <= end_date)]
         missing_pred_dates = pd.to_datetime(missing_pred_dates, utc=True, errors='coerce')
-
+        print("1", type(missing_pred_dates))
         logger.info(f"[{key}] Missing prediction dates from DB: {missing_pred_dates[:5].tolist() if len(missing_pred_dates)>0 else 'N/A'}")
         missing_pred_dates_db = missing_pred_dates.copy() ## select them for upsertion
         logger.info(f"[{key}] Found {len(missing_pred_dates)} missing prediction dates in DB.")
@@ -114,6 +114,7 @@ def build_pipeline(app, crypto, model, version):
         csv_missing_dates = df[df["open_time"] < oldest_missing ]["open_time"]
         csv_missing_dates = csv_missing_dates[csv_missing_dates>df_pred["open_time"].max()] if not df_pred.empty else missing_pred_dates_db
         logger.info(f"[{key}] Found {len(csv_missing_dates)} missing prediction dates in CSV older than oldest missing in DB.")
+        print("2", type(missing_pred_dates), type(csv_missing_dates))
         missing_pred_dates = pd.to_datetime(
             pd.concat([pd.Series(missing_pred_dates), csv_missing_dates]).drop_duplicates()
             , utc=True, format='mixed'
