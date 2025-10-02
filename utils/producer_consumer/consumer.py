@@ -103,6 +103,8 @@ def build_pipeline(app, crypto, model, version):
         end_date = pd.to_datetime(end_date).tz_localize("UTC") if end_date.tzinfo is None else end_date.tz_convert("UTC")
 
         missing_pred_dates = df["open_time"][(df["open_time"] >= start_date) & (df["open_time"] <= end_date)]
+        missing_pred_dates = pd.to_datetime(missing_pred_dates, utc=True, errors='coerce')
+
         logger.info(f"[{key}] Missing prediction dates from DB: {missing_pred_dates[:5].tolist() if len(missing_pred_dates)>0 else 'N/A'}")
         missing_pred_dates_db = missing_pred_dates.copy() ## select them for upsertion
         logger.info(f"[{key}] Found {len(missing_pred_dates)} missing prediction dates in DB.")
@@ -182,7 +184,7 @@ def build_pipeline(app, crypto, model, version):
             for d in tqdm(missing_pred_dates.values):
                 if d not in pos_map:
                     ## get the closest date before d
-                    d = pd.Timestamp(d).tz_localize('UTC')  # if d is naive
+                    # d = pd.Timestamp(d).tz_localize('UTC')  # if d is naive
                     possible_dates = df['open_time'][df['open_time'] < d]
                     if possible_dates.empty:
                         ## use first index
