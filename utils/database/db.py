@@ -108,9 +108,12 @@ class CryptoDB:
         # Step 0: Convert pred string to list of floats
         if df['pred'].dtype == object:
             if isinstance(df['pred'].iloc[0], str):
-                print(df['pred'].iloc[0])
+                print(df['pred'])
+                ## print dtype of each element
+                for val in df['pred']:
+                    print(type(val), val)
                 df['pred_list'] = df['pred'].apply(
-                    lambda x: [float(i.replace(',','').rstrip().lstrip()) for i in x.strip('[]').split(',')]
+                    lambda x: [float(i.replace(',','').rstrip().lstrip()) for i in x.strip('[]').split(',') ]
                 )
             else:
                 df['pred_list'] = df['pred']
