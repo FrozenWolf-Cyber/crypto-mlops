@@ -6,6 +6,7 @@ import os
 import json
 import numpy as np
 import datetime
+import ast
 
 def normalize_pred(x):
     if isinstance(x, np.ndarray):
@@ -106,19 +107,32 @@ class CryptoDB:
         trl_column = f"trl_{version}"
     
         # Step 0: Convert pred string to list of floats
-        if df['pred'].dtype == object:
-            if isinstance(df['pred'].iloc[0], str):
-                print(df['pred'])
-                ## print dtype of each element
-                for val in df['pred']:
-                    print(type(val), val)
-                df['pred_list'] = df['pred'].apply(
-                    lambda x: [float(i.replace(',','').rstrip().lstrip()) for i in x.strip('[]').split(',') ]
-                )
-            else:
-                df['pred_list'] = df['pred']
-        else:
-            df['pred_list'] = df['pred']
+        def parse_pred(val):
+            # Case 1: String like "[0.1, 0.2, 0.3]"
+            if isinstance(val, str):
+                try:
+                    # Safely evaluate if it's a Python list string
+                    parsed = ast.literal_eval(val)
+                    if isinstance(parsed, list):
+                        return [float(x) for x in parsed]
+                    else:
+                        return [float(str(parsed).replace(',', '').strip())]
+                except Exception:
+                    # fallback: manual split
+                    return [float(i.replace(',', '').strip()) for i in val.strip('[]').split(',') if i]
+
+            # Case 2: Already a list/array
+            elif isinstance(val, (list, tuple)):
+                return [float(x) for x in val]
+
+            # Case 3: Numeric scalar
+            elif isinstance(val, (int, float)):
+                return [float(val)]
+
+            # Fallback
+            return None
+
+        df['pred_list'] = df['pred'].apply(parse_pred)
     
         # Ensure optional columns exist (default None if missing)
         if "label" not in df.columns:
