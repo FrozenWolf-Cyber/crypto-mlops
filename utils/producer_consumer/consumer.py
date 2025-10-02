@@ -182,11 +182,7 @@ def build_pipeline(app, crypto, model, version):
             for d in tqdm(missing_pred_dates.values):
                 if d not in pos_map:
                     ## get the closest date before d
-                    print(type(d), d)
-                    print(type(df['open_time'].values[0]), df['open_time'].values[0])
                     d = pd.Timestamp(d).tz_localize('UTC')  # if d is naive
-                    print("Date not found exactly, finding closest before:", d)
-                    print("Available dates range:", df['open_time'].min(), "to", df['open_time'].max())
                     possible_dates = df['open_time'][df['open_time'] < d]
                     if possible_dates.empty:
                         ## use first index
