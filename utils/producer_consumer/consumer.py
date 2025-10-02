@@ -162,16 +162,23 @@ def build_pipeline(app, crypto, model, version):
             # print(missing_pred_dates_db_dates[0]==missing_pred_dates.values[0])
             # print(missing_pred_dates_db_dates[0], missing_pred_dates.values[0])
             
+            # Ensure df['open_time'] is tz-aware UTC
             if df['open_time'].dt.tz is None:
                 df['open_time'] = df['open_time'].dt.tz_localize("UTC")
             else:
                 df['open_time'] = df['open_time'].dt.tz_convert("UTC")
-
-            # Ensure missing_pred_dates is UTC
+            
+            # Ensure missing_pred_dates is tz-aware UTC
             if missing_pred_dates.dt.tz is None:
                 missing_pred_dates = missing_pred_dates.dt.tz_localize("UTC")
             else:
                 missing_pred_dates = missing_pred_dates.dt.tz_convert("UTC")
+            
+            # Vectorized: get all possible dates before each missing_pred_date
+            for d in missing_pred_dates:
+                # convert d to pandas Timestamp to keep tz info
+                d = pd.Timestamp(d, tz="UTC")  
+                possible_dates = df['open_time'][df['open_time'] < d]
 
 
             
