@@ -116,7 +116,7 @@ def build_pipeline(app, crypto, model, version):
             pd.concat([pd.Series(missing_pred_dates), csv_missing_dates]).drop_duplicates()
             , utc=True, format='mixed'
         )
-        missing_pred_dates = missing_pred_dates.tz_convert("UTC")
+        
         missing_pred_dates_db = pd.to_datetime(missing_pred_dates_db, utc=True, format='mixed')
         
         logger.info(f"[{key}] Oldest missing prediction date in DB: {oldest_missing if oldest_missing else 'N/A'}")
@@ -161,6 +161,14 @@ def build_pipeline(app, crypto, model, version):
             # print(missing_pred_dates_db_dates[:5])
             # print(missing_pred_dates_db_dates[0]==missing_pred_dates.values[0])
             # print(missing_pred_dates_db_dates[0], missing_pred_dates.values[0])
+            
+            if missing_pred_dates.dt.tz is None:
+                missing_pred_dates = missing_pred_dates.dt.tz_localize("UTC")
+            else:
+                # If already tz-aware, convert to UTC
+                missing_pred_dates = missing_pred_dates.dt.tz_convert("UTC")
+
+            
             for d in tqdm(missing_pred_dates.values):
 
                 if d not in pos_map:
