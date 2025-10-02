@@ -337,7 +337,6 @@ def build_pipeline(app, crypto, model, version):
             else:
                 last_time = last_csv_open_time
                 
-
             idx = df_full.index[df_full["open_time"] == last_time]
             if not idx.empty:
                 pos = idx[0]  # row position of last_time
@@ -345,7 +344,8 @@ def build_pipeline(app, crypto, model, version):
                 df_partial = df_full.iloc[start:pos+1].copy()
             else:
                 logger.info(f"[{key}] Last time {last_time} not found in full data, starting fresh.")
-                df_partial = pd.DataFrame()  # nothing found
+                # df_partial = pd.DataFrame()  # nothing found
+                df_partial = df_full.iloc[-seq_len:].copy()  # take last seq_len rows to start fresh
                 
             del df_full, idx
             gc.collect()
