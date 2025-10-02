@@ -17,19 +17,15 @@ Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 
 mm = ModelManager(tracking_uri=os.getenv("MLFLOW_URI"))
 models = {}  # {name: {version: model_object}}
-on_refresh = False
+import threading
+
+refresh_lock = threading.Lock()
 
 @app.post("/refresh")
 def load_production_models():
     """Load current production models (v1 + last 2) into memory."""
-    if on_refresh:
-        while on_refresh:
-            print("Another refresh is in progress, waiting...")
-            time.sleep(1)
-            
-    global on_refresh
-    on_refresh = True
-    
+    refresh_lock.acquire()
+   
     try:
         models_temp = {}
         models_temp = {}
@@ -55,11 +51,11 @@ def load_production_models():
     except Exception as e:
         log.info("Traceback: %s", traceback.format_exc())
         log.error("Error loading models: %s", e)
-        on_refresh = False
+        refresh_lock.release()
         return {"status": "error loading models"}
     global models
     models = models_temp
-    on_refresh = False
+    refresh_lock.release()
     
     return {"status": "models loaded", "models": log_model}
 
@@ -72,8 +68,7 @@ def startup_event():
 @app.post("/is_model_available")
 def is_model_available(model_name: str, version: int):
     global models
-    global on_refresh
-    while on_refresh:
+    while refresh_lock.locked():
         print("Refresh in progress, waiting...")
         time.sleep(1)
     """Check if a model and version is available."""
@@ -89,9 +84,8 @@ def is_model_available(model_name: str, version: int):
 @app.post("/predict")
 def predict(model_name: str, version: int, features: list = Body(...)):
     global models
-    global on_refresh
-    
-    while on_refresh:
+
+    while refresh_lock.locked():
         print("Refresh in progress, waiting...")
         time.sleep(1)
         

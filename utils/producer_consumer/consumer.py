@@ -41,7 +41,9 @@ df_partial = None
 df_pred = None
 last_time = None
 
-def get_predictions(inp, crypto, model, version):
+def get_predictions(inp, crypto, model, version, retries=10):
+    if retries <= 0:
+        raise Exception(f"Max retries exceeded for getting predictions for {crypto} {model} {version}")
     ## is_model_available at fastapi
     params = {"model_name": f"{crypto.lower()}_{model.lower()}", "version": int(version[1:])-1}
     is_available = requests.post(f"http://fastapi-ml:8000/is_model_available", params=params).json()['available']
@@ -57,7 +59,9 @@ def get_predictions(inp, crypto, model, version):
         params = {"model_name": f"{crypto.lower()}_{model.lower()}", "version": int(version[1:])-1}
         pred = requests.post(url, params=params, json=batch_inp)
         if pred.status_code != 200:
-            raise ValueError(f"Prediction request failed with status {pred.status_code}: {pred.text}")
+            print(f"Prediction request failed with status {pred.status_code}: {pred.text}")
+            time.sleep(30)
+            return get_predictions(inp[i:], crypto, model, version, retries=retries-1)  # retry remaining
         pred = pred.json()['predictions']
         if i == 0:
             all_pred = pred
@@ -440,7 +444,7 @@ app = Application(
     auto_offset_reset="earliest",
     state_dir="/opt/airflow/custom_persistent_shared/quix_state",
         consumer_extra_config={
-        "max.poll.interval.ms": 600000  # 10 minutes instead of 5
+        "max.poll.interval.ms": 6000000  
     }
 )
 build_pipeline(app, args.crypto, args.model, args.version)
