@@ -5,6 +5,7 @@ from tqdm import tqdm
 import os
 import json
 import numpy as np
+import datetime
 
 def normalize_pred(x):
     if isinstance(x, np.ndarray):
@@ -626,8 +627,11 @@ class CryptoDB:
         print(f"Existing times from DB: {list(existing_times)[:1]} to {list(existing_times)[-1]}")
         print(open_times)
         print(existing_times)
-        missing_times = list(set(open_times) - existing_times)
+        existing_times = {dt.replace(tzinfo=datetime.timezone.utc) for dt in existing_times}
 
+        print(existing_times)
+        missing_times = list(set(open_times) - existing_times)
+        print(f"Missing times in DB: {len(missing_times)} out of {len(open_times)}")
         if missing_times:
             insert_df = original_df[original_df["open_time"].isin(missing_times)].copy()
             pred_map = dict(zip(open_times, predictions))
