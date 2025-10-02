@@ -400,7 +400,7 @@ class CryptoDB:
         """
         if not {"open_time", "pred"}.issubset(pred_df.columns):
             raise ValueError("pred_df must contain 'open_time' and 'pred' columns")
-
+        pred_df = pred_df[["open_time", "pred"]].copy()
         table_name = table_name.lower()
         model = model.lower()
         col_name = f"{model}_{version}"  # real column in target table
