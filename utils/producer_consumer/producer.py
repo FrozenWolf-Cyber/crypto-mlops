@@ -145,7 +145,7 @@ def main():
     csv_data = {symbol: get_data(symbol) for symbol in SYMBOLS}
     csv_last_times = {symbol: csv_data[symbol]["open_time"].iloc[-1] for symbol in SYMBOLS}
     
-    psql_last_times = {symbol: pd.to_datetime(crypto_db.get_last_date(symbol)) for symbol in SYMBOLS}
+    psql_last_times = {symbol: pd.to_datetime(crypto_db.get_last_date(symbol), utc=True, format='mixed') for symbol in SYMBOLS}
     print("PSQL last times:", psql_last_times)
     print("CSV Last times:", csv_last_times)
     ### chose the min to prevent lag and avoid duplicates at consumer end
