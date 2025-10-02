@@ -327,6 +327,7 @@ def build_pipeline(app, crypto, model, version):
         
         df = pd.DataFrame(records)
         df["open_time"] = pd.to_datetime(df["open_time"], format='%Y-%m-%d %H:%M:%S')
+        df["open_time"] = pd.to_datetime(df["open_time"], utc=True)
         logger.info(f"[{key}] New data received, {len(df)} rows before filtering.")
         df = df[df["open_time"]>last_time] if last_time else df
         logger.info(f"[{key}] {len(df)} rows after filtering with last_time {last_time}.")
