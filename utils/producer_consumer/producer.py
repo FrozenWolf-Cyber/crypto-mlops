@@ -83,13 +83,13 @@ def download_full_history(symbol, interval="1m", start_str="2017-08-01", skip_st
     ## drop close_time column
     df_partial = df_partial.drop(columns=["close_time"])
     
-    df_partial["open_time"] = pd.to_datetime(df_partial["open_time"], unit="ms")
+    df_partial["open_time"] = pd.to_datetime(df_partial["open_time"], unit="ms", utc=True)
     if skip_start:
         print(f"Skipping data before {start_str}")
         print(f"df_partial {df_partial['open_time'].min()} to {df_partial['open_time'].max()}")
         print(f"start_str: {pd.to_datetime(start_str)}")
         print(f"start_str: {pd.to_datetime(start_str, utc=True)}")
-        df_partial = df_partial[df_partial["open_time"] > pd.to_datetime(start_str)]
+        df_partial = df_partial[df_partial["open_time"] > pd.to_datetime(start_str, utc=True)]
     # df_partial["open_time"] = df_partial["open_time"].astype("int64") // 10**6
     # df_partial["close_time"] = df_partial["close_time"].astype("int64") // 10**6
     df_partial["open_time"] = pd.to_datetime(df_partial["open_time"], format='%Y-%m-%d %H:%M:%S')
