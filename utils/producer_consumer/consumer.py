@@ -133,6 +133,7 @@ def build_pipeline(app, crypto, model, version):
         logger.info(f"[{key}] Total rows in price data: {len(df)}.")
          
         logger.info(f"[{key}] Found {len(missing_pred_dates)} missing prediction dates.")
+        print(missing_pred_dates)
         if len(missing_pred_dates) > 0:
             df = df[df['open_time']<=missing_pred_dates.max()]
             ### slice 30 rows before min
@@ -180,7 +181,8 @@ def build_pipeline(app, crypto, model, version):
             #     # Convert to pandas Timestamp (preserves tz-awareness)
             #     d = pd.Timestamp(d)
 
-            
+            print(missing_pred_dates)
+            print(df['open_time'].values)
             for d in tqdm(missing_pred_dates.values):
                 if d not in pos_map:
                     ## get the closest date before d
