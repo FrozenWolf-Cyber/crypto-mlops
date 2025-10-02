@@ -107,30 +107,33 @@ class CryptoDB:
         trl_column = f"trl_{version}"
     
         # Step 0: Convert pred string to list of floats
+
         def parse_pred(val):
-            # Case 1: String like "[0.1, 0.2, 0.3]"
+            # Case 1: String like "[0.1, 0.2, 0.3]" or space-separated numbers
             if isinstance(val, str):
                 try:
-                    # Safely evaluate if it's a Python list string
+                    # Try parsing with literal_eval
                     parsed = ast.literal_eval(val)
                     if isinstance(parsed, list):
                         return [float(x) for x in parsed]
                     else:
-                        return [float(str(parsed).replace(',', '').strip())]
+                        return [float(parsed)]
                 except Exception:
-                    # fallback: manual split
-                    return [float(i.replace(',', '').strip()) for i in val.strip('[]').split(',') if i]
-
-            # Case 2: Already a list/array
+                    # fallback: handle both comma and space separated numbers
+                    cleaned = val.strip('[]').replace(',', ' ')
+                    return [float(x) for x in cleaned.split() if x]
+        
+            # Case 2: Already a list/tuple
             elif isinstance(val, (list, tuple)):
                 return [float(x) for x in val]
-
+        
             # Case 3: Numeric scalar
             elif isinstance(val, (int, float)):
                 return [float(val)]
-
+        
             # Fallback
             return None
+
 
         df['pred_list'] = df['pred'].apply(parse_pred)
     
