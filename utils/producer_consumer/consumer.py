@@ -116,7 +116,7 @@ def build_pipeline(app, crypto, model, version):
             pd.concat([pd.Series(missing_pred_dates), csv_missing_dates]).drop_duplicates()
             , utc=True, format='mixed'
         )
-        
+        missing_pred_dates = missing_pred_dates.tz_convert("UTC")
         missing_pred_dates_db = pd.to_datetime(missing_pred_dates_db, utc=True, format='mixed')
         
         logger.info(f"[{key}] Oldest missing prediction date in DB: {oldest_missing if oldest_missing else 'N/A'}")
