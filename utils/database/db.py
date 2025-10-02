@@ -7,6 +7,7 @@ import json
 import numpy as np
 import datetime
 import ast
+import time
 
 def normalize_pred(x):
     if isinstance(x, np.ndarray):
@@ -122,15 +123,15 @@ class CryptoDB:
                     # fallback: handle both comma and space separated numbers
                     cleaned = val.strip('[]').replace(',', ' ')
                     return [float(x) for x in cleaned.split() if x]
-        
+
             # Case 2: Already a list/tuple
             elif isinstance(val, (list, tuple)):
                 return [float(x) for x in val]
-        
+
             # Case 3: Numeric scalar
             elif isinstance(val, (int, float)):
                 return [float(val)]
-        
+
             # Fallback
             return None
 
@@ -397,7 +398,16 @@ class CryptoDB:
                 SET {model}_{to_version} = {model}_{from_version},
                     {model}_{from_version} = NULL;
             """)
-            conn.execute(shift_sql)
+            for attempt in range(3):
+                try:
+                    with self.engine.begin() as conn:
+                        conn.execute(shift_sql)
+                    break
+                except Exception as e:
+                    print(f"Error during shift_predictions attempt {attempt+1}: {e}")
+                    time.sleep(60)  # backoff
+                    continue
+         
 
     def shift_predictions_trl(self, table_name, model, from_version, to_version):
         table_name = table_name.lower()
