@@ -201,6 +201,7 @@ def main():
                 #### insert into csv
                 records = records[records["open_time"] > csv_last_times[symbol]]
                 print(f"Appending {len(records)} new records to CSV for {symbol}...")
+                print(f"New rows starting from {records.iloc[0]['open_time']} to {records.iloc[-1]['open_time']}")
                 csv_data[symbol] = pd.concat([csv_data[symbol], records], ignore_index=True)
                 # Save to CSV
                 csv_data[symbol].to_csv(csv_path[symbol], index=False)
