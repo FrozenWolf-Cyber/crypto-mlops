@@ -188,6 +188,10 @@ def build_pipeline(app, crypto, model, version):
             # print(missing_pred_dates)
             # print(df['open_time'].values)
             mask = missing_pred_dates_db.isin(missing_pred_dates)
+            ## print mask
+            print("Mask for db missing dates in all missing dates:", mask.tolist())
+            from collections import Counter
+            print("Mask value counts:", Counter(mask))
             for mask_idx, d in tqdm(enumerate(missing_pred_dates)):
                 print("sfsdfsfdsf")
                 if d not in pos_map:
@@ -210,7 +214,7 @@ def build_pipeline(app, crypto, model, version):
                 # collect the ith row (the target prediction time)
 
                 ## check if d in missing_pred_dates_db
-                if mask[mask_idx]:
+                if mask.iloc[mask_idx]:
                     print("hiiii")
                     rows_for_upsert.append(df.iloc[idx])
                     db_missing_pred_dates_pred_idx.append(len(inp)-1)  # index in inp list
