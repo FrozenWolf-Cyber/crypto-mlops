@@ -243,6 +243,7 @@ def create_dag1():
         schedule='0 0 */5 * *',  # Every 5 days
         start_date=start_date,
         catchup=False,
+        max_active_tasks=10,
         max_active_runs=1,
         dagrun_timeout=timedelta(hours=5),
         on_failure_callback=cleanup_on_timeout,
