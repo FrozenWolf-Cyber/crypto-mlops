@@ -12,7 +12,7 @@ os.makedirs(logs_path, exist_ok=True)
 
 print(full_path)
 processes = []
-max_time = int(55*60) ### 55 minutes max for each training
+max_time = int(60) ###TODO: DEBUG 55 minutes max for each training
 
 # trl_train
 trl_cmd = [
