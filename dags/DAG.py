@@ -170,7 +170,7 @@ def log_failure(context):
 # DAG 1: Training Pipeline
 # =========================
 def monitor_model_state(model_name, **context):
-    time_limit = 3700 # 1 hour and 10 minutes
+    time_limit = 5400 # 1.5 hours
     start_time = time.time()
     print(f"Monitoring model: {model_name}")
     if "_" in model_name:
@@ -240,11 +240,11 @@ def cleanup_on_timeout(context):
 def create_dag1():
     with DAG(
         'training_pipeline',
-        schedule='0 0 */3 * *',  # Every 3 days
+        schedule='0 0 */5 * *',  # Every 5 days
         start_date=start_date,
         catchup=False,
         max_active_runs=1,
-        dagrun_timeout=timedelta(hours=3),
+        dagrun_timeout=timedelta(hours=5),
         on_failure_callback=cleanup_on_timeout,
         on_success_callback=cleanup_on_timeout,
     ) as dag:
