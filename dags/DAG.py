@@ -313,6 +313,7 @@ def create_dag1():
                 op_kwargs={"model_name": model},
                 retries=0,          # how many times to retry
                 retry_delay=timedelta(minutes=1),  # wait between retries
+                priority_weight= 10,
             )
             
             # monitor_tasks_vastkill[model] = PythonOperator(
@@ -376,12 +377,14 @@ def create_dag1():
         
 
         start_pretrain >> flush_and_init >> train_models
+        train_models >> monitor_all_state_to_kill_task
 
         for model in models:
             train_models >> monitor_tasks[model]
 
 
         monitor_all_state_to_kill_task =PythonOperator(
+            priority_weight= 100000,
             task_id='monitor_all_to_kill',
             python_callable=monitor_all_state_to_kill,
                 on_execute_callback=log_start,
@@ -390,8 +393,7 @@ def create_dag1():
             
         )
         # for each monitor, insert a neutral node
-        train_models >> monitor_all_state_to_kill_task
-
+        
         for model in models:
             monitor_tasks[model] >> [post_tasks[model], skip_task]
        
