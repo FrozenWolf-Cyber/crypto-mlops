@@ -374,14 +374,6 @@ def create_dag1():
                 on_failure_callback=log_failure,
             
         )
-        
-
-        start_pretrain >> flush_and_init >> train_models
-        train_models >> monitor_all_state_to_kill_task
-
-        for model in models:
-            train_models >> monitor_tasks[model]
-
 
         monitor_all_state_to_kill_task =PythonOperator(
             priority_weight= 100000,
@@ -392,6 +384,15 @@ def create_dag1():
                 on_failure_callback=log_failure,
             
         )
+
+        start_pretrain >> flush_and_init >> train_models
+        train_models >> monitor_all_state_to_kill_task
+
+        for model in models:
+            train_models >> monitor_tasks[model]
+
+
+
         # for each monitor, insert a neutral node
         
         for model in models:
