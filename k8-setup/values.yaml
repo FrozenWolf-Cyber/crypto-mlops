@@ -76,7 +76,6 @@ dags:
     repo: "https://github.com/FrozenWolf-Cyber/crypto-mlops"
     branch: "master"
     wait: 10
-    dest: repo                    # this ensures gitSync clones into /opt/airflow/dags/repo
   persistence:
     enabled: true
     existingClaim: shared-pvc-airflow
@@ -87,7 +86,6 @@ logs:
   persistence:
     enabled: true
     existingClaim: shared-pvc
-    accessMode: ReadWriteMany
 
 # Disable Flower
 flower:
