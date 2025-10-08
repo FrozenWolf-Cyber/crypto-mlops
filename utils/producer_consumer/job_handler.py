@@ -1,6 +1,4 @@
-import logging
 import time
-log = logging.getLogger(__name__)
 import os
 import subprocess
 STATE_DIR = "/opt/airflow/custom_persistent_shared/consumer_states"
