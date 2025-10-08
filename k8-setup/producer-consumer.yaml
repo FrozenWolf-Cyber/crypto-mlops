@@ -42,7 +42,7 @@ spec:
               apt-get update && apt-get install -y --no-install-recommends git
               git clone https://github.com/FrozenWolf-Cyber/crypto-mlops /app/repo
               cd /app/repo/utils/producer_consumer
-              python job_handler.py
+              python -m job_handler
           volumeMounts:
             - name: custom-worker-shared
               mountPath: /opt/airflow/custom_persistent_shared
