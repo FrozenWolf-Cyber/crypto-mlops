@@ -1,4 +1,4 @@
-executor: CeleryExecutor
+executor: LocalExecutor
 
 env:
   - name: AIRFLOW__CORE__DAGS_FOLDER
@@ -71,8 +71,8 @@ flower:
   enabled: false
 
 
-# redis: 
-#   enabled: false
+redis: 
+  enabled: false
 
 metrics:
   enabled: true
