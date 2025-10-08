@@ -2,8 +2,8 @@ executor: CeleryExecutor
 
 images:
   airflow:
-    repository: apache/airflow
-    tag: 3.7.0
+    repository: frozenwolf2003/mlops-airflow
+    tag: latest
     pullPolicy: IfNotPresent
 
 # DAG GitSync
