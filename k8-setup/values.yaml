@@ -2,7 +2,7 @@ executor: KubernetesExecutor
 
 env:
   - name: AIRFLOW__CORE__DAGS_FOLDER
-    value: /opt/airflow/dags/repo/dags/
+    value: /opt/airflow/custom_dags
   - name: PYTHONPATH
     value: /opt/airflow/dags/repo
   - name: TEST_ENV
@@ -11,12 +11,19 @@ env:
     value: /opt/airflow/pod_templates/pod_template_file.yaml
     
 volumeMounts:
-  - name: airflow-dags
+  - name: custom-worker-shared
     mountPath: /opt/airflow/custom_persistent_shared
+  - name: airflow-dags
+    mountPath: /opt/airflow/custom_dags
+volumes:
+  - name: custom-worker-shared
+    persistentVolumeClaim:
+      claimName: shared-pvc
 volumes:
   - name: airflow-dags
     persistentVolumeClaim:
-      claimName: shared-pvc
+      claimName: shared-pvc-airflow
+
 
 extraEnv: |
   - name: KAFKA_HOST
@@ -58,11 +65,11 @@ airflow:
 
 # DAGs persistence + git-sync
 dags:
-  gitSync:
-    enabled: true
-    repo: "https://github.com/FrozenWolf-Cyber/crypto-mlops"
-    branch: "master"
-    wait: 10
+  # gitSync:
+  #   enabled: true
+  #   repo: "https://github.com/FrozenWolf-Cyber/crypto-mlops"
+  #   branch: "master"
+  #   wait: 10
   persistence:
     enabled: true
     existingClaim: shared-pvc-airflow
