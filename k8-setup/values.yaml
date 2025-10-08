@@ -1,26 +1,83 @@
-executor: CeleryExecutor
+executor: LocalExecutor
 
+env:
+  - name: AIRFLOW__CORE__DAGS_FOLDER
+    value: /opt/airflow/dags/repo/dags/
+  - name: PYTHONPATH
+    value: /opt/airflow/dags/repo
+  - name: TEST_ENV
+    value: "GOKULADETHYA"
+
+volumeMounts:
+  - name: airflow-dags
+    mountPath: /opt/airflow/custom_persistent_shared
+volumes:
+  - name: airflow-dags
+    persistentVolumeClaim:
+      claimName: shared-pvc
+
+extraEnv: |
+  - name: KAFKA_HOST
+    valueFrom:
+      fieldRef:
+        fieldPath: status.hostIP
+  - name: MLFLOW_TRACKING_URI
+    valueFrom:
+      secretKeyRef:
+        name: platform-secrets
+        key: MLFLOW_URI
+  - name: MLFLOW_TRACKING_USERNAME
+    value: "admin"
+  - name: MLFLOW_TRACKING_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: platform-secrets
+        key: MLFLOW_ADMIN_PASSWORD
+
+extraEnvFrom: |
+  - secretRef:
+      name: platform-secrets
+
+
+webserverSecretKeySecretName: my-webserver-secret
+# Use your custom image everywhere
 airflow:
   image:
     repository: frozenwolf2003/mlops-airflow
     tag: latest
 
+  config:
+    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags/repo/dags/
+  env:
+    - name: PYTHONPATH
+      value: /opt/airflow/dags/repo
 
+
+
+# Ensure DAG processor, scheduler, triggerer all use your image
+# DAGs
 dags:
-  persistence:
-    enabled: true
-    # Volume size for dags
-    size: 1Gi
-    # If using a custom storageClass, pass name here
-    storageClassName:
-    # access mode of the persistent volume
-    accessMode: ReadWriteMany
-    ## the name of an existing PVC to use
-    existingClaim: shared-pvc-airflow
-    subPath: ~
   gitSync:
     enabled: true
-    repo: https://github.com/FrozenWolf-Cyber/crypto-mlops
-    branch: master
-    period: 5s
-    wait: ~
+    repo: "https://github.com/FrozenWolf-Cyber/crypto-mlops"
+    branch: "master"
+    wait: 10
+  persistence:
+    enabled: true
+    existingClaim: shared-pvc-airflow
+    accessMode: ReadWriteMany
+
+flower:
+  enabled: false
+
+
+redis: 
+  enabled: false
+
+metrics:
+  enabled: true
+  statsd:
+    enabled: true
+    host: airflow-statsd
+    port: 9125
+    prefix: airflow
