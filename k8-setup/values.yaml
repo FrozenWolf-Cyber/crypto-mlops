@@ -77,9 +77,7 @@ dags:
     branch: "master"
     wait: 10
   persistence:
-    enabled: true
-    existingClaim: shared-pvc-airflow
-    accessMode: ReadWriteMany
+    enabled: false
 
 # Logs
 logs:
