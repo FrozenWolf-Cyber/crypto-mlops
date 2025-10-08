@@ -21,13 +21,13 @@ dags:
 dags:
   persistence:
     enabled: true
-    existingClaim: shared-airflow-pvc
+    existingClaim: shared-pvc-airflow
 
 # Logs persistence
 logs:
   persistence:
     enabled: true
-    existingClaim: shared-airflow-pvc
+    existingClaim: shared-pvc-airflow
 
 # Celery configuration
 celery:
