@@ -1,67 +1,61 @@
-# values.yaml - Dummy Airflow Helm chart values
-
 executor: CeleryExecutor
 
-# Airflow image settings
 images:
   airflow:
     repository: apache/airflow
     tag: 3.7.0
     pullPolicy: IfNotPresent
 
-# GitSync configuration for DAGs
+# DAG GitSync
 dags:
   gitSync:
     enabled: true
-    repo: "https://github.com/FrozenWolf-Cyber/crypto-mlops"
-    branch: "master"
+    repo: "https://github.com/example/airflow-dags.git"
+    branch: "main"
     rev: "HEAD"
-    wait: 10
+    wait: 30
     depth: 1
     subPath: ""
-    # optional: use SSH key instead of HTTPS token
-    # sshKeySecret: "git-ssh-key"
-    # knownHosts: |
-    #   github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAr...
 
-persistence:
-  enabled: true
-  existingClaim: shared-airflow-pvc
-  accessMode: ReadWriteMany
-  size: 10Gi
-  # optional: mount paths for Airflow
-  mountPath: /opt/airflow/dags
+# DAGs persistence (shared PVC)
+dags:
+  persistence:
+    enabled: true
+    existingClaim: shared-airflow-pvc
 
+# Logs persistence
 logs:
   persistence:
     enabled: true
     existingClaim: shared-airflow-pvc
-    accessMode: ReadWriteMany
-    size: 10Gi
-    mountPath: /opt/airflow/logs
 
-# Celery Executor settings
+# Celery configuration
 celery:
   worker:
     replicas: 2
   flower:
     enabled: true
 
-# Airflow configs
+# Airflow configs as key-value objects
 config:
-  AIRFLOW__CORE__FERNET_KEY: "dummyfernetkey1234567890"
-  AIRFLOW__CORE__DAGS_FOLDER: "/opt/airflow/dags"
-  AIRFLOW__CORE__EXECUTOR: "CeleryExecutor"
-  AIRFLOW__CELERY__RESULT_BACKEND: "db+postgresql://airflow:airflow@airflow-postgresql:5432/airflow"
-  AIRFLOW__CELERY__BROKER_URL: "redis://airflow-redis:6379/0"
+  AIRFLOW__CORE__FERNET_KEY:
+    value: "dummyfernetkey1234567890"
+  AIRFLOW__CORE__DAGS_FOLDER:
+    value: "/opt/airflow/dags"
+  AIRFLOW__CORE__EXECUTOR:
+    value: "CeleryExecutor"
+  AIRFLOW__CELERY__BROKER_URL:
+    value: "redis://airflow-redis:6379/0"
+  AIRFLOW__CELERY__RESULT_BACKEND:
+    value: "db+postgresql://airflow:airflow@airflow-postgresql:5432/airflow"
 
-# PostgreSQL dependency (optional)
+# PostgreSQL (for Celery backend)
 postgresql:
   enabled: true
   postgresqlDatabase: airflow
   postgresqlUsername: airflow
   postgresqlPassword: airflow
 
-# Redis for Celery Broker
+# Redis (for Celery broker)
 redis:
   enabled: true
