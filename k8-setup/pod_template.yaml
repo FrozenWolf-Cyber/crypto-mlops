@@ -43,9 +43,14 @@ data:
             - secretRef:
                 name: platform-secrets
           volumeMounts:
-            - name: airflow-dags
+            - name: custom-worker-shared
               mountPath: /opt/airflow/custom_persistent_shared
+            - name: airflow-dags
+              mountPath: /opt/airflow/custom_dags
       volumes:
-        - name: airflow-dags
+        - name: custom-worker-shared
           persistentVolumeClaim:
             claimName: shared-pvc
+        - name: airflow-dags
+          persistentVolumeClaim:
+            claimName: shared-pvc-airflow

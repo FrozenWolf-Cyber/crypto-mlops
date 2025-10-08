@@ -19,7 +19,6 @@ volumes:
   - name: custom-worker-shared
     persistentVolumeClaim:
       claimName: shared-pvc
-volumes:
   - name: airflow-dags
     persistentVolumeClaim:
       claimName: shared-pvc-airflow
