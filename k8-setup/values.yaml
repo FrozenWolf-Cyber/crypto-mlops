@@ -2,9 +2,9 @@ executor: CeleryExecutor
 
 env:
   - name: AIRFLOW__CORE__DAGS_FOLDER
-    value: /opt/airflow/dags/repo/dags/
+    value: /app/my_repo_clone/dags/
   - name: PYTHONPATH
-    value: /opt/airflow/dags/repo
+    value: /app/my_repo_clone
   - name: TEST_ENV
     value: "GOKULADETHYA"
 
@@ -47,10 +47,10 @@ airflow:
     tag: latest
 
   config:
-    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags/repo/dags/
+    AIRFLOW__CORE__DAGS_FOLDER: /app/my_repo_clone/dags/
   env:
     - name: PYTHONPATH
-      value: /opt/airflow/dags/repo
+      value: /app/my_repo_clone
 
 
 
