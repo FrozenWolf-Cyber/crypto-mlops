@@ -1,5 +1,4 @@
-executor: LocalExecutor
-
+executor: CeleryExecutor
 
 airflow:
   image:
