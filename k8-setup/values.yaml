@@ -1,33 +1,26 @@
 executor: CeleryExecutor  # or KubernetesExecutor
 
-# Airflow main image and env
 airflow:
   image:
     repository: frozenwolf2003/mlops-airflow
     tag: latest
+    pullPolicy: Always
   config:
-    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags/repo/dags/
-  env:
-    - name: PYTHONPATH
-      value: /opt/airflow/dags/repo
+    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
 
-# DAGs configuration
+# DAGs
 dags:
   gitSync:
     enabled: true
     repo: "https://github.com/FrozenWolf-Cyber/crypto-mlops"
     branch: "master"
     wait: 10
-    # Mount path must match AIRFLOW__CORE__DAGS_FOLDER minus the 'dags' subfolder
-    root: /opt/airflow/dags/repo
-    dest: dags
   persistence:
     enabled: true
-    existingClaim: shared-pvc-airflow  # must be RWX
+    existingClaim: shared-pvc-airflow
     accessMode: ReadWriteMany
-    mountPath: /opt/airflow/dags/repo
 
-# Extra environment variables (shared by all pods)
+# Extra environment variables
 extraEnv: |
   - name: KAFKA_HOST
     valueFrom:
@@ -50,18 +43,12 @@ extraEnvFrom: |
   - secretRef:
       name: platform-secrets
 
-# Webserver secret key
 webserverSecretKeySecretName: my-webserver-secret
-
-# Flower
 flower:
   enabled: false
-
-# # Redis (for CeleryExecutor)
 # redis:
 #   enabled: false
 
-# Metrics
 metrics:
   enabled: true
   statsd:
