@@ -1,9 +1,17 @@
-from .consumer_utils import state_checker, if_state_exists, state_write, delete_state, STATE_DIR, PRODUCER_CONSUMER_JOB_DIR
 import logging
 import time
 log = logging.getLogger(__name__)
 import os
 import subprocess
+STATE_DIR = "/opt/airflow/custom_persistent_shared/consumer_states"
+PRODUCER_CONSUMER_JOB_DIR = "/opt/airflow/custom_persistent_shared/jobs"
+# Ensure the state directory exists
+if not os.path.exists(STATE_DIR):
+    os.makedirs(STATE_DIR, exist_ok=True)
+    
+if not os.path.exists(PRODUCER_CONSUMER_JOB_DIR):
+    os.makedirs(PRODUCER_CONSUMER_JOB_DIR, exist_ok=True)
+
 
 def create_consumer(crypto: str, model: str, version: str):
     if os.path.exists(os.path.join(STATE_DIR, f"{crypto}_{model}_{version}.json")):
