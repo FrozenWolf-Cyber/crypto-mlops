@@ -1,17 +1,34 @@
 executor: KubernetesExecutor
 
-# Airflow environment
 env:
   - name: AIRFLOW__CORE__DAGS_FOLDER
-    value: /opt/airflow/dags
+    value: /opt/airflow/dags/repo/dags/
   - name: PYTHONPATH
     value: /opt/airflow/dags/repo
   - name: TEST_ENV
     value: "GOKULADETHYA"
   - name: AIRFLOW__KUBERNETES_EXECUTOR__POD_TEMPLATE_FILE
     value: /opt/airflow/pod_templates/pod_template_file.yaml
+    
+volumeMounts:
+  - name: airflow-dags
+    mountPath: /opt/airflow/custom_persistent_shared
+volumes:
+  - name: airflow-dags
+    persistentVolumeClaim:
+      claimName: shared-pvc
 
-# Extra environment from secrets
+extraVolumes:
+  - name: pod-template
+    configMap:
+      name: airflow-pod-template
+
+extraVolumeMounts:
+  - name: pod-template
+    mountPath: /opt/airflow/
+    readOnly: true
+
+
 extraEnv: |
   - name: KAFKA_HOST
     valueFrom:
@@ -34,37 +51,25 @@ extraEnvFrom: |
   - secretRef:
       name: platform-secrets
 
-# Custom volumes for shared data
-extraVolumes:
-  - name: airflow-shared
-    persistentVolumeClaim:
-      claimName: shared-pvc-airflow
-  - name: pod-template
-    configMap:
-      name: airflow-pod-template
-
-extraVolumeMounts:
-  - name: airflow-shared
-    mountPath: /opt/airflow/custom_persistent_shared
-  - name: pod-template
-    mountPath: /opt/airflow/
-    readOnly: true
 
 webserverSecretKeySecretName: my-webserver-secret
-
-# Custom Airflow image
+# Use your custom image everywhere
 airflow:
   image:
     repository: frozenwolf2003/mlops-airflow
     tag: latest
+
   config:
-    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags/repo/dags/
     AIRFLOW__KUBERNETES__POD_TEMPLATE_FILE: /opt/airflow/pod_templates/pod_template_file.yaml
   env:
     - name: PYTHONPATH
       value: /opt/airflow/dags/repo
 
-# DAGs configuration
+
+
+# Ensure DAG processor, scheduler, triggerer all use your image
+# DAGs
 dags:
   gitSync:
     enabled: true
@@ -72,23 +77,23 @@ dags:
     branch: "master"
     wait: 10
   persistence:
-    enabled: false  # disabled to avoid mount conflict
+    enabled: true
+    existingClaim: shared-pvc-airflow
+    accessMode: ReadWriteMany
 
-# Logs
+flower:
+  enabled: false
+
 logs:
   persistence:
     enabled: true
     existingClaim: shared-pvc
+    accessMode: ReadWriteMany
 
-# Disable Flower
-flower:
+
+redis: 
   enabled: false
 
-# Redis disabled
-redis:
-  enabled: false
-
-# Metrics
 metrics:
   enabled: true
   statsd:
