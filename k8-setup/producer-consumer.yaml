@@ -18,7 +18,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: producer-consumer
-          image: python:3.10-slim  # or your custom image
+          image: frozenwolf2003/producer_consumer:latest
           envFrom:
             - secretRef:
                 name: platform-secrets
