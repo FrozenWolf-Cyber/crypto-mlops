@@ -1,4 +1,4 @@
-executor: KubernetesExecutor
+executor: CeleryExecutor
 
 env:
   - name: AIRFLOW__CORE__DAGS_FOLDER
@@ -7,8 +7,6 @@ env:
     value: /opt/airflow/dags/repo
   - name: TEST_ENV
     value: "GOKULADETHYA"
-  - name: AIRFLOW__KUBERNETES_EXECUTOR__POD_TEMPLATE_FILE
-    value: /opt/airflow/pod_templates/pod_template.yaml
 
 volumeMounts:
   - name: airflow-dags
@@ -73,8 +71,8 @@ flower:
   enabled: false
 
 
-redis: 
-  enabled: false
+# redis: 
+#   enabled: false
 
 metrics:
   enabled: true
