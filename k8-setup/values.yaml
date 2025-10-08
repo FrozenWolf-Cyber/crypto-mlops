@@ -20,7 +20,7 @@ dags:
     existingClaim: shared-pvc-airflow
     subPath: ~
   gitSync:
-    enabled: false
+    enabled: true
     repo: https://github.com/FrozenWolf-Cyber/crypto-mlops
     branch: master
     period: 5s
