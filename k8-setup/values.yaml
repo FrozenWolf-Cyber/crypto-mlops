@@ -1,4 +1,4 @@
-executor: LocalExecutor
+executor: KubernetesExecutor
 
 env:
   - name: AIRFLOW__CORE__DAGS_FOLDER
@@ -7,6 +7,8 @@ env:
     value: /opt/airflow/dags/repo
   - name: TEST_ENV
     value: "GOKULADETHYA"
+  - name: AIRFLOW__KUBERNETES_EXECUTOR__POD_TEMPLATE_FILE
+    value: /opt/airflow/pod_template.yaml
 
 volumeMounts:
   - name: airflow-dags
