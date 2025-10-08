@@ -17,11 +17,15 @@ data:
           image: frozenwolf2003/mlops-airflow:latest
           imagePullPolicy: IfNotPresent
           env:
+            - name: AIRFLOW__CORE__DAGS_FOLDER
+              value: /opt/airflow/custom_dags/dags
+            - name: PYTHONPATH
+              value: /opt/airflow/custom_dags
+            - name: TEST_ENV
+              value: "GOKULADETHYA"
             # Core Airflow env
             - name: AIRFLOW__CORE__EXECUTOR
-              value: KubernetesExecutor
-            - name: AIRFLOW__CORE__DAGS_FOLDER
-              value: /opt/airflow/dags/repo/dags/
+              value: LocalExecutor
             # Extra env from your values.yaml
             - name: KAFKA_HOST
               valueFrom:

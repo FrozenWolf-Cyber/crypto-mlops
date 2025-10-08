@@ -2,9 +2,9 @@ executor: KubernetesExecutor
 
 env:
   - name: AIRFLOW__CORE__DAGS_FOLDER
-    value: /opt/airflow/custom_dags
+    value: /opt/airflow/custom_dags/dags
   - name: PYTHONPATH
-    value: /opt/airflow/dags/repo
+    value: /opt/airflow/custom_dags
   - name: TEST_ENV
     value: "GOKULADETHYA"
   - name: AIRFLOW__KUBERNETES_EXECUTOR__POD_TEMPLATE_FILE
@@ -55,11 +55,11 @@ airflow:
     tag: latest
 
   config:
-    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags/repo/dags/
+    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/custom_dags/dags
     AIRFLOW__KUBERNETES__POD_TEMPLATE_FILE: /opt/airflow/pod_templates/pod_template_file.yaml
   env:
     - name: PYTHONPATH
-      value: /opt/airflow/dags/repo
+      value: /opt/airflow/custom_dags
 
 
 # DAGs persistence + git-sync
