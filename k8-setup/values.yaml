@@ -49,13 +49,3 @@ config:
   AIRFLOW__CELERY__RESULT_BACKEND:
     value: "db+postgresql://airflow:airflow@airflow-postgresql:5432/airflow"
 
-# PostgreSQL (for Celery backend)
-postgresql:
-  enabled: true
-  postgresqlDatabase: airflow
-  postgresqlUsername: airflow
-  postgresqlPassword: airflow
-
-# Redis (for Celery broker)
-redis:
-  enabled: true
