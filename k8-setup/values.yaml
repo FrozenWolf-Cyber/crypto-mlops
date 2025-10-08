@@ -82,9 +82,9 @@ dags:
 flower:
   enabled: false
 
-logs:
-  persistence:
-    enabled: true
+# logs:
+#   persistence:
+#     enabled: true
 
 redis: 
   enabled: false
