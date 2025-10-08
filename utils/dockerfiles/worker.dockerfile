@@ -50,4 +50,4 @@ EOF
 
 COPY past_news_scrape.py .
 COPY scrape.py .
-RUN git clone https://github.com/FrozenWolf-Cyber/crypto-mlops ${AIRFLOW_HOME}/dags/crypto-mlops
+RUN git clone https://github.com/FrozenWolf-Cyber/crypto-mlops .
