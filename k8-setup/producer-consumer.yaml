@@ -42,7 +42,6 @@ spec:
               apt-get update && apt-get install -y --no-install-recommends git
               git clone https://github.com/FrozenWolf-Cyber/crypto-mlops /app/repo
               cd /app/repo/utils/producer_consumer
-              pip install --no-cache-dir -r requirements.txt
               python job_handler.py
           volumeMounts:
             - name: custom-worker-shared
