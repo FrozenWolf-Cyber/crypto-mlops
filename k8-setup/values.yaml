@@ -80,7 +80,6 @@ dags:
     enabled: true
     existingClaim: shared-pvc-airflow
     accessMode: ReadWriteMany
-    path: /opt/airflow/dags
 
 flower:
   enabled: false
