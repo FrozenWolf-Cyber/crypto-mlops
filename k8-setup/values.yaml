@@ -8,8 +8,8 @@ env:
   - name: TEST_ENV
     value: "GOKULADETHYA"
   - name: AIRFLOW__KUBERNETES_EXECUTOR__POD_TEMPLATE_FILE
-    value: /opt/airflow/pod_template.yaml
-
+    value: /opt/airflow/pod_templates/pod_template_file.yaml
+    
 volumeMounts:
   - name: airflow-dags
     mountPath: /opt/airflow/custom_persistent_shared
@@ -61,7 +61,7 @@ airflow:
 
   config:
     AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags/repo/dags/
-    AIRFLOW__KUBERNETES__POD_TEMPLATE_FILE: /opt/airflow/pod_template.yaml
+    AIRFLOW__KUBERNETES__POD_TEMPLATE_FILE: /opt/airflow/pod_templates/pod_template_file.yaml
   env:
     - name: PYTHONPATH
       value: /opt/airflow/dags/repo
@@ -80,6 +80,7 @@ dags:
     enabled: true
     existingClaim: shared-pvc-airflow
     accessMode: ReadWriteMany
+    path: /opt/airflow/dags
 
 flower:
   enabled: false
