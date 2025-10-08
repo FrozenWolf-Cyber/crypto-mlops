@@ -50,4 +50,5 @@ EOF
 
 COPY past_news_scrape.py .
 COPY scrape.py .
-RUN git clone https://github.com/FrozenWolf-Cyber/crypto-mlops .
+RUN mkdir my_repo_clone
+RUN git clone https://github.com/FrozenWolf-Cyber/crypto-mlops my_repo_clone
