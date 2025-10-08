@@ -1,4 +1,4 @@
-executor: CeleryExecutor
+executor: LocalExecutor
 
 
 airflow:
