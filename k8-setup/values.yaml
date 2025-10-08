@@ -2,21 +2,21 @@ executor: KubernetesExecutor
 
 env:
   - name: AIRFLOW__CORE__DAGS_FOLDER
-    value: /opt/airflow/dags/repo/dags/
+    value: /opt/airflow/dags       # <-- match the PVC mount
   - name: PYTHONPATH
     value: /opt/airflow/dags/repo
   - name: TEST_ENV
     value: "GOKULADETHYA"
   - name: AIRFLOW__KUBERNETES_EXECUTOR__POD_TEMPLATE_FILE
     value: /opt/airflow/pod_templates/pod_template_file.yaml
-    
+
 volumeMounts:
   - name: airflow-dags
-    mountPath: /opt/airflow/custom_persistent_shared
+    mountPath: /opt/airflow/dags   # <-- mount here
 volumes:
   - name: airflow-dags
     persistentVolumeClaim:
-      claimName: shared-pvc
+      claimName: shared-pvc-airflow
 
 extraVolumes:
   - name: pod-template
@@ -60,7 +60,7 @@ airflow:
     tag: latest
 
   config:
-    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags/repo/dags/
+    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
     AIRFLOW__KUBERNETES__POD_TEMPLATE_FILE: /opt/airflow/pod_templates/pod_template_file.yaml
   env:
     - name: PYTHONPATH
@@ -76,11 +76,20 @@ dags:
     repo: "https://github.com/FrozenWolf-Cyber/crypto-mlops"
     branch: "master"
     wait: 10
+    dest: repo                    # this ensures gitSync clones into /opt/airflow/dags/repo
   persistence:
     enabled: true
     existingClaim: shared-pvc-airflow
     accessMode: ReadWriteMany
 
+# Logs
+logs:
+  persistence:
+    enabled: true
+    existingClaim: shared-pvc
+    accessMode: ReadWriteMany
+
+# Disable Flower
 flower:
   enabled: false
 
