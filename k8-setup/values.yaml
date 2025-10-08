@@ -1,12 +1,14 @@
-executor: CeleryExecutor
+executor: KubernetesExecutor
 
 env:
   - name: AIRFLOW__CORE__DAGS_FOLDER
-    value: /app/my_repo_clone/dags/
+    value: /opt/airflow/dags/
   - name: PYTHONPATH
-    value: /app/my_repo_clone
+    value: /opt/airflow
   - name: TEST_ENV
     value: "GOKULADETHYA"
+  - name: AIRFLOW__KUBERNETES_EXECUTOR__POD_TEMPLATE_FILE
+    value: /opt/airflow/pod_templates/pod_template_file.yaml
 
 volumeMounts:
   - name: airflow-dags
@@ -15,6 +17,15 @@ volumes:
   - name: airflow-dags
     persistentVolumeClaim:
       claimName: shared-pvc
+
+extraVolumes:
+  - name: pod-template
+    configMap:
+      name: airflow-pod-template
+extraVolumeMounts:
+  - name: pod-template
+    mountPath: /opt/airflow/
+    readOnly: true
 
 extraEnv: |
   - name: KAFKA_HOST
@@ -47,10 +58,11 @@ airflow:
     tag: latest
 
   config:
-    AIRFLOW__CORE__DAGS_FOLDER: /app/my_repo_clone/dags/
+    AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags/
+    AIRFLOW__KUBERNETES__POD_TEMPLATE_FILE: /opt/airflow/pod_templates/pod_template_file.yaml
   env:
     - name: PYTHONPATH
-      value: /app/my_repo_clone
+      value: /opt/airflow
 
 
 
@@ -71,8 +83,8 @@ flower:
   enabled: false
 
 
-# redis: 
-#   enabled: false
+redis: 
+  enabled: false
 
 metrics:
   enabled: true

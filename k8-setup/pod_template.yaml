@@ -18,9 +18,9 @@ data:
           imagePullPolicy: IfNotPresent
           env:
             - name: AIRFLOW__CORE__DAGS_FOLDER
-              value: /opt/airflow/custom_dags/dags
+              value: /opt/airflow/dags/
             - name: PYTHONPATH
-              value: /opt/airflow/custom_dags
+              value: /opt/airflow
             - name: TEST_ENV
               value: "GOKULADETHYA"
             # Core Airflow env
