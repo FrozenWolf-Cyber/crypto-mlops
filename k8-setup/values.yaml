@@ -88,8 +88,6 @@ logs:
   persistence:
     enabled: true
     existingClaim: shared-pvc
-    accessMode: ReadWriteMany
-
 
 redis: 
   enabled: false
