@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: producer-consumer
+  namespace: platform
+  labels:
+    app: producer-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: producer-consumer
+  template:
+    metadata:
+      labels:
+        app: producer-consumer
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: producer-consumer
+          image: python:3.10-slim  # or your custom image
+          envFrom:
+            - secretRef:
+                name: platform-secrets
+          env:
+            - name: MLFLOW_TRACKING_URI
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: MLFLOW_URI
+            - name: MLFLOW_TRACKING_USERNAME
+              value: "admin"
+            - name: MLFLOW_TRACKING_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: MLFLOW_ADMIN_PASSWORD
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              apt-get update && apt-get install -y --no-install-recommends git
+              git clone https://github.com/FrozenWolf-Cyber/crypto-mlops /app/repo
+              cd /app/repo/utils/producer_consumer
+              pip install --no-cache-dir -r requirements.txt
+              python job_handler.py
+          volumeMounts:
+            - name: custom-worker-shared
+              mountPath: /opt/airflow/custom_persistent_shared
+      volumes:
+        - name: custom-worker-shared
+          persistentVolumeClaim:
+            claimName: shared-pvc

@@ -9,6 +9,7 @@ import requests
 manager = S3Manager()
 # from control_consumer import send_control_command
 from ..producer_consumer.consumer_utils import state_checker, state_write, delete_state, STATE_DIR
+PRODUCER_CONSUMER_JOB_DIR = "/opt/airflow/custom_persistent_shared/jobs"
 
 
 def create_consumer(crypto: str, model: str, version: str):
@@ -18,21 +19,26 @@ def create_consumer(crypto: str, model: str, version: str):
     """Download datasets and launch consumer."""
     print(f"[CREATE] Preparing consumer for {crypto} {model} {version}")
 
-    cmd = [
-    "bash", "-c",
-    f"PYTHONPATH=..:$PYTHONPATH python -m utils.producer_consumer.consumer "
-    f"--crypto {crypto} --model {model} --version {version}"
-    ]
-    
-    print("[CREATE] Launching:", " ".join(cmd))
-    subprocess.Popen(
-    cmd,
-    stdout=subprocess.DEVNULL,
-    stderr=subprocess.DEVNULL,
-    stdin=subprocess.DEVNULL,
-    close_fds=True,
-    start_new_session=True
-)
+#     cmd = [
+#     "bash", "-c",
+#     f"PYTHONPATH=..:$PYTHONPATH python -m utils.producer_consumer.consumer "
+#     f"--crypto {crypto} --model {model} --version {version}"
+#     ]
+    # print("[CREATE] Launching:", " ".join(cmd))
+#     subprocess.Popen(
+#     cmd,
+#     stdout=subprocess.DEVNULL,
+#     stderr=subprocess.DEVNULL,
+#     stdin=subprocess.DEVNULL,
+#     close_fds=True,
+#     start_new_session=True
+# )
+    ## instead of create subprocess we will save it as a job file at PRODUCER_CONSUMER_JOB_DIR which will be launched by a separate script
+    file_name = f"{crypto}_{model}_{version}.sh"
+    with open(os.path.join(PRODUCER_CONSUMER_JOB_DIR, file_name), "w") as f:
+        f.write("#!/bin/bash\n")
+        f.write(f"export PYTHONPATH=..:$PYTHONPATH\n")
+        f.write(f"python -m utils.producer_consumer.consumer --crypto {crypto} --model {model} --version {version}\n")
 
 
 def main():

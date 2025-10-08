@@ -32,17 +32,18 @@ RUN mkdir -p /opt/playwright \
  && playwright install --with-deps
 
 # 5️⃣ Test Playwright works
-RUN python - <<EOF
-from playwright.sync_api import sync_playwright
-with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True)
-    print("✅ Chromium launched successfully")
-    browser.close()
-EOF
+# RUN python - <<EOF
+# from playwright.sync_api import sync_playwright
+# with sync_playwright() as p:
+#     browser = p.chromium.launch(headless=True)
+#     print("✅ Chromium launched successfully")
+#     browser.close()
+# EOF
 
 # 6️⃣ Copy project files
 COPY past_news_scrape.py .
 COPY scrape.py .
-
+### mkdir so that /opt/airflow/custom_persistent_shared is usable
+RUN mkdir -p /opt/airflow/custom_persistent_shared
 # (Optional) Run script on build – consider ENTRYPOINT instead
-RUN python past_news_scrape.py
+# RUN python past_news_scrape.py

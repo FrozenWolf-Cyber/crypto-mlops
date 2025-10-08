@@ -6,9 +6,13 @@ import logging
 log = logging.getLogger(__name__)
 
 STATE_DIR = "/opt/airflow/custom_persistent_shared/consumer_states"
-
+PRODUCER_CONSUMER_JOB_DIR = "/opt/airflow/custom_persistent_shared/jobs"
 # Ensure the state directory exists
-os.makedirs(STATE_DIR, exist_ok=True)
+if not os.path.exists(STATE_DIR):
+    os.makedirs(STATE_DIR, exist_ok=True)
+    
+if not os.path.exists(PRODUCER_CONSUMER_JOB_DIR):
+    os.makedirs(PRODUCER_CONSUMER_JOB_DIR, exist_ok=True)
 
 def state_write(crypto: str, model: str, version: str, state: str, error_msg: str = ""):
     """
