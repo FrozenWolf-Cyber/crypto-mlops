@@ -18,6 +18,17 @@ volumes:
     persistentVolumeClaim:
       claimName: shared-pvc
 
+extraVolumes:
+  - name: pod-template
+    configMap:
+      name: airflow-pod-template
+
+extraVolumeMounts:
+  - name: pod-template
+    mountPath: /opt/airflow/
+    readOnly: true
+
+
 extraEnv: |
   - name: KAFKA_HOST
     valueFrom:
@@ -50,6 +61,7 @@ airflow:
 
   config:
     AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags/repo/dags/
+    AIRFLOW__KUBERNETES__POD_TEMPLATE_FILE: /opt/airflow/pod_template.yaml
   env:
     - name: PYTHONPATH
       value: /opt/airflow/dags/repo

@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: airflow-pod-template
+  labels:
+    app: airflow
+data:
+  pod_template.yaml: |
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: airflow-base-pod
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: base
+          image: frozenwolf2003/mlops-airflow:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            # Core Airflow env
+            - name: AIRFLOW__CORE__EXECUTOR
+              value: KubernetesExecutor
+            - name: AIRFLOW__CORE__DAGS_FOLDER
+              value: /opt/airflow/dags/repo/dags/
+            # Extra env from your values.yaml
+            - name: KAFKA_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: MLFLOW_TRACKING_URI
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: MLFLOW_URI
+            - name: MLFLOW_TRACKING_USERNAME
+              value: "admin"
+            - name: MLFLOW_TRACKING_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: platform-secrets
+                  key: MLFLOW_ADMIN_PASSWORD
+          envFrom:
+            - secretRef:
+                name: platform-secrets
+          volumeMounts:
+            - name: airflow-dags
+              mountPath: /opt/airflow/custom_persistent_shared
+      volumes:
+        - name: airflow-dags
+          persistentVolumeClaim:
+            claimName: shared-pvc
