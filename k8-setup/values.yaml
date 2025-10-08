@@ -8,11 +8,20 @@ airflow:
 
 
 dags:
-  gitSync:
-    enabled: true
-    repo: "https://github.com/FrozenWolf-Cyber/crypto-mlops"
-    branch: "master"
-    wait: 10
   persistence:
     enabled: true
-
+    # Volume size for dags
+    size: 1Gi
+    # If using a custom storageClass, pass name here
+    storageClassName:
+    # access mode of the persistent volume
+    accessMode: ReadWriteMany
+    ## the name of an existing PVC to use
+    existingClaim: shared-pvc-airflow
+    subPath: ~
+  gitSync:
+    enabled: false
+    repo: https://github.com/FrozenWolf-Cyber/crypto-mlops
+    branch: master
+    period: 5s
+    wait: ~
