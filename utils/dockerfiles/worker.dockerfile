@@ -14,8 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
-RUN git clone https://github.com/FrozenWolf-Cyber/crypto-mlops
-COPY crypto-mlops/* ${AIRFLOW_HOME}/dags/
+RUN git clone https://github.com/FrozenWolf-Cyber/crypto-mlops ${AIRFLOW_HOME}/dags/crypto-mlops
 RUN apt-get install -y locales
 RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
