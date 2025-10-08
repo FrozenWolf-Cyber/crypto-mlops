@@ -85,7 +85,6 @@ flower:
 logs:
   persistence:
     enabled: true
-    existingClaim: shared-pvc-airflow
 
 redis: 
   enabled: false
