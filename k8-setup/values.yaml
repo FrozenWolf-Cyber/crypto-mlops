@@ -18,17 +18,6 @@ volumes:
     persistentVolumeClaim:
       claimName: shared-pvc
 
-extraVolumes:
-  - name: pod-template
-    configMap:
-      name: airflow-pod-template
-
-extraVolumeMounts:
-  - name: pod-template
-    mountPath: /opt/airflow/
-    readOnly: true
-
-
 extraEnv: |
   - name: KAFKA_HOST
     valueFrom:
@@ -67,9 +56,7 @@ airflow:
       value: /opt/airflow/dags/repo
 
 
-
-# Ensure DAG processor, scheduler, triggerer all use your image
-# DAGs
+# DAGs persistence + git-sync
 dags:
   gitSync:
     enabled: true
@@ -81,13 +68,9 @@ dags:
     existingClaim: shared-pvc-airflow
     accessMode: ReadWriteMany
 
+# Disable flower/redis (not needed with K8sExecutor)
 flower:
   enabled: false
-
-logs:
-  persistence:
-    enabled: true
-    existingClaim: shared-pvc
 
 redis: 
   enabled: false
