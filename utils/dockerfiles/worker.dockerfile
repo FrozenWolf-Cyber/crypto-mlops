@@ -51,6 +51,7 @@ EOF
 COPY past_news_scrape.py .
 COPY scrape.py .
 RUN mkdir my_repo_clone
+ARG CACHE_BUST=1
 RUN git clone https://github.com/FrozenWolf-Cyber/crypto-mlops my_repo_clone
 RUN cp -r my_repo_clone/* ${AIRFLOW_HOME}/
 RUN echo $AIRFLOW_HOME

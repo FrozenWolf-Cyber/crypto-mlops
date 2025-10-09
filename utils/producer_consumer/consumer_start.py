@@ -48,6 +48,7 @@ def create_consumer(crypto: str, model: str, version: str):
     ## instead of create subprocess we will save it as a job file at PRODUCER_CONSUMER_JOB_DIR which will be launched by a separate script
     file_name = f"{crypto}_{model}_{version}.sh"
     with open(os.path.join(PRODUCER_CONSUMER_JOB_DIR, file_name), "w") as f:
+        print("Writing job file:", os.path.join(PRODUCER_CONSUMER_JOB_DIR, file_name))
         f.write("#!/bin/bash\n")
         f.write(f"export PYTHONPATH=..:$PYTHONPATH\n")
         f.write(f"python -m utils.producer_consumer.consumer --crypto {crypto} --model {model} --version {version}\n")
