@@ -7,7 +7,7 @@ import numpy as np
 import onnxruntime as ort
 from tqdm import tqdm
 from ..trainer.train_utils import annotate_news
-
+import os
 
 def get_label(price_change, threshold):
     if price_change > threshold:
@@ -153,7 +153,9 @@ def main(args):
         
         
         combined_preds.to_csv(out_path, index=False)
-        
+        state_file = out_path
+        os.chmod(state_file, 0o777)
+        os.chmod(os.path.dirname(state_file), 0o777)
         print(f"Saved updated predictions for version {version} at {out_path}")
 
 

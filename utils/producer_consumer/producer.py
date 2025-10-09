@@ -216,6 +216,9 @@ def main():
                 tmp_path = f"{csv_path[symbol]}_{random.randint(1,100000)}.tmp"
                 csv_data[symbol].to_csv(tmp_path, index=False)
                 os.replace(tmp_path, csv_path[symbol]) 
+                state_file = csv_path[symbol]
+                os.chmod(state_file, 0o777)
+                os.chmod(os.path.dirname(state_file), 0o777)
                 
                 last_times[symbol] = last_time_recieved
                 csv_last_times[symbol] = last_times[symbol]

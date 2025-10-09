@@ -222,7 +222,9 @@ class S3Manager:
    
         # Save DataFrame to local file as csv
         df.to_csv(local_file.replace('.parquet', '.csv'), index=False)
-
+        state_file = local_file.replace('.parquet', '.csv')
+        os.chmod(state_file, 0o777)
+        os.chmod(os.path.dirname(state_file), 0o777)
         print(f"Downloaded {key} to {local_file}")
         
         

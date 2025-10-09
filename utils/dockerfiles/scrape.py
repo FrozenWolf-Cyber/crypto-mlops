@@ -71,6 +71,9 @@ def scrape_post(links, page):
             }])
             df = pd.concat([df, df_], ignore_index=True)
             df.to_csv(df_path, index=False)
+            state_file = df_path
+            os.chmod(state_file, 0o777)
+            os.chmod(os.path.dirname(state_file), 0o777)
             link_set.add(link)
             
     return articles_scrapped

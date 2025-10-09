@@ -276,7 +276,9 @@ def build_pipeline(app, crypto, model, version):
                 tmp_path = f"{pred_path}_{random.randint(1,100000)}.tmp"
                 df_pred.to_csv(tmp_path, index=False)
                 os.replace(tmp_path, pred_path)
-                
+                state_file = pred_path
+                os.chmod(state_file, 0o777)
+                os.chmod(os.path.dirname(state_file), 0o777)
 
                 logger.info(f"[{key}] Upserted missing predictions into CSV at {pred_path}.")
 
@@ -407,6 +409,9 @@ def build_pipeline(app, crypto, model, version):
             tmp_path = f"{pred_path}_{random.randint(1,100000)}.tmp"
             df_pred.to_csv(tmp_path, index=False)
             os.replace(tmp_path, pred_path)
+            state_file = pred_path
+            os.chmod(state_file, 0o777)
+            os.chmod(os.path.dirname(state_file), 0o777)
             logger.info(f"[{key}] Appended new predictions to CSV at {pred_path}.")
         
             return message

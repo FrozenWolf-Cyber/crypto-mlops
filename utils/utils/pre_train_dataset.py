@@ -84,7 +84,15 @@ for coin in cryptos:
     print(f"Start date: {train_df.iloc[0]['open_time']}, End date: {test_df.iloc[-1]['open_time']}")
     
     train_df.to_csv(f"{data_path}/{coin}.csv", index=False)
+    state_file = f"{data_path}/{coin}.csv"
+    os.chmod(state_file, 0o777)
+    os.chmod(os.path.dirname(state_file), 0o777)
+
     test_df.to_csv(f"{data_path}/{coin}_test.csv", index=False)
+    
+    state_file = f"{data_path}/{coin}_test.csv"
+    os.chmod(state_file, 0o777)
+    os.chmod(os.path.dirname(state_file), 0o777)
     manager.upload_df(f"{data_path}/{coin}.csv", bucket='mlops', key=f'prices/{coin}.parquet')
     manager.upload_df(f"{data_path}/{coin}_test.csv", bucket='mlops', key=f'prices/{coin}_test.parquet')
     

@@ -229,7 +229,9 @@ class S3Manager:
    
         # Save DataFrame to local file as csv
         df.to_csv(local_file.replace('.parquet', '.csv'), index=False)
-
+        state_file = local_file.replace('.parquet', '.csv')
+        os.chmod(state_file, 0o777)
+        os.chmod(os.path.dirname(state_file), 0o777)
         # DOwnload hash file too
         hash_key = key.replace('.parquet', '.hash')
         s3_hash = self._get_s3_hash(bucket, hash_key)
