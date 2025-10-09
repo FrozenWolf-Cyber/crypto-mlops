@@ -273,7 +273,7 @@ def build_pipeline(app, crypto, model, version):
                 df_pred = pd.concat([df_pred, df_upsert], ignore_index=True)
                 df_pred = df_pred.sort_values(by="open_time").reset_index(drop=True)
                 df_pred = df_pred.drop_duplicates(subset=["open_time"])
-                tmp_path = f"{pred_path}_{random.randint(100000)}.tmp"
+                tmp_path = f"{pred_path}_{random.randint(1,100000)}.tmp"
                 df_pred.to_csv(tmp_path, index=False)
                 os.replace(tmp_path, pred_path)
                 
@@ -404,7 +404,7 @@ def build_pipeline(app, crypto, model, version):
             df_pred = df_pred.sort_values(by="open_time").reset_index(drop=True)
             df_pred = df_pred.drop_duplicates(subset=["open_time"])
             logger.info(f"[{key}] After appending, CSV has {len(df_pred)} rows.")
-            tmp_path = f"{pred_path}_{random.randint(100000)}.tmp"
+            tmp_path = f"{pred_path}_{random.randint(1,100000)}.tmp"
             df_pred.to_csv(tmp_path, index=False)
             os.replace(tmp_path, pred_path)
             logger.info(f"[{key}] Appended new predictions to CSV at {pred_path}.")

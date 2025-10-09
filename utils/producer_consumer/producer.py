@@ -213,7 +213,7 @@ def main():
                 csv_data[symbol] = pd.concat([csv_data[symbol], records], ignore_index=True)
                 # Save to CSV
                 # csv_data[symbol].to_csv(csv_path[symbol], index=False)
-                tmp_path = f"{csv_path[symbol]}_{random.randint(100000)}.tmp"
+                tmp_path = f"{csv_path[symbol]}_{random.randint(1,100000)}.tmp"
                 csv_data[symbol].to_csv(tmp_path, index=False)
                 os.replace(tmp_path, csv_path[symbol]) 
                 
