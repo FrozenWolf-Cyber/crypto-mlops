@@ -22,7 +22,12 @@ spec:
           envFrom:
             - secretRef:
                 name: platform-secrets
-          env:
+
+          env: |
+            - name: KAFKA_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
             - name: MLFLOW_TRACKING_URI
               valueFrom:
                 secretKeyRef:
@@ -35,6 +40,13 @@ spec:
                 secretKeyRef:
                   name: platform-secrets
                   key: MLFLOW_ADMIN_PASSWORD
+          
+          envFrom:
+            - secretRef:
+                name: platform-secrets
+
+
+
           command: ["/bin/sh", "-c"]
           args:
             - |
