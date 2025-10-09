@@ -18,11 +18,11 @@ spec:
     rollingUpdate:
       maxUnavailable: 1
       maxSurge: 1
+
   template:
     metadata:
       labels:
         app: crypto-backend
-
     spec:
       restartPolicy: Always
       containers:
@@ -38,62 +38,32 @@ spec:
           args:
             - |
               set -e
-              git clone https://github.com/FrozenWolf-Cyber/crypto-mlops
-              cd crypto-mlops/utils/dockerfiles
-              uvicorn main:app --host 0.0.0.0 --port 8000 --workers 0
+              if [ ! -d "/app/crypto-mlops" ]; then
+                mkdir -p /app
+                cd /app
+                git clone https://github.com/FrozenWolf-Cyber/crypto-mlops
+              fi
+              cd /app/crypto-mlops/utils/dockerfiles
+              exec uvicorn main:app --host 0.0.0.0 --port 8000 --workers 1
 
----
+          # Health checks
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 300
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
 
-# -------------------------------
-# 2. Service
-# -------------------------------
-# http://crypto-backend:8000/docs
-apiVersion: v1
-kind: Service
-metadata:
-  name: crypto-backend
-  namespace: platform
-  labels:
-    app: crypto-backend
-spec:
-  type: NodePort
-  selector:
-    app: crypto-backend
-  ports:
-    - nodePort: 30080
-      protocol: TCP
-      port: 8000
-      targetPort: 8000
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 300
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
 
-
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: crypto-backend-ingress
-  namespace: platform
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    # nginx.ingress.kubernetes.io/whitelist-source-range: "173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22"
-spec:
-  ingressClassName: nginx
-  tls:
-    - hosts:
-        - crypto-backend.gokuladethya.uk
-      secretName: crypto-backend-tls
-  rules:
-    - host: crypto-backend.gokuladethya.uk
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: crypto-backend
-                port:
-                  number: 8000
-
-
-
-
+          # Restart behavior
+          restartPolicy: Always

@@ -437,6 +437,10 @@ def trigger_force_sync(credentials: HTTPBasicCredentials = Depends(verify_creden
         print(f"Updated overall last sync to {state['overall_last_sync']}")
         return last_success
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
 @app.get("/prices/{coin}")
 def get_prices(
     coin: str,
