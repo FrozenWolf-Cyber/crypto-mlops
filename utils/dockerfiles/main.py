@@ -399,9 +399,9 @@ origins = [
     "http://localhost:5173",  # Vite dev server
     "http://127.0.0.1:5173",  # sometimes needed
     "https://FrozenWolf-Cyber.github.io/crypto",
-    
+    "https://crypto-bxs.pages.dev",
+    "https://crypto.gokuladethya.uk"
 ]
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,        # or ["*"] to allow all origins (for dev)
