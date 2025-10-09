@@ -12,6 +12,7 @@ import numpy as np
 from .consumer_utils import state_checker, state_write
 from tqdm import tqdm
 from .logger import get_logger
+import random
 
 import threading
 
@@ -272,7 +273,11 @@ def build_pipeline(app, crypto, model, version):
                 df_pred = pd.concat([df_pred, df_upsert], ignore_index=True)
                 df_pred = df_pred.sort_values(by="open_time").reset_index(drop=True)
                 df_pred = df_pred.drop_duplicates(subset=["open_time"])
-                df_pred.to_csv(pred_path, index=False)
+                tmp_path = f"{pred_path}_{random.randint(100000)}.tmp"
+                df_pred.to_csv(tmp_path, index=False)
+                os.replace(tmp_path, pred_path)
+                
+
                 logger.info(f"[{key}] Upserted missing predictions into CSV at {pred_path}.")
 
             del inp, pred, rows_for_upsert, df_upsert
@@ -399,7 +404,9 @@ def build_pipeline(app, crypto, model, version):
             df_pred = df_pred.sort_values(by="open_time").reset_index(drop=True)
             df_pred = df_pred.drop_duplicates(subset=["open_time"])
             logger.info(f"[{key}] After appending, CSV has {len(df_pred)} rows.")
-            df_pred.to_csv(pred_path, index=False)
+            tmp_path = f"{pred_path}_{random.randint(100000)}.tmp"
+            df_pred.to_csv(tmp_path, index=False)
+            os.replace(tmp_path, pred_path)
             logger.info(f"[{key}] Appended new predictions to CSV at {pred_path}.")
         
             return message

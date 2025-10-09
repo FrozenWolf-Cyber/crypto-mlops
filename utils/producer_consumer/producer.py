@@ -5,6 +5,8 @@ import pandas as pd
 from datetime import datetime
 from quixstreams import Application
 from tqdm import tqdm
+import random
+import tempfile
 from ..database.db import crypto_db
 from .consumer_utils import state_write, state_checker, delete_state
 BASE_URL = "https://api.binance.com/api/v3/klines"
@@ -210,7 +212,10 @@ def main():
                 print(f"New rows starting from {records.iloc[0]['open_time']} to {records.iloc[-1]['open_time']}")
                 csv_data[symbol] = pd.concat([csv_data[symbol], records], ignore_index=True)
                 # Save to CSV
-                csv_data[symbol].to_csv(csv_path[symbol], index=False)
+                # csv_data[symbol].to_csv(csv_path[symbol], index=False)
+                tmp_path = f"{csv_path[symbol]}_{random.randint(100000)}.tmp"
+                csv_data[symbol].to_csv(tmp_path, index=False)
+                os.replace(tmp_path, csv_path[symbol]) 
                 
                 last_times[symbol] = last_time_recieved
                 csv_last_times[symbol] = last_times[symbol]
