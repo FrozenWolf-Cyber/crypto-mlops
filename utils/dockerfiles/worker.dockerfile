@@ -55,3 +55,4 @@ ARG CACHE_BUST=1
 RUN git clone https://github.com/FrozenWolf-Cyber/crypto-mlops my_repo_clone
 RUN cp -r my_repo_clone/* ${AIRFLOW_HOME}/
 RUN echo $AIRFLOW_HOME
+USER root

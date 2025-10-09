@@ -49,6 +49,11 @@ extraEnvFrom: |
   - secretRef:
       name: platform-secrets
 
+securityContext:
+  runAsUser: 0        # UID you want Airflow to run as
+  runAsGroup: 0
+  fsGroup: 0          # ensures shared volumes are accessible
+
 
 webserverSecretKeySecretName: my-webserver-secret
 # Use your custom image everywhere
