@@ -23,7 +23,7 @@ spec:
             - secretRef:
                 name: platform-secrets
 
-          env: |
+          env:
             - name: KAFKA_HOST
               valueFrom:
                 fieldRef:
@@ -41,10 +41,6 @@ spec:
                   name: platform-secrets
                   key: MLFLOW_ADMIN_PASSWORD
           
-          envFrom:
-            - secretRef:
-                name: platform-secrets
-
 
 
           command: ["/bin/sh", "-c"]
