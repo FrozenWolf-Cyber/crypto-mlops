@@ -34,9 +34,13 @@ spec:
             - secretRef:
                 name: platform-secrets
 
-          command: ["uvicorn"]
-          args: ["main:app", "--host", "0.0.0.0", "--port", "8000"]
-
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              git clone https://github.com/FrozenWolf-Cyber/crypto-mlops
+              cd crypto-mlops/utils/dockerfiles
+              uvicorn main:app --host 0.0.0.0 --port 8000 --workers 0
 
 ---
 
