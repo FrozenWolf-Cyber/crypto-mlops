@@ -20,7 +20,7 @@ def create_consumer(crypto: str, model: str, version: str):
 
     cmd = [
     "bash", "-c",
-    f"python -m consumer "
+    f"python -m utils.producer_consumer.consumer "
     f"--crypto {crypto} --model {model} --version {version}"
     ]
     print("[CREATE] Launching:", " ".join(cmd))
@@ -41,7 +41,7 @@ def create_producer(crypto: str, model: str, version: str):
     """Download datasets and launch consumer."""
     print(f"[CREATE] Preparing producer for {crypto} {model} {version}")
 
-    cmd = ["bash", "-c", "python -m producer"]
+    cmd = ["bash", "-c", "python -m utils.producer_consumer.producer "]
     print("[CREATE] Launching:", " ".join(cmd))
     subprocess.Popen(
     cmd,
