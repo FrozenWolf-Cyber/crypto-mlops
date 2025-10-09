@@ -68,6 +68,8 @@ def create_trl_onnx_model():
     import json
     with open("/opt/airflow/custom_persistent_shared/trl_onnx_models/trl_onnx_config.json", "w") as f:
         json.dump(config, f)
+        os.chmod(f, 0o777)
+        os.chmod(os.path.dirname(f), 0o777)
         
         
 create_trl_onnx_model()

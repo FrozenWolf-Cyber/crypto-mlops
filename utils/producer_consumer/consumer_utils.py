@@ -29,6 +29,9 @@ def state_write(crypto: str, model: str, version: str, state: str, error_msg: st
     }
     with open(state_file, "w") as f:
         json.dump(data, f)
+
+    os.chmod(state_file, 0o777)
+    os.chmod(os.path.dirname(state_file), 0o777)
     print(f"[STATE] {crypto} {model} {version} -> {state}")
 
 def state_checker(crypto: str, model: str, version: str, timeout=120) -> str:
