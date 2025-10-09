@@ -22,10 +22,7 @@ spec:
     metadata:
       labels:
         app: crypto-backend
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8000"
-        prometheus.io/path: "/metrics"
+
     spec:
       restartPolicy: Always
       containers:
@@ -40,13 +37,6 @@ spec:
           command: ["uvicorn"]
           args: ["main:app", "--host", "0.0.0.0", "--port", "8000"]
 
-          livenessProbe:
-            httpGet:
-              path: /metrics
-              port: 8000
-            initialDelaySeconds: 600
-            periodSeconds: 15
-            failureThreshold: 5
 
 ---
 
