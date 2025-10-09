@@ -64,6 +64,3 @@ spec:
             periodSeconds: 20
             timeoutSeconds: 5
             failureThreshold: 3
-
-          # Restart behavior
-          restartPolicy: Always
