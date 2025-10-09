@@ -15,6 +15,10 @@ spec:
       labels:
         app: producer-consumer
     spec:
+      securityContext:
+        runAsUser: 0        # run the pod as root
+        runAsGroup: 0       # root group
+        fsGroup: 0  
       restartPolicy: Always
       containers:
         - name: producer-consumer

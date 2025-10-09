@@ -12,6 +12,10 @@ data:
       name: airflow-base-pod
     spec:
       restartPolicy: Never
+      securityContext:
+        runAsUser: 0        # run the pod as root
+        runAsGroup: 0       # root group
+        fsGroup: 0  
       containers:
         - name: base
           image: frozenwolf2003/mlops-airflow:latest
