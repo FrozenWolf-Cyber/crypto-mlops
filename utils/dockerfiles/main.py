@@ -438,7 +438,7 @@ def trigger_force_sync(credentials: HTTPBasicCredentials = Depends(verify_creden
         return last_success
 
 @app.get("/health")
-async def health():
+def health():
     return {"status": "ok"}
 
 @app.get("/prices/{coin}")

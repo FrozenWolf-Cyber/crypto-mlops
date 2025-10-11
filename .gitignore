@@ -13,3 +13,4 @@ state/
 *.ipynb
 platform-secrets.yml
 start_training.sh
+utils/dockerfiles/data
