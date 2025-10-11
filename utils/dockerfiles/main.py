@@ -395,9 +395,9 @@ print(f"Initial overall last sync at {state['overall_last_sync']} from task {tas
 app = FastAPI(title="Crypto Project API")
 # Allow localhost:5173 to access the backend
 origins = [
-    "http://localhost:3000",  # React dev server
-    "http://localhost:5173",  # Vite dev server
-    "http://127.0.0.1:5173",  # sometimes needed
+    # "http://localhost:3000",  # React dev server
+    # "http://localhost:5173",  # Vite dev server
+    # "http://127.0.0.1:5173",  # sometimes needed
     "https://FrozenWolf-Cyber.github.io/crypto",
     "https://crypto-bxs.pages.dev",
     "https://crypto.gokuladethya.uk"
