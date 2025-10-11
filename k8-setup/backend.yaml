@@ -52,15 +52,6 @@ spec:
               path: /health
               port: 8000
             initialDelaySeconds: 300
-            periodSeconds: 10
-            timeoutSeconds: 3
-            failureThreshold: 3
-
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8000
-            initialDelaySeconds: 300
             periodSeconds: 20
-            timeoutSeconds: 5
+            timeoutSeconds: 60
             failureThreshold: 3
