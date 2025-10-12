@@ -50,8 +50,8 @@ spec:
             failureThreshold: 1
 
           volumeMounts:
-            - name: custom
-              mountPath: backend-pvc
+            - name: backend-pvc
+              mountPath: backend-data
       volumes:
         - name: backend-pvc
           persistentVolumeClaim:
