@@ -51,7 +51,7 @@ spec:
 
           volumeMounts:
             - name: backend-pvc
-              mountPath: backend-data
+              mountPath: app/data
       volumes:
         - name: backend-pvc
           persistentVolumeClaim:
@@ -68,7 +68,7 @@ spec:
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: /mnt/   # make sure this folder exists on VM
+    path: /mnt/backend-data   # make sure this folder exists on VM
     type: DirectoryOrCreate
   persistentVolumeReclaimPolicy: Retain
 ---
