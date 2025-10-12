@@ -32,6 +32,77 @@ It combines **reinforcement-tuned FinBERT**, **LightGBM**, and **TST models**, w
 
 ---
 
+## Folder Structure
+
+```bash
+crypto-mlops
+├── dags/
+│   ├── cleanup_DAG.py                # training event cleanup
+│   ├── DAG.py                        # model_training_pipeline: trains LightGBM, TST, TRL models every 5 days; includes consumer_start_dag (resume producer/consumer on startup) and delete_all_process (kill all producer/consumer)
+│   └── trl_infer_Dag.py              # trl_inference_pipeline: scrapes past news data, compiles using trl_onnx_maker, performs inference
+│
+├── k8-setup/
+│   ├── airflow-ingress.yaml          # reverse proxy for Airflow (TODO)
+│   ├── backend.yaml                  # backend for crypto dashboard + reverse proxy
+│   ├── cluster-issuer.yaml           # auto issues/renews TLS/SSL certs (HTTPS) in cluster
+│   ├── fast-api.yaml                 # hosts model inference for consumer process, loads latest models from S3 + MLflow, exposes Prometheus hooks
+│   ├── generate_secrets.py           # dynamically generates platform-secrets.yaml from OS env vars; assigns credentials for entire cluster
+│   ├── grafana-config.yaml           # Grafana hosting configs
+│   ├── grafaingress.yaml             # reverse proxy for Grafana
+│   ├── kafka-service.yaml            # exposes Kafka to cluster pods
+│   ├── kafka.yaml                    # external Docker-based Kafka (default Quixstream template)
+│   ├── ml-flow.yaml                  # MLflow hosting pod + service exposure to other pods
+│   ├── mlflow_bootstrap.py           # post-reverse-proxy script: updates admin creds, sets public view password, creates secret endpoint for VastAI logging
+│   ├── mlflow-ingress.yaml           # reverse proxy for MLflow
+│   ├── pod_template.yaml             # pod template for Airflow KubernetesExecutor tasks
+│   ├── producer-consumer.yaml        # pod running producer and consumer outside Airflow
+│   ├── pvc.yaml                      # PV/PVC claims for persistent storage
+│   └── values.yaml                   # Airflow configuration values
+│
+├── utils/
+│   ├── articles_runner/
+│   │   ├── past_news_scrape.py       # news scraper using Playwright
+│   │   └── scrape.py                 # scraping utilities; saves scraped news locally as CSV
+│   │
+│   ├── artifact_control/
+│   │   ├── model_manager.py          # handles MLflow model logging, promotion, archival in S3 registry
+│   │   └── s3_manager.py             # upload/download predictions, price data, etc.
+│   │
+│   ├── database/
+│   │   ├── airflow_db.py             # training status DB updated by VastAI; monitored by training DAG
+│   │   ├── db.py                     # handles CRUD ops on crypto prices, predictions, and articles
+│   │   └── status_db.py              # DAG hook that logs each task’s status and errors
+│   │
+│   ├── dockerfile/
+│   │   ├── backend.dockerfile        # FastAPI backend for crypto dashboard
+│   │   ├── main.py                   # backend server entrypoint
+│   │   ├── modelserve.dockerfile     # FastAPI model serving image
+│   │   ├── producer_consumer.dockerfile # producer-consumer pod image
+│   │   └── worker.dockerfile         # Airflow worker image
+│   │
+│   ├── producer_consumer/
+│   │   ├── consumer_start.py         # resumes producer-consumer setup on pod restart/new setup
+│   │   ├── consumer_utils.py         # handles read/write states for communication between independent processes and worker pods
+│   │   ├── consumer.py               # consumer triggered per version/model/crypto; listens to topic, performs inference via FastAPI, pushes results to DB, self-deletes after completion
+│   │   ├── job_handler.py            # creates producer/consumer by invoking scripts when job is received from worker
+│   │   ├── kill_all.py               # kills all active producers and consumers
+│   │   └── producer.py               # producer for each coin; pushes messages to topic and writes locally
+│   │
+│   ├── serve/
+│   │   ├── fastapi_app.py            # FastAPI model server; supports model refresh from MLflow/S3; monitored by Prometheus
+│   │   ├── trl_inference.py          # loads compiled ONNX models to perform inference
+│   │   └── trl_onnx_maker.py         # detects new model pushes, compiles new ONNX models
+│   │
+│   ├── trainer/                      # training scripts; train_parallel.py triggers concurrent model training (LightGBM/TST/TRL) with early stopping and safe completion; updates status; performs post-train inference and S3 upload
+│   │
+│   └── utils/
+│       ├── kill_vast_ai_instances.py # terminates all VastAI instances
+│       ├── post_train_reconcile.py   # reconciles post-train predictions with DB/CSV; kills old consumers, spins new ones for updated model
+│       ├── post_train_trl.py         # same as above, but for TRL model
+│       ├── pre_train_dataset.py      # slices last 6 months’ data before training; pushes to S3 for VastAI pods
+│       └── vast_ai_train.py          # selects budget-efficient VastAI pod; blacklists malformed pods
+
+```
 ## 📊 Label Generation
 
 ### 1️⃣ Time-Series Labels
