@@ -7,6 +7,8 @@
 
 **Project:** Crypto MLOps Dashboard — Real-time BTC/USDT price and sentiment prediction.
 
+**Dashboard Code:** [https://github.com/FrozenWolf-Cyber/crypto](https://github.com/FrozenWolf-Cyber/crypto)
+
 For installation instructions, see [INSTALL.md](install.md).
 
 ---
@@ -161,6 +163,10 @@ loss = loss_surrogate + kl_coef * kl_loss
 * **Kafka (dockerized):** Separate persistent setup
 
 **Grafana:** [https://grafana.gokuladethya.uk/](https://grafana.gokuladethya.uk/)
+
+## DAG:
+Training Pipeline DAG:
+![DAG](demo/training_pipeline-graph.png)
 
 ---
 
