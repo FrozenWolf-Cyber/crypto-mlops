@@ -11,9 +11,6 @@ from s3_manager import S3Manager
 import time
 import threading
 ## lock during data sync and update from db
-sync_lock = threading.Lock()
-price_lock = threading.Lock()
-trl_lock = threading.Lock()
 
 s3_manager = S3Manager(
    )
@@ -194,41 +191,37 @@ def update_trl_from_db(start: pd.Timestamp, trl: pd.DataFrame):
 def update_price_periodic(sec=60):
     if time.time() - state["price_last_sync"] < sec:
         return
-    if not sync_lock.locked():
-        with price_lock:
-            print("Periodic price update from DB...")
-            first_nan_date = state["first_nan_date"]
-            for coin in coins:
-                print(f"Updating prices for {coin} from {first_nan_date}")
-                state["prices"][coin], first_nan_date = update_price_from_db(first_nan_date, coin, state["prices"][coin])
-            state["first_nan_date"] = first_nan_date
-            state["price_last_sync"] = time.time()
+    print("Periodic price update from DB...")
+    first_nan_date = state["first_nan_date"]
+    for coin in coins:
+        print(f"Updating prices for {coin} from {first_nan_date}")
+        state["prices"][coin], first_nan_date = update_price_from_db(first_nan_date, coin, state["prices"][coin])
+    state["first_nan_date"] = first_nan_date
+    state["price_last_sync"] = time.time()
 
 def update_trl_periodic(sec=300):
     if time.time() - state["trl_last_sync"] < sec:
         return
-    if not sync_lock.locked():
-        with trl_lock:
-            print("Periodic TRL update from DB...")
-            trl_open_time = state["trl_open_time"]
-            state["trl"], trl_open_time = update_trl_from_db(trl_open_time, state["trl"])
-            state["trl_open_time"] = trl_open_time
-            state["trl_last_sync"] = time.time()
+
+    print("Periodic TRL update from DB...")
+    trl_open_time = state["trl_open_time"]
+    state["trl"], trl_open_time = update_trl_from_db(trl_open_time, state["trl"])
+    state["trl_open_time"] = trl_open_time
+    state["trl_last_sync"] = time.time()
 
             
 def sync_data_periodic(): ## sync every 3 days
     ## check if any new task_name post_train_* status SUCCESS in crypto_batch_status table. If yes, do full sync
-    with sync_lock:
-        last_success, task_name = get_last_successful_post_train()
-        print(f"Last successful post_train task at {last_success}, last overall sync at {state['overall_last_sync'], task_name}")
-        if state["overall_last_sync"] != last_success:
-            print(f"[TASK SUCCESS:{task_name}] Detected new successful post_train task since last sync {state['overall_last_sync']} -> {last_success}")
-            print("Periodic full data sync...")
-            sync_data()
-            state["overall_last_sync"] = last_success ## update to latest just before sync. a new task might come during sync which needs another sync later
-            print(f"Updated overall last sync to {state['overall_last_sync']}")
-            return last_success
-        print("No new successful post_train tasks since last sync")
+    last_success, task_name = get_last_successful_post_train()
+    print(f"Last successful post_train task at {last_success}, last overall sync at {state['overall_last_sync'], task_name}")
+    if state["overall_last_sync"] != last_success:
+        print(f"[TASK SUCCESS:{task_name}] Detected new successful post_train task since last sync {state['overall_last_sync']} -> {last_success}")
+        print("Periodic full data sync...")
+        sync_data()
+        state["overall_last_sync"] = last_success ## update to latest just before sync. a new task might come during sync which needs another sync later
+        print(f"Updated overall last sync to {state['overall_last_sync']}")
+        return last_success
+    print("No new successful post_train tasks since last sync")
     return last_success
         
 def get_last_successful_post_train():
@@ -247,7 +240,6 @@ def get_last_successful_post_train():
         return None, None
 
 def sync_data():
-    with sync_lock:
         if not os.path.exists("data"):
             os.makedirs("data")
         if not os.path.exists("data/prices"):
@@ -427,15 +419,14 @@ def trigger_sync(credentials: HTTPBasicCredentials = Depends(verify_credentials)
 @app.get("/force_sync")
 def trigger_force_sync(credentials: HTTPBasicCredentials = Depends(verify_credentials)):
     print("Manual force sync triggered by", credentials.username, flush=True)
-    with sync_lock:
-        last_success, task_name = get_last_successful_post_train()
-        print(f"Last successful post_train task at {last_success}, last overall sync at {state['overall_last_sync'], task_name}")
-        print(f"[TASK SUCCESS:{task_name}] Detected new successful post_train task since last sync {state['overall_last_sync']} -> {last_success}")
-        print("Periodic full data sync...")
-        sync_data()
-        state["overall_last_sync"] = last_success ## update to latest just before sync. a new task might come during sync which needs another sync later
-        print(f"Updated overall last sync to {state['overall_last_sync']}")
-        return last_success
+    last_success, task_name = get_last_successful_post_train()
+    print(f"Last successful post_train task at {last_success}, last overall sync at {state['overall_last_sync'], task_name}")
+    print(f"[TASK SUCCESS:{task_name}] Detected new successful post_train task since last sync {state['overall_last_sync']} -> {last_success}")
+    print("Periodic full data sync...")
+    sync_data()
+    state["overall_last_sync"] = last_success ## update to latest just before sync. a new task might come during sync which needs another sync later
+    print(f"Updated overall last sync to {state['overall_last_sync']}")
+    return last_success
 
 @app.get("/health")
 def health():
