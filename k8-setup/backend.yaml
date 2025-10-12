@@ -37,12 +37,6 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              set -e
-              if [ ! -d "/app/crypto-mlops" ]; then
-                mkdir -p /app
-                cd /app
-                git clone https://github.com/FrozenWolf-Cyber/crypto-mlops
-              fi
               cd /app/crypto-mlops/utils/dockerfiles
               exec uvicorn main:app --host 0.0.0.0 --port 8000 --workers 0
 
