@@ -37,7 +37,6 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              cd /app/crypto-mlops/utils/dockerfiles
               exec uvicorn main:app --host 0.0.0.0 --port 8000 --workers 0
 
           # Health checks
