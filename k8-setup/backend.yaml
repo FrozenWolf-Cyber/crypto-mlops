@@ -58,23 +58,20 @@ spec:
             claimName: backend-pvc
 
 ---
-# PersistentVolumeClaim for shared storage
 apiVersion: v1
-kind: PersistentVolumeClaim
+kind: PersistentVolume
 metadata:
-  name: backend-pvc
-  namespace: platform
+  name: backend-pv
 spec:
+  capacity:
+    storage: 10Gi
   accessModes:
     - ReadWriteMany
-  resources:
-    requests:
-      storage: 10Gi
-  volumeName: backend-pvc
-  storageClassName: ""   # ← this is required
-
+  hostPath:
+    path: /mnt/   # make sure this folder exists on VM
+    type: DirectoryOrCreate
+  persistentVolumeReclaimPolicy: Retain
 ---
-# PersistentVolumeClaim for shared storage
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -86,5 +83,5 @@ spec:
   resources:
     requests:
       storage: 10Gi
-  volumeName: shared-pv
+  volumeName: backend-pv
   storageClassName: ""   # ← this is required
