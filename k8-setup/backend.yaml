@@ -48,3 +48,43 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 90
             failureThreshold: 1
+
+          volumeMounts:
+            - name: custom
+              mountPath: backend-pvc
+      volumes:
+        - name: backend-pvc
+          persistentVolumeClaim:
+            claimName: backend-pvc
+
+---
+# PersistentVolumeClaim for shared storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backend-pvc
+  namespace: platform
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  volumeName: backend-pvc
+  storageClassName: ""   # ← this is required
+
+---
+# PersistentVolumeClaim for shared storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backend-pvc
+  namespace: platform
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  volumeName: shared-pv
+  storageClassName: ""   # ← this is required
