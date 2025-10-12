@@ -44,14 +44,14 @@ spec:
                 git clone https://github.com/FrozenWolf-Cyber/crypto-mlops
               fi
               cd /app/crypto-mlops/utils/dockerfiles
-              exec uvicorn main:app --host 0.0.0.0 --port 8000 --workers 1
+              exec uvicorn main:app --host 0.0.0.0 --port 8000 --workers 0
 
           # Health checks
-          readinessProbe:
+          livenessProbe:
             httpGet:
               path: /health
               port: 8000
             initialDelaySeconds: 300
-            periodSeconds: 20
-            timeoutSeconds: 60
-            failureThreshold: 3
+            periodSeconds: 10
+            timeoutSeconds: 90
+            failureThreshold: 1
