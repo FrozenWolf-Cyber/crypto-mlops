@@ -32,6 +32,60 @@ It combines **reinforcement-tuned FinBERT**, **LightGBM**, and **TST models**, w
 
 ---
 
+Here’s your **rephrased and properly formatted README section** version of that “Idea Overview” — written in Markdown, styled for GitHub readability, and preserving your technical depth:
+
+---
+
+## 🧠 Idea Overview
+
+We scrape **article data**, **Bitcoin prices**, and other related statistics at regular intervals to power a continuous MLOps pipeline.
+The system trains three core model types:
+
+* **TRL (LLM Classifier for Articles)** — trained using *Gradient-Regularized Policy Optimization (GRPO)* to align textual sentiment with market reactions.
+* **LightGBM** — trained on tabular, price-based features for short-term movement prediction.
+* **Time Series Transformer (TST)** — processes temporal sequences to capture price trend dynamics.
+
+Each model maintains **three active versions** to monitor **distribution shifts** and **performance degradation** over time.
+All three versions of all three models (total of nine live predictions) are continuously updated and stored in **PostgreSQL**, which serves data to the analytics dashboard.
+
+---
+
+### ⚙️ Deployment & Architecture
+
+The pipeline aims for **near-zero downtime**, **scalability**, and **rapid model refresh**.
+For instance, if LightGBM completes retraining early, it can be deployed immediately without waiting for other models or disrupting ongoing inference.
+
+To achieve this:
+
+* **Kafka** is used for asynchronous producer-consumer message streaming.
+* **S3-hosted MLflow** handles model registry, version tracking, and logging.
+* **Hot-swapping** is performed as soon as a model finishes training, avoiding downtime.
+* **Prometheus + Grafana** provide real-time observability for inference latency and system load.
+* **Nginx Ingress Reverse Proxy** secures endpoints and routes traffic efficiently.
+* **Airflow DAGs** orchestrate retraining, data updates, and deployment cycles.
+
+Additionally, **historical predictions** are reconciled whenever a model version is updated to maintain backward consistency between inferences.
+
+---
+
+### ☸️ Why Kubernetes?
+
+I adopted **Kubernetes (K8s)** primarily to experiment with **scalable training and deployment orchestration**, and to explore GPU-based pod scheduling.
+
+The original design included connecting **Vast.ai nodes** as additional GPU-enabled workers in the same cluster, dynamically spinning up training pods through the **Kubernetes Operator** based on GPU VRAM availability.
+
+However, this approach faced several challenges:
+
+1. **VM Dependency** — Kubernetes requires VMs instead of lightweight instances, increasing startup time, instability, and cost.
+2. **GPU Resource Scheduling** — The official **NVIDIA GPU plugin** only supports A/H-series GPUs, not cheaper consumer GPUs.
+3. **Third-party plugins** — Existing GPU schedulers were unstable and often incompatible with mixed GPU environments.
+4. **Custom Scheduler via Airflow** — Bypassing K8s GPU scheduling was possible but **cost-inefficient** and **complex to maintain**.
+
+Despite these challenges, the system serves as a strong **experimental sandbox** for learning scalable MLOps principles — including distributed training, versioned deployment, and automated monitoring across heterogeneous infrastructure.
+
+---
+
+
 ## Folder Structure
 
 ```bash
