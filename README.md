@@ -32,10 +32,6 @@ It combines **reinforcement-tuned FinBERT**, **LightGBM**, and **TST models**, w
 
 ---
 
-Here’s your **rephrased and properly formatted README section** version of that “Idea Overview” — written in Markdown, styled for GitHub readability, and preserving your technical depth:
-
----
-
 ## 🧠 Idea Overview
 
 We scrape **article data**, **Bitcoin prices**, and other related statistics at regular intervals to power a continuous MLOps pipeline.
