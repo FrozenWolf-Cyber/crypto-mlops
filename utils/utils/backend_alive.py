@@ -14,6 +14,10 @@ def trigger_apis():
         status_resp = requests.get(f"{BASE_URL}/status/events")
         print(f"[{time.ctime()}] ✅ /status/events triggered | Status: {status_resp.status_code}")
 
+        # /keep_alive
+        keep_alive_resp = requests.get(f"{BASE_URL}/keep_alive")
+        print(f"[{time.ctime()}] ✅ /keep_alive triggered | Status: {keep_alive_resp}")
+
     except Exception as e:
         print(f"[{time.ctime()}] ❌ Error triggering APIs: {e}")
 

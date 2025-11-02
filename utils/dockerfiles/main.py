@@ -416,6 +416,22 @@ def trigger_sync(credentials: HTTPBasicCredentials = Depends(verify_credentials)
     r = sync_data_periodic()
     return {"status": r}
 
+@app.get("/keep_alive")
+def keep_alive():
+    ## select last item from trl and prices sql table to keep the connections alive
+    try:
+        print("Keep alive triggered", flush=True)
+        for coin in coins:
+            query = f"SELECT * FROM \"{coin.lower()}\" ORDER BY open_time DESC LIMIT 1"
+            fetch_all(db_engines["prices"], query)
+        query = "SELECT * FROM trl ORDER BY date DESC LIMIT 1"
+        fetch_all(db_engines["trl"], query)
+    except Exception as e:
+        print("Keep alive error:", str(e), flush=True)
+        return {"status": "error", "detail": str(e)}
+    return {"status": "alive"}
+        
+
 @app.get("/force_sync")
 def trigger_force_sync(credentials: HTTPBasicCredentials = Depends(verify_credentials)):
     print("Manual force sync triggered by", credentials.username, flush=True)
