@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backend-alive-pod
+  labels:
+    app: backend-alive
+spec:
+  restartPolicy: Always
+  containers:
+    - name: backend-alive
+      image: python:3.11-slim
+      imagePullPolicy: IfNotPresent
+      command:
+        - sh
+        - -c
+        - |
+          apt-get update && \
+          apt-get install -y git && \
+          pip install --no-cache-dir requests && \
+          git clone https://github.com/FrozenWolf-Cyber/crypto-mlops.git && \
+          cd crypto-mlops && \
+          python utils/utils/backend_alive.py
+
